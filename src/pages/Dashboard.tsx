@@ -4,19 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TwoFactorSetup } from "@/components/TwoFactorSetup";
+import { RoleBasedActions, HasRole } from "@/components/RoleBasedActions";
 import { 
   Calendar, 
-  Users, 
-  BookOpen, 
   Building2, 
   Clock, 
   Bell,
   LogOut,
   RefreshCw,
-  GraduationCap,
   DoorOpen,
   BarChart3,
-  Shield
+  Shield,
+  Settings,
+  UserCog
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -53,87 +53,8 @@ const Dashboard = () => {
     return colors[role] || "bg-gray-100 text-gray-800";
   };
 
-  // Quick actions basées sur le rôle
-  const getQuickActions = () => {
-    const baseActions = [
-      {
-        title: "Emplois du temps",
-        description: "Consulter et gérer les plannings",
-        icon: Calendar,
-        color: "text-primary",
-        bgColor: "bg-primary/10",
-      },
-    ];
-
-    if (user?.role === 'admin' || user?.role === 'directeur' || user?.role === 'responsable_pedagogique') {
-      return [
-        ...baseActions,
-        {
-          title: "Enseignants",
-          description: "Gérer les profils enseignants",
-          icon: Users,
-          color: "text-green-600",
-          bgColor: "bg-green-100 dark:bg-green-900/30",
-        },
-        {
-          title: "Classes",
-          description: "Gérer les classes et groupes",
-          icon: GraduationCap,
-          color: "text-blue-600",
-          bgColor: "bg-blue-100 dark:bg-blue-900/30",
-        },
-        {
-          title: "Salles",
-          description: "Gérer les salles de cours",
-          icon: DoorOpen,
-          color: "text-purple-600",
-          bgColor: "bg-purple-100 dark:bg-purple-900/30",
-        },
-        {
-          title: "Matières",
-          description: "Gérer les matières enseignées",
-          icon: BookOpen,
-          color: "text-orange-600",
-          bgColor: "bg-orange-100 dark:bg-orange-900/30",
-        },
-        {
-          title: "Rattrapages",
-          description: "Planifier les séances de rattrapage",
-          icon: RefreshCw,
-          color: "text-red-600",
-          bgColor: "bg-red-100 dark:bg-red-900/30",
-        },
-      ];
-    }
-
-    if (user?.role === 'enseignant') {
-      return [
-        ...baseActions,
-        {
-          title: "Mon planning",
-          description: "Voir mon emploi du temps",
-          icon: Clock,
-          color: "text-green-600",
-          bgColor: "bg-green-100 dark:bg-green-900/30",
-        },
-        {
-          title: "Mes cours",
-          description: "Gérer mes cours",
-          icon: BookOpen,
-          color: "text-blue-600",
-          bgColor: "bg-blue-100 dark:bg-blue-900/30",
-        },
-        {
-          title: "Rattrapages",
-          description: "Demander un rattrapage",
-          icon: RefreshCw,
-          color: "text-orange-600",
-          bgColor: "bg-orange-100 dark:bg-orange-900/30",
-        },
-      ];
-    }
-
-    return baseActions;
+  const handleActionClick = (route: string) => {
+    navigate(route);
   };
 
   return (
@@ -258,28 +179,58 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions basées sur le rôle */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-foreground mb-4">Actions rapides</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {getQuickActions().map((action, index) => (
-              <Card 
-                key={index} 
-                className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-transparent hover:border-primary/20"
-              >
-                <CardHeader className="pb-2">
-                  <div className={`w-12 h-12 ${action.bgColor} rounded-lg flex items-center justify-center mb-2`}>
-                    <action.icon className={`h-6 w-6 ${action.color}`} />
-                  </div>
-                  <CardTitle className="text-base">{action.title}</CardTitle>
-                  <CardDescription className="text-sm">
-                    {action.description}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
+          <RoleBasedActions onActionClick={handleActionClick} />
         </div>
+
+        {/* Admin Panel - uniquement visible pour les admins */}
+        <HasRole roles={['admin']}>
+          <Card className="mb-8 border-red-500/20 bg-red-50/50 dark:bg-red-950/20">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/50 rounded-lg flex items-center justify-center">
+                  <UserCog className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-red-700 dark:text-red-400">Panel Administrateur</CardTitle>
+                  <CardDescription>
+                    Accès complet au système
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                <Button 
+                  variant="outline" 
+                  className="border-red-200 hover:bg-red-100 dark:border-red-800 dark:hover:bg-red-900/50"
+                  onClick={() => navigate('/admin/utilisateurs')}
+                >
+                  <UserCog className="h-4 w-4 mr-2" />
+                  Gérer les utilisateurs
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-red-200 hover:bg-red-100 dark:border-red-800 dark:hover:bg-red-900/50"
+                  onClick={() => navigate('/admin/etablissements')}
+                >
+                  <Building2 className="h-4 w-4 mr-2" />
+                  Établissements
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="border-red-200 hover:bg-red-100 dark:border-red-800 dark:hover:bg-red-900/50"
+                  onClick={() => navigate('/admin/parametres')}
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Paramètres système
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </HasRole>
 
         {/* Etablissement Info (for admin/director) */}
         {(user?.role === 'admin' || user?.role === 'directeur') && (
