@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TwoFactorSetup } from "@/components/TwoFactorSetup";
 import { 
   Calendar, 
   Users, 
@@ -13,12 +15,14 @@ import {
   RefreshCw,
   GraduationCap,
   DoorOpen,
-  BarChart3
+  BarChart3,
+  Shield
 } from "lucide-react";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [show2FASetup, setShow2FASetup] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -157,6 +161,19 @@ const Dashboard = () => {
                   {getRoleLabel(user?.role || '')}
                 </span>
               </div>
+              
+              {/* 2FA Setup Button */}
+              {!user?.twoFactorEnabled && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShow2FASetup(true)}
+                  className="hidden sm:flex items-center gap-2 border-orange-500/50 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
+                >
+                  <Shield className="h-4 w-4" />
+                  Activer 2FA
+                </Button>
+              )}
               
               <Button variant="outline" size="icon" className="relative">
                 <Bell className="h-4 w-4" />
@@ -299,6 +316,12 @@ const Dashboard = () => {
           </Card>
         )}
       </main>
+
+      {/* 2FA Setup Dialog */}
+      <TwoFactorSetup 
+        open={show2FASetup} 
+        onOpenChange={setShow2FASetup}
+      />
     </div>
   );
 };
