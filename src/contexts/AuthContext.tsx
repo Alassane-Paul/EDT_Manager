@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi, setAuthToken, clearAuthToken, ApiUser } from '@/lib/api';
+import { authApi, setAuthToken, clearAuthToken,  } from '@/api/auth/api';
+import { ApiUser } from '@/types/auth';
 
 // Types pour les rôles - alignés avec ton API
 export type UserRole = 'admin' | 'directeur' | 'responsable_pedagogique' | 'enseignant' | 'etudiant' | 'personnel';
@@ -46,7 +47,7 @@ const mapApiUserToUser = (apiUser: ApiUser): User => ({
   role: apiUser.role as UserRole,
   status: apiUser.statut,
   establishmentId: apiUser.etablissement_id,
-  twoFactorEnabled: apiUser.two_factor_enabled,
+  twoFactorEnabled: apiUser.deux_fa_active,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -86,20 +87,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await authApi.login({
         email,
-        mot_de_passe: password,
+        password: password,
       });
-
+      console.log('Login response:', response);
       // Si 2FA est requis
-      if (response.requires2FA && response.tempToken) {
+      if (response.requires2FA && response.utilisateur?.deux_fa_active) {
         setRequires2FA(true);
-        setTempToken(response.tempToken);
+        setTempToken(response.token);
         return { success: true, requires2FA: true };
       }
 
       // Connexion réussie sans 2FA
-      if (response.token && response.user) {
+      if (response.token && response.utilisateur) {
         setAuthToken(response.token);
-        const mappedUser = mapApiUserToUser(response.user);
+        const mappedUser = mapApiUserToUser(response.utilisateur);
         setUser(mappedUser);
         localStorage.setItem('user', JSON.stringify(mappedUser));
         setRequires2FA(false);
@@ -125,9 +126,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         code,
       });
 
-      if (response.token && response.user) {
+      if (response.token && response.utilisateur) {
         setAuthToken(response.token);
-        const mappedUser = mapApiUserToUser(response.user);
+        const mappedUser = mapApiUserToUser(response.utilisateur);
         setUser(mappedUser);
         localStorage.setItem('user', JSON.stringify(mappedUser));
         setRequires2FA(false);
@@ -153,21 +154,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await authApi.register({
         email,
-        mot_de_passe: password,
+        password: password,
         prenom: firstName,
         nom: lastName,
         role,
         code_acces_etablissement: accessCode,
       });
 
-      if (response.token && response.user) {
+      if (response.token && response.utilisateur) {
         setAuthToken(response.token);
-        const mappedUser = mapApiUserToUser(response.user);
+        const mappedUser = mapApiUserToUser(response.utilisateur);
         setUser(mappedUser);
         localStorage.setItem('user', JSON.stringify(mappedUser));
         return true;
       }
 
+      console.log(response);
       return false;
     } catch (error) {
       console.error('Signup error:', error);
