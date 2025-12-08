@@ -8,6 +8,20 @@ import AppRoutes from "./routes";
 
 const queryClient = new QueryClient();
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    const { user, isLoading } = useAuth();
+
+    if (isLoading) {
+        return <div className="flex items-center justify-center min-h-screen">Chargement...</div>;
+    }
+
+    if (!user) {
+        return <Navigate to="/auth" replace />;
+    }
+
+    return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>

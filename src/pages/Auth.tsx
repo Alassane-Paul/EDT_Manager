@@ -48,6 +48,7 @@ const Auth = () => {
     setIsLoading(true);
     try {
       const result = await login(loginEmail, loginPassword);
+      console.log(result);
       
       if (result.requires2FA) {
         toast({
@@ -152,6 +153,8 @@ const Auth = () => {
         signupRole,
         accessCode || undefined
       );
+      
+      console.log(success);
       
       if (success) {
         toast({
