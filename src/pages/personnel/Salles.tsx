@@ -1,6 +1,5 @@
-import { PageLayout } from "@/components/layout/PageLayout";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -20,141 +19,29 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertCircle
+  Loader2
 } from "lucide-react";
 import { useState } from "react";
+import { useSalles } from "@/hooks/useSalles";
+import { Salle } from "@/api/salles/api";
 
-interface Salle {
-  id: number;
-  nom: string;
-  capacite: number;
-  batiment: string;
-  etage: number;
-  type: "cours" | "tp" | "amphi" | "labo";
-  equipements: string[];
-  disponible: boolean;
-  coursActuel?: {
-    matiere: string;
-    enseignant: string;
-    heureFin: string;
-  };
-  prochainCours?: {
-    matiere: string;
-    heureDebut: string;
-  };
-}
-
-// Données de démonstration
+// Mock data fallback
 const mockSalles: Salle[] = [
-  {
-    id: 1,
-    nom: "A101",
-    capacite: 40,
-    batiment: "Bâtiment A",
-    etage: 1,
-    type: "cours",
-    equipements: ["Vidéoprojecteur", "Wifi", "Tableau blanc"],
-    disponible: true,
-  },
-  {
-    id: 2,
-    nom: "A102",
-    capacite: 35,
-    batiment: "Bâtiment A",
-    etage: 1,
-    type: "cours",
-    equipements: ["Vidéoprojecteur", "Wifi"],
-    disponible: false,
-    coursActuel: {
-      matiere: "Anglais",
-      enseignant: "Mme Wilson",
-      heureFin: "10:00",
-    },
-    prochainCours: {
-      matiere: "Communication",
-      heureDebut: "10:15",
-    },
-  },
-  {
-    id: 3,
-    nom: "B201",
-    capacite: 30,
-    batiment: "Bâtiment B",
-    etage: 2,
-    type: "cours",
-    equipements: ["Vidéoprojecteur", "Wifi", "Climatisation"],
-    disponible: true,
-    prochainCours: {
-      matiere: "Économie",
-      heureDebut: "14:00",
-    },
-  },
-  {
-    id: 4,
-    nom: "C301",
-    capacite: 25,
-    batiment: "Bâtiment C",
-    etage: 3,
-    type: "tp",
-    equipements: ["Ordinateurs", "Vidéoprojecteur", "Wifi"],
-    disponible: false,
-    coursActuel: {
-      matiere: "Informatique",
-      enseignant: "M. Bernard",
-      heureFin: "12:00",
-    },
-  },
-  {
-    id: 5,
-    nom: "C302",
-    capacite: 25,
-    batiment: "Bâtiment C",
-    etage: 3,
-    type: "tp",
-    equipements: ["Ordinateurs", "Vidéoprojecteur", "Wifi"],
-    disponible: true,
-  },
-  {
-    id: 6,
-    nom: "Amphi 1",
-    capacite: 200,
-    batiment: "Bâtiment Principal",
-    etage: 0,
-    type: "amphi",
-    equipements: ["Vidéoprojecteur", "Wifi", "Microphone", "Sonorisation"],
-    disponible: true,
-  },
-  {
-    id: 7,
-    nom: "Labo IA",
-    capacite: 20,
-    batiment: "Bâtiment C",
-    etage: 4,
-    type: "labo",
-    equipements: ["Serveurs GPU", "Stations de travail", "Wifi"],
-    disponible: false,
-    coursActuel: {
-      matiere: "Deep Learning",
-      enseignant: "M. Bernard",
-      heureFin: "17:00",
-    },
-  },
-  {
-    id: 8,
-    nom: "B102",
-    capacite: 45,
-    batiment: "Bâtiment B",
-    etage: 1,
-    type: "cours",
-    equipements: ["Vidéoprojecteur", "Wifi", "Tableau interactif"],
-    disponible: true,
-  },
+  { id: "1", nom: "A101", capacite: 40, type: "cours", equipements: ["Vidéoprojecteur", "Wifi", "Tableau blanc"], etablissement_id: "1", batiment: "Bâtiment A", etage: 1, disponible: true },
+  { id: "2", nom: "A102", capacite: 35, type: "cours", equipements: ["Vidéoprojecteur", "Wifi"], etablissement_id: "1", batiment: "Bâtiment A", etage: 1, disponible: false },
+  { id: "3", nom: "B201", capacite: 30, type: "cours", equipements: ["Vidéoprojecteur", "Wifi", "Climatisation"], etablissement_id: "1", batiment: "Bâtiment B", etage: 2, disponible: true },
+  { id: "4", nom: "C301", capacite: 25, type: "tp", equipements: ["Ordinateurs", "Vidéoprojecteur", "Wifi"], etablissement_id: "1", batiment: "Bâtiment C", etage: 3, disponible: false },
+  { id: "5", nom: "C302", capacite: 25, type: "tp", equipements: ["Ordinateurs", "Vidéoprojecteur", "Wifi"], etablissement_id: "1", batiment: "Bâtiment C", etage: 3, disponible: true },
+  { id: "6", nom: "Amphi 1", capacite: 200, type: "amphi", equipements: ["Vidéoprojecteur", "Wifi", "Microphone", "Sonorisation"], etablissement_id: "1", batiment: "Bâtiment Principal", etage: 0, disponible: true },
+  { id: "7", nom: "Labo IA", capacite: 20, type: "labo", equipements: ["Serveurs GPU", "Stations de travail", "Wifi"], etablissement_id: "1", batiment: "Bâtiment C", etage: 4, disponible: false },
+  { id: "8", nom: "B102", capacite: 45, type: "cours", equipements: ["Vidéoprojecteur", "Wifi", "Tableau interactif"], etablissement_id: "1", batiment: "Bâtiment B", etage: 1, disponible: true },
 ];
 
 const getTypeLabel = (type: string) => {
   const labels: Record<string, string> = {
     cours: "Salle de cours",
     tp: "Salle TP",
+    td: "Salle TD",
     amphi: "Amphithéâtre",
     labo: "Laboratoire",
   };
@@ -165,10 +52,11 @@ const getTypeColor = (type: string) => {
   const colors: Record<string, string> = {
     cours: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
     tp: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+    td: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
     amphi: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
     labo: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
   };
-  return colors[type] || "bg-gray-100 text-gray-700";
+  return colors[type] || "bg-muted text-muted-foreground";
 };
 
 const getEquipmentIcon = (equipement: string) => {
@@ -183,9 +71,17 @@ const SallesPersonnel = () => {
   const [filterType, setFilterType] = useState<string>("all");
   const [filterDisponibilite, setFilterDisponibilite] = useState<string>("all");
 
-  const filteredSalles = mockSalles.filter((salle) => {
+  const { salles: apiSalles, isLoading, error } = useSalles({
+    type: filterType !== "all" ? filterType : undefined,
+    disponible: filterDisponibilite === "all" ? undefined : filterDisponibilite === "disponible",
+  });
+
+  // Use API data or fallback to mock
+  const salles = apiSalles.length > 0 ? apiSalles : mockSalles;
+
+  const filteredSalles = salles.filter((salle) => {
     const matchSearch = salle.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       salle.batiment.toLowerCase().includes(searchTerm.toLowerCase());
+                       (salle.batiment?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
     const matchType = filterType === "all" || salle.type === filterType;
     const matchDispo = filterDisponibilite === "all" || 
                       (filterDisponibilite === "disponible" && salle.disponible) ||
@@ -194,14 +90,14 @@ const SallesPersonnel = () => {
   });
 
   const stats = {
-    total: mockSalles.length,
-    disponibles: mockSalles.filter(s => s.disponible).length,
-    occupees: mockSalles.filter(s => !s.disponible).length,
-    capaciteTotale: mockSalles.reduce((acc, s) => acc + s.capacite, 0),
+    total: salles.length,
+    disponibles: salles.filter(s => s.disponible).length,
+    occupees: salles.filter(s => !s.disponible).length,
+    capaciteTotale: salles.reduce((acc, s) => acc + s.capacite, 0),
   };
 
   return (
-    <PageLayout title="Disponibilité des Salles">
+    <AppLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -270,6 +166,7 @@ const SallesPersonnel = () => {
                   <SelectItem value="all">Tous les types</SelectItem>
                   <SelectItem value="cours">Salle de cours</SelectItem>
                   <SelectItem value="tp">Salle TP</SelectItem>
+                  <SelectItem value="td">Salle TD</SelectItem>
                   <SelectItem value="amphi">Amphithéâtre</SelectItem>
                   <SelectItem value="labo">Laboratoire</SelectItem>
                 </SelectContent>
@@ -288,101 +185,89 @@ const SallesPersonnel = () => {
           </CardContent>
         </Card>
 
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        )}
+
         {/* Grille des salles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredSalles.map((salle) => (
-            <Card 
-              key={salle.id}
-              className={`overflow-hidden transition-all hover:shadow-lg ${
-                salle.disponible 
-                  ? "border-green-500/30 hover:border-green-500/50" 
-                  : "border-red-500/30 hover:border-red-500/50"
-              }`}
-            >
-              <CardHeader className="pb-2">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      salle.disponible 
-                        ? "bg-green-100 dark:bg-green-900/30" 
-                        : "bg-red-100 dark:bg-red-900/30"
-                    }`}>
-                      <DoorOpen className={`h-5 w-5 ${
-                        salle.disponible ? "text-green-600" : "text-red-600"
-                      }`} />
+        {!isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredSalles.map((salle) => (
+              <Card 
+                key={salle.id}
+                className={`overflow-hidden transition-all hover:shadow-lg ${
+                  salle.disponible 
+                    ? "border-green-500/30 hover:border-green-500/50" 
+                    : "border-red-500/30 hover:border-red-500/50"
+                }`}
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        salle.disponible 
+                          ? "bg-green-100 dark:bg-green-900/30" 
+                          : "bg-red-100 dark:bg-red-900/30"
+                      }`}>
+                        <DoorOpen className={`h-5 w-5 ${
+                          salle.disponible ? "text-green-600" : "text-red-600"
+                        }`} />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{salle.nom}</CardTitle>
+                        <CardDescription>
+                          {salle.batiment} {salle.etage !== undefined && `- Étage ${salle.etage}`}
+                        </CardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle className="text-lg">{salle.nom}</CardTitle>
-                      <CardDescription>{salle.batiment} - Étage {salle.etage}</CardDescription>
+                    {salle.disponible ? (
+                      <Badge className="bg-green-500 hover:bg-green-600">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Libre
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive">
+                        <XCircle className="h-3 w-3 mr-1" />
+                        Occupée
+                      </Badge>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className={getTypeColor(salle.type)}>
+                      {getTypeLabel(salle.type)}
+                    </Badge>
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Users className="h-4 w-4" />
+                      {salle.capacite} places
                     </div>
                   </div>
-                  {salle.disponible ? (
-                    <Badge className="bg-green-500 hover:bg-green-600">
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Libre
-                    </Badge>
-                  ) : (
-                    <Badge variant="destructive">
-                      <XCircle className="h-3 w-3 mr-1" />
-                      Occupée
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className={getTypeColor(salle.type)}>
-                    {getTypeLabel(salle.type)}
-                  </Badge>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <Users className="h-4 w-4" />
-                    {salle.capacite} places
-                  </div>
-                </div>
 
-                {/* Équipements */}
-                <div className="flex flex-wrap gap-1">
-                  {salle.equipements.slice(0, 3).map((eq, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
-                      {getEquipmentIcon(eq)}
-                      <span className="ml-1">{eq}</span>
-                    </Badge>
-                  ))}
-                  {salle.equipements.length > 3 && (
-                    <Badge variant="secondary" className="text-xs">
-                      +{salle.equipements.length - 3}
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Cours actuel ou prochain */}
-                {salle.coursActuel && (
-                  <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm">
-                    <p className="font-medium text-red-700 dark:text-red-300">En cours:</p>
-                    <p className="text-red-600 dark:text-red-400">{salle.coursActuel.matiere}</p>
-                    <div className="flex items-center gap-1 text-xs text-red-500">
-                      <Clock className="h-3 w-3" />
-                      Jusqu'à {salle.coursActuel.heureFin}
-                    </div>
+                  {/* Équipements */}
+                  <div className="flex flex-wrap gap-1">
+                    {salle.equipements.slice(0, 3).map((eq, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {getEquipmentIcon(eq)}
+                        <span className="ml-1">{eq}</span>
+                      </Badge>
+                    ))}
+                    {salle.equipements.length > 3 && (
+                      <Badge variant="secondary" className="text-xs">
+                        +{salle.equipements.length - 3}
+                      </Badge>
+                    )}
                   </div>
-                )}
-                
-                {salle.prochainCours && !salle.coursActuel && (
-                  <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-sm">
-                    <p className="font-medium text-yellow-700 dark:text-yellow-300">Prochain cours:</p>
-                    <p className="text-yellow-600 dark:text-yellow-400">{salle.prochainCours.matiere}</p>
-                    <div className="flex items-center gap-1 text-xs text-yellow-500">
-                      <Clock className="h-3 w-3" />
-                      À {salle.prochainCours.heureDebut}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
-        {filteredSalles.length === 0 && (
+        {!isLoading && filteredSalles.length === 0 && (
           <Card>
             <CardContent className="p-8 text-center">
               <DoorOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -391,7 +276,7 @@ const SallesPersonnel = () => {
           </Card>
         )}
       </div>
-    </PageLayout>
+    </AppLayout>
   );
 };
 
