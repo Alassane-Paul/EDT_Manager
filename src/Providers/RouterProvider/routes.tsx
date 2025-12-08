@@ -3,6 +3,11 @@ import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
+import EmploiTempsEtudiant from "@/pages/etudiant/EmploiTemps";
+import CoursEtudiant from "@/pages/etudiant/Cours";
+import NotificationsEtudiant from "@/pages/etudiant/Notifications";
+import EmploiTempsPersonnel from "@/pages/personnel/EmploiTemps";
+import SallesPersonnel from "@/pages/personnel/Salles";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
@@ -25,7 +30,6 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/auth" replace />;
   }
 
-  // Vérification des rôles si spécifiés
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -45,6 +49,50 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Routes Étudiant */}
+      <Route 
+        path="/etudiant/emploi-temps" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'etudiant']}>
+            <EmploiTempsEtudiant />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/etudiant/cours" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'etudiant']}>
+            <CoursEtudiant />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/etudiant/notifications" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'etudiant']}>
+            <NotificationsEtudiant />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Routes Personnel */}
+      <Route 
+        path="/personnel/emplois-temps" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'personnel']}>
+            <EmploiTempsPersonnel />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/personnel/salles" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'personnel']}>
+            <SallesPersonnel />
           </ProtectedRoute>
         } 
       />
