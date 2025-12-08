@@ -1,5 +1,5 @@
-import { PageLayout } from "@/components/layout/PageLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,79 +11,69 @@ import {
   Info, 
   Clock,
   X,
-  Check
+  Check,
+  Loader2
 } from "lucide-react";
 import { useState } from "react";
+import { useNotifications } from "@/hooks/useNotifications";
+import { Notification } from "@/api/notifications/api";
 
-interface Notification {
-  id: number;
-  type: "info" | "warning" | "success" | "change";
-  title: string;
-  message: string;
-  date: string;
-  read: boolean;
-}
-
-// Données de démonstration
+// Mock data fallback
 const mockNotifications: Notification[] = [
   {
-    id: 1,
-    type: "change",
-    title: "Changement de salle",
-    message: "Le cours de Mathématiques de demain a été déplacé en salle B102 au lieu de A101.",
-    date: "Il y a 2 heures",
-    read: false,
-  },
-  {
-    id: 2,
+    id: "1",
     type: "warning",
-    title: "Cours annulé",
+    titre: "Changement de salle",
+    message: "Le cours de Mathématiques de demain a été déplacé en salle B102 au lieu de A101.",
+    lu: false,
+    date_creation: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    utilisateur_id: "1",
+  },
+  {
+    id: "2",
+    type: "error",
+    titre: "Cours annulé",
     message: "Le cours d'Économie du mardi 15 janvier est annulé. Un rattrapage sera programmé.",
-    date: "Il y a 5 heures",
-    read: false,
+    lu: false,
+    date_creation: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    utilisateur_id: "1",
   },
   {
-    id: 3,
+    id: "3",
     type: "info",
-    title: "Nouvel emploi du temps",
+    titre: "Nouvel emploi du temps",
     message: "Un nouvel emploi du temps est disponible pour le semestre 2. Consultez-le dans la section EDT.",
-    date: "Hier",
-    read: false,
+    lu: false,
+    date_creation: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    utilisateur_id: "1",
   },
   {
-    id: 4,
+    id: "4",
     type: "success",
-    title: "Rattrapage programmé",
+    titre: "Rattrapage programmé",
     message: "Le rattrapage du cours de Physique est programmé le samedi 20 janvier de 10h à 12h en salle A201.",
-    date: "Il y a 2 jours",
-    read: true,
+    lu: true,
+    date_creation: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    utilisateur_id: "1",
   },
   {
-    id: 5,
-    type: "change",
-    title: "Changement d'horaire",
-    message: "Le cours d'Anglais du vendredi passe de 08h00-10h00 à 10h15-12h15.",
-    date: "Il y a 3 jours",
-    read: true,
-  },
-  {
-    id: 6,
+    id: "5",
     type: "info",
-    title: "Examens de fin de semestre",
-    message: "Les dates des examens de fin de semestre sont disponibles. Consultez le calendrier académique.",
-    date: "Il y a 1 semaine",
-    read: true,
+    titre: "Changement d'horaire",
+    message: "Le cours d'Anglais du vendredi passe de 08h00-10h00 à 10h15-12h15.",
+    lu: true,
+    date_creation: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    utilisateur_id: "1",
   },
 ];
 
 const getNotificationIcon = (type: string) => {
   switch (type) {
     case "warning":
+    case "error":
       return <AlertTriangle className="h-5 w-5 text-orange-500" />;
     case "success":
       return <CheckCircle className="h-5 w-5 text-green-500" />;
-    case "change":
-      return <Calendar className="h-5 w-5 text-blue-500" />;
     default:
       return <Info className="h-5 w-5 text-primary" />;
   }
@@ -92,44 +82,69 @@ const getNotificationIcon = (type: string) => {
 const getNotificationBadge = (type: string) => {
   switch (type) {
     case "warning":
+    case "error":
       return <Badge variant="destructive">Urgent</Badge>;
     case "success":
       return <Badge className="bg-green-500 hover:bg-green-600">Confirmé</Badge>;
-    case "change":
-      return <Badge variant="secondary">Modification</Badge>;
     default:
       return <Badge variant="outline">Info</Badge>;
   }
 };
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffHours < 1) return "À l'instant";
+  if (diffHours < 24) return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
+  if (diffDays < 7) return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+  return date.toLocaleDateString('fr-FR');
+};
+
 const NotificationsEtudiant = () => {
-  const [notifications, setNotifications] = useState(mockNotifications);
   const [activeTab, setActiveTab] = useState("all");
+  const { 
+    notifications: apiNotifications, 
+    unreadCount: apiUnreadCount, 
+    isLoading, 
+    markAsRead, 
+    markAllAsRead, 
+    deleteNotification 
+  } = useNotifications();
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
-
-  const deleteNotification = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+  // Use API data or fallback to mock
+  const notifications = apiNotifications.length > 0 ? apiNotifications : mockNotifications;
+  const unreadCount = apiNotifications.length > 0 ? apiUnreadCount : mockNotifications.filter(n => !n.lu).length;
 
   const filteredNotifications = notifications.filter((n) => {
-    if (activeTab === "unread") return !n.read;
-    if (activeTab === "changes") return n.type === "change" || n.type === "warning";
+    if (activeTab === "unread") return !n.lu;
+    if (activeTab === "changes") return n.type === "warning" || n.type === "error";
     return true;
   });
 
+  const handleMarkAsRead = (id: string) => {
+    if (apiNotifications.length > 0) {
+      markAsRead(id);
+    }
+  };
+
+  const handleMarkAllAsRead = () => {
+    if (apiNotifications.length > 0) {
+      markAllAsRead();
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    if (apiNotifications.length > 0) {
+      deleteNotification(id);
+    }
+  };
+
   return (
-    <PageLayout title="Notifications">
+    <AppLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -149,99 +164,108 @@ const NotificationsEtudiant = () => {
           </div>
           
           {unreadCount > 0 && (
-            <Button variant="outline" onClick={markAllAsRead}>
+            <Button variant="outline" onClick={handleMarkAllAsRead}>
               <Check className="h-4 w-4 mr-2" />
               Tout marquer comme lu
             </Button>
           )}
         </div>
 
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="all">
-              Toutes ({notifications.length})
-            </TabsTrigger>
-            <TabsTrigger value="unread">
-              Non lues ({unreadCount})
-            </TabsTrigger>
-            <TabsTrigger value="changes">
-              Modifications
-            </TabsTrigger>
-          </TabsList>
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        )}
 
-          <TabsContent value={activeTab} className="mt-4">
-            <div className="space-y-3">
-              {filteredNotifications.length > 0 ? (
-                filteredNotifications.map((notification) => (
-                  <Card 
-                    key={notification.id}
-                    className={`transition-all ${
-                      !notification.read 
-                        ? "border-primary/50 bg-primary/5" 
-                        : "hover:bg-muted/50"
-                    }`}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 mt-1">
-                          {getNotificationIcon(notification.type)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold text-foreground">
-                              {notification.title}
-                            </h4>
-                            {getNotificationBadge(notification.type)}
-                            {!notification.read && (
-                              <span className="w-2 h-2 bg-primary rounded-full" />
+        {/* Tabs */}
+        {!isLoading && (
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="all">
+                Toutes ({notifications.length})
+              </TabsTrigger>
+              <TabsTrigger value="unread">
+                Non lues ({unreadCount})
+              </TabsTrigger>
+              <TabsTrigger value="changes">
+                Modifications
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value={activeTab} className="mt-4">
+              <div className="space-y-3">
+                {filteredNotifications.length > 0 ? (
+                  filteredNotifications.map((notification) => (
+                    <Card 
+                      key={notification.id}
+                      className={`transition-all ${
+                        !notification.lu 
+                          ? "border-primary/50 bg-primary/5" 
+                          : "hover:bg-muted/50"
+                      }`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0 mt-1">
+                            {getNotificationIcon(notification.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-semibold text-foreground">
+                                {notification.titre}
+                              </h4>
+                              {getNotificationBadge(notification.type)}
+                              {!notification.lu && (
+                                <span className="w-2 h-2 bg-primary rounded-full" />
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {notification.message}
+                            </p>
+                            <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              {formatDate(notification.date_creation)}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {!notification.lu && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => handleMarkAsRead(notification.id)}
+                                title="Marquer comme lu"
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
                             )}
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {notification.message}
-                          </p>
-                          <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            {notification.date}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          {!notification.read && (
                             <Button 
                               variant="ghost" 
                               size="icon"
-                              onClick={() => markAsRead(notification.id)}
-                              title="Marquer comme lu"
+                              onClick={() => handleDelete(notification.id)}
+                              title="Supprimer"
                             >
-                              <Check className="h-4 w-4" />
+                              <X className="h-4 w-4" />
                             </Button>
-                          )}
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => deleteNotification(notification.id)}
-                            title="Supprimer"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
+                          </div>
                         </div>
-                      </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <Card>
+                    <CardContent className="p-8 text-center">
+                      <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">Aucune notification</p>
                     </CardContent>
                   </Card>
-                ))
-              ) : (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">Aucune notification</p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
-    </PageLayout>
+    </AppLayout>
   );
 };
 

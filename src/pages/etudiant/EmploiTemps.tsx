@@ -1,36 +1,13 @@
-import { PageLayout } from "@/components/layout/PageLayout";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Calendar, Clock, MapPin, User, ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { Calendar, Clock, MapPin, User, ChevronLeft, ChevronRight, Download, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useMonEmploiTemps, useExportEmploiTemps } from "@/hooks/useEmploiTemps";
+import { Seance } from "@/api/emploi-temps/api";
 
-// Données de démonstration pour l'emploi du temps
-const mockSchedule = {
-  lundi: [
-    { id: 1, matiere: "Mathématiques", heure_debut: "08:00", heure_fin: "10:00", salle: "A101", enseignant: "M. Dupont" },
-    { id: 2, matiere: "Physique", heure_debut: "10:15", heure_fin: "12:15", salle: "B203", enseignant: "Mme Martin" },
-    { id: 3, matiere: "Informatique", heure_debut: "14:00", heure_fin: "16:00", salle: "C301", enseignant: "M. Bernard" },
-  ],
-  mardi: [
-    { id: 4, matiere: "Anglais", heure_debut: "08:00", heure_fin: "10:00", salle: "A102", enseignant: "Mme Wilson" },
-    { id: 5, matiere: "Économie", heure_debut: "10:15", heure_fin: "12:15", salle: "B201", enseignant: "M. Laurent" },
-  ],
-  mercredi: [
-    { id: 6, matiere: "Projet Tuteuré", heure_debut: "08:00", heure_fin: "12:00", salle: "Labo Info", enseignant: "M. Bernard" },
-  ],
-  jeudi: [
-    { id: 7, matiere: "Base de données", heure_debut: "08:00", heure_fin: "10:00", salle: "C302", enseignant: "M. Garcia" },
-    { id: 8, matiere: "Réseaux", heure_debut: "10:15", heure_fin: "12:15", salle: "C303", enseignant: "Mme Petit" },
-    { id: 9, matiere: "Mathématiques", heure_debut: "14:00", heure_fin: "16:00", salle: "A101", enseignant: "M. Dupont" },
-  ],
-  vendredi: [
-    { id: 10, matiere: "Anglais", heure_debut: "08:00", heure_fin: "10:00", salle: "A102", enseignant: "Mme Wilson" },
-    { id: 11, matiere: "Communication", heure_debut: "10:15", heure_fin: "12:15", salle: "B102", enseignant: "Mme Dubois" },
-  ],
-};
-
-const joursSemaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi"];
+const joursSemaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi"] as const;
 const joursAffichage = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 
 const getSubjectColor = (matiere: string) => {
@@ -45,12 +22,47 @@ const getSubjectColor = (matiere: string) => {
     "Réseaux": "bg-red-100 border-red-300 dark:bg-red-900/30 dark:border-red-700",
     "Communication": "bg-indigo-100 border-indigo-300 dark:bg-indigo-900/30 dark:border-indigo-700",
   };
-  return colors[matiere] || "bg-gray-100 border-gray-300 dark:bg-gray-800/50 dark:border-gray-700";
+  return colors[matiere] || "bg-muted border-border";
+};
+
+// Mock data fallback
+const mockSchedule: Record<string, Seance[]> = {
+  lundi: [
+    { id: "1", cours_id: "1", matiere_nom: "Mathématiques", enseignant_id: "1", enseignant_nom: "M. Dupont", classe_id: "1", classe_nom: "L3 Info", salle_id: "1", salle_nom: "A101", jour: "lundi", date: "", heure_debut: "08:00", heure_fin: "10:00", type: "cours", statut: "planifie" },
+    { id: "2", cours_id: "2", matiere_nom: "Physique", enseignant_id: "2", enseignant_nom: "Mme Martin", classe_id: "1", classe_nom: "L3 Info", salle_id: "2", salle_nom: "B203", jour: "lundi", date: "", heure_debut: "10:15", heure_fin: "12:15", type: "cours", statut: "planifie" },
+    { id: "3", cours_id: "3", matiere_nom: "Informatique", enseignant_id: "3", enseignant_nom: "M. Bernard", classe_id: "1", classe_nom: "L3 Info", salle_id: "3", salle_nom: "C301", jour: "lundi", date: "", heure_debut: "14:00", heure_fin: "16:00", type: "tp", statut: "planifie" },
+  ],
+  mardi: [
+    { id: "4", cours_id: "4", matiere_nom: "Anglais", enseignant_id: "4", enseignant_nom: "Mme Wilson", classe_id: "1", classe_nom: "L3 Info", salle_id: "4", salle_nom: "A102", jour: "mardi", date: "", heure_debut: "08:00", heure_fin: "10:00", type: "cours", statut: "planifie" },
+    { id: "5", cours_id: "5", matiere_nom: "Économie", enseignant_id: "5", enseignant_nom: "M. Laurent", classe_id: "1", classe_nom: "L3 Info", salle_id: "5", salle_nom: "B201", jour: "mardi", date: "", heure_debut: "10:15", heure_fin: "12:15", type: "cours", statut: "planifie" },
+  ],
+  mercredi: [
+    { id: "6", cours_id: "6", matiere_nom: "Projet Tuteuré", enseignant_id: "3", enseignant_nom: "M. Bernard", classe_id: "1", classe_nom: "L3 Info", salle_id: "6", salle_nom: "Labo Info", jour: "mercredi", date: "", heure_debut: "08:00", heure_fin: "12:00", type: "tp", statut: "planifie" },
+  ],
+  jeudi: [
+    { id: "7", cours_id: "7", matiere_nom: "Base de données", enseignant_id: "6", enseignant_nom: "M. Garcia", classe_id: "1", classe_nom: "L3 Info", salle_id: "7", salle_nom: "C302", jour: "jeudi", date: "", heure_debut: "08:00", heure_fin: "10:00", type: "cours", statut: "planifie" },
+    { id: "8", cours_id: "8", matiere_nom: "Réseaux", enseignant_id: "7", enseignant_nom: "Mme Petit", classe_id: "1", classe_nom: "L3 Info", salle_id: "8", salle_nom: "C303", jour: "jeudi", date: "", heure_debut: "10:15", heure_fin: "12:15", type: "cours", statut: "planifie" },
+    { id: "9", cours_id: "1", matiere_nom: "Mathématiques", enseignant_id: "1", enseignant_nom: "M. Dupont", classe_id: "1", classe_nom: "L3 Info", salle_id: "1", salle_nom: "A101", jour: "jeudi", date: "", heure_debut: "14:00", heure_fin: "16:00", type: "td", statut: "planifie" },
+  ],
+  vendredi: [
+    { id: "10", cours_id: "4", matiere_nom: "Anglais", enseignant_id: "4", enseignant_nom: "Mme Wilson", classe_id: "1", classe_nom: "L3 Info", salle_id: "4", salle_nom: "A102", jour: "vendredi", date: "", heure_debut: "08:00", heure_fin: "10:00", type: "cours", statut: "planifie" },
+    { id: "11", cours_id: "9", matiere_nom: "Communication", enseignant_id: "8", enseignant_nom: "Mme Dubois", classe_id: "1", classe_nom: "L3 Info", salle_id: "9", salle_nom: "B102", jour: "vendredi", date: "", heure_debut: "10:15", heure_fin: "12:15", type: "cours", statut: "planifie" },
+  ],
 };
 
 const EmploiTempsEtudiant = () => {
   const { user } = useAuth();
   const [selectedWeek, setSelectedWeek] = useState(0);
+  
+  const getWeekString = (offset: number) => {
+    const today = new Date();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - today.getDay() + 1 + (offset * 7));
+    return monday.toISOString().split('T')[0];
+  };
+
+  const { emploiTemps, isLoading, error } = useMonEmploiTemps(getWeekString(selectedWeek));
+  const { exportPDF, isExporting } = useExportEmploiTemps();
   
   const getWeekDates = (offset: number) => {
     const today = new Date();
@@ -67,9 +79,13 @@ const EmploiTempsEtudiant = () => {
   };
 
   const weekDates = getWeekDates(selectedWeek);
+  
+  // Use API data or fallback to mock
+  const schedule = emploiTemps?.seances || mockSchedule;
+  const stats = emploiTemps?.statistiques || { heures_total: 24, nombre_seances: 11, matieres_count: 9 };
 
   return (
-    <PageLayout title="Mon Emploi du Temps">
+    <AppLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -91,53 +107,74 @@ const EmploiTempsEtudiant = () => {
             <Button variant="outline" size="icon" onClick={() => setSelectedWeek(prev => prev + 1)}>
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" className="ml-2">
-              <Download className="h-4 w-4 mr-2" />
+            <Button 
+              variant="outline" 
+              className="ml-2"
+              onClick={() => exportPDF({ semaine: getWeekString(selectedWeek) })}
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4 mr-2" />
+              )}
               Exporter
             </Button>
           </div>
         </div>
 
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        )}
+
         {/* Grille de l'emploi du temps */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          {joursSemaine.map((jour, index) => (
-            <Card key={jour} className="overflow-hidden">
-              <CardHeader className="bg-muted/50 py-3">
-                <CardTitle className="text-sm font-semibold text-center">
-                  {joursAffichage[index]}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-3 space-y-2 min-h-[300px]">
-                {mockSchedule[jour as keyof typeof mockSchedule]?.length > 0 ? (
-                  mockSchedule[jour as keyof typeof mockSchedule].map((cours) => (
-                    <div
-                      key={cours.id}
-                      className={`p-3 rounded-lg border-l-4 ${getSubjectColor(cours.matiere)} transition-all hover:shadow-md cursor-pointer`}
-                    >
-                      <p className="font-medium text-sm text-foreground">{cours.matiere}</p>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                        <Clock className="h-3 w-3" />
-                        {cours.heure_debut} - {cours.heure_fin}
+        {!isLoading && (
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            {joursSemaine.map((jour, index) => {
+              const seances = schedule[jour] || [];
+              return (
+                <Card key={jour} className="overflow-hidden">
+                  <CardHeader className="bg-muted/50 py-3">
+                    <CardTitle className="text-sm font-semibold text-center">
+                      {joursAffichage[index]}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-3 space-y-2 min-h-[300px]">
+                    {seances.length > 0 ? (
+                      seances.map((seance) => (
+                        <div
+                          key={seance.id}
+                          className={`p-3 rounded-lg border-l-4 ${getSubjectColor(seance.matiere_nom)} transition-all hover:shadow-md cursor-pointer`}
+                        >
+                          <p className="font-medium text-sm text-foreground">{seance.matiere_nom}</p>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                            <Clock className="h-3 w-3" />
+                            {seance.heure_debut} - {seance.heure_fin}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <MapPin className="h-3 w-3" />
+                            {seance.salle_nom}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <User className="h-3 w-3" />
+                            {seance.enseignant_nom}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
+                        Pas de cours
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        {cours.salle}
-                      </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <User className="h-3 w-3" />
-                        {cours.enseignant}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                    Pas de cours
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
 
         {/* Statistiques */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -146,7 +183,7 @@ const EmploiTempsEtudiant = () => {
               <CardTitle className="text-sm text-muted-foreground">Heures cette semaine</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">24h</p>
+              <p className="text-2xl font-bold">{stats.heures_total}h</p>
             </CardContent>
           </Card>
           <Card>
@@ -154,7 +191,7 @@ const EmploiTempsEtudiant = () => {
               <CardTitle className="text-sm text-muted-foreground">Nombre de cours</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">11</p>
+              <p className="text-2xl font-bold">{stats.nombre_seances}</p>
             </CardContent>
           </Card>
           <Card>
@@ -162,12 +199,12 @@ const EmploiTempsEtudiant = () => {
               <CardTitle className="text-sm text-muted-foreground">Matières différentes</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">9</p>
+              <p className="text-2xl font-bold">{stats.matieres_count}</p>
             </CardContent>
           </Card>
         </div>
       </div>
-    </PageLayout>
+    </AppLayout>
   );
 };
 
