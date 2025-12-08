@@ -1,9 +1,9 @@
+import { useAuth } from "@/contexts/AuthContext";
+import Auth from "@/pages/Auth";
+import Dashboard from "@/pages/Dashboard";
+import Index from "@/pages/Index";
+import NotFound from "@/pages/NotFound";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./contexts/AuthContext";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

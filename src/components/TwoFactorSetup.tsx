@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { authApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Shield, QrCode, Copy, Check } from "lucide-react";
+import { authApi } from "@/api/auth/api";
 
 interface TwoFactorSetupProps {
   open: boolean;

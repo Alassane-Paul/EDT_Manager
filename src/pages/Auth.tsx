@@ -230,7 +230,7 @@ const Auth = () => {
           <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
             <Calendar className="w-8 h-8 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold">TimeTable Manager</CardTitle>
+          <CardTitle className="text-2xl font-bold">Edt Manager</CardTitle>
           <CardDescription>
             Système de gestion des emplois du temps
           </CardDescription>
