@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Calendar, Clock, MapPin, User, ChevronLeft, ChevronRight, Download, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useMonEmploiTemps, useExportEmploiTemps } from "@/hooks/useEmploiTemps";
-import { Seance } from "@/api/emploi-temps/api";
+import { Seance } from "@/types/emploi-temps";
 
 const joursSemaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi"] as const;
 const joursAffichage = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];

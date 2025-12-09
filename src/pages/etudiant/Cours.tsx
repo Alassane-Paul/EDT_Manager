@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, Clock, User, Search, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useMesCours } from "@/hooks/useCours";
-import { Cours } from "@/api/cours/api";
+import { Cours } from "@/types/cours";
 
 const getColorClasses = (color?: string) => {
   const colors: Record<string, { bg: string; text: string; border: string }> = {

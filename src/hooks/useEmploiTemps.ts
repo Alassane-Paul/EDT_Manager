@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { emploiTempsApi, EmploiTemps, EmploiTempsFilters, Seance } from "@/api/emploi-temps/api";
+import { emploiTempsApi } from "@/api/emploi-temps/api";
+import { EmploiTemps, EmploiTempsFilters, Seance } from "@/types/emploi-temps";
 import { toast } from "sonner";
 
 export function useMonEmploiTemps(semaine?: string) {
