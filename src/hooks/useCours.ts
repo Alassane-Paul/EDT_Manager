@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { coursApi, Cours, CoursFilters } from "@/api/cours/api";
+import { coursApi } from "@/api/cours/api";
+import { Cours, CoursFilters } from "@/types/cours";
 import { toast } from "sonner";
 
 export function useCours(filters?: CoursFilters) {
