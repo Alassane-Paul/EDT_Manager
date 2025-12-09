@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
-import { Notification } from "@/api/notifications/api";
+import { Notification } from "@/types/notifications";
 
 // Mock data fallback
 const mockNotifications: Notification[] = [

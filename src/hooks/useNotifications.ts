@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { notificationsApi, Notification } from "@/api/notifications/api";
+import { notificationsApi } from "@/api/notifications/api";
 import { toast } from "sonner";
 
 export function useNotifications() {
@@ -8,7 +8,7 @@ export function useNotifications() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["notifications"],
     queryFn: notificationsApi.getAll,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 60000, // Refresh every 60 seconds
   });
 
   const markAsReadMutation = useMutation({
