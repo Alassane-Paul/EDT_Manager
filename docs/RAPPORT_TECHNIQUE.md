@@ -324,6 +324,8 @@ src/
 ├── api/                    # Services API
 │   ├── auth/
 │   │   └── api.ts         # Endpoints authentification
+│   ├── absences/
+│   │   └── api.ts         # Endpoints absences
 │   ├── cours/
 │   │   └── api.ts         # Endpoints cours
 │   ├── emploi-temps/
@@ -348,18 +350,28 @@ src/
 │   └── AuthContext.tsx    # Gestion de l'authentification
 │
 ├── hooks/                 # Hooks personnalisés
+│   ├── useAbsences.ts     # Hook pour les absences
 │   ├── useCours.ts        # Hook pour les cours
 │   ├── useEmploiTemps.ts  # Hook pour l'emploi du temps
 │   ├── useNotifications.ts # Hook pour les notifications
 │   └── useSalles.ts       # Hook pour les salles
 │
 ├── pages/                 # Pages de l'application
+│   ├── enseignant/        # Pages spécifiques enseignants
+│   │   ├── EmploiTemps.tsx # EDT enseignant
+│   │   ├── Cours.tsx      # Gestion des cours
+│   │   └── Absences.tsx   # Déclaration d'absences
 │   ├── etudiant/          # Pages spécifiques étudiants
 │   ├── personnel/         # Pages spécifiques personnel
 │   ├── Auth.tsx           # Authentification
 │   └── Dashboard.tsx      # Tableau de bord
 │
 ├── types/                 # Types TypeScript
+│   ├── absences.ts        # Types pour les absences
+│   ├── cours.ts           # Types pour les cours
+│   ├── emploi-temps.ts    # Types pour l'emploi du temps
+│   └── notifications.ts   # Types pour les notifications
+│
 └── Providers/             # Providers React (Router, Query)
 ```
 
@@ -421,7 +433,52 @@ Development: http://localhost:5000/api
 | POST | `/emplois-temps/seances` | Créer une séance |
 | PUT | `/emplois-temps/seances/:id` | Modifier une séance |
 | DELETE | `/emplois-temps/seances/:id` | Supprimer une séance |
+| PUT | `/emplois-temps/seances/:id/annuler` | Annuler une séance |
 | GET | `/emplois-temps/export/pdf` | Export PDF |
+
+### Endpoints Cours
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/cours` | Liste des cours (avec filtres) |
+| GET | `/cours/:id` | Détail d'un cours |
+| GET | `/cours/mes-cours` | Mes cours (enseignant) |
+| POST | `/cours` | Créer un cours |
+| PUT | `/cours/:id` | Modifier un cours |
+| DELETE | `/cours/:id` | Supprimer un cours |
+
+### Endpoints Absences
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/absences` | Liste des absences (avec filtres) |
+| GET | `/absences/seance/:id` | Absences d'une séance |
+| GET | `/seances/:id/etudiants` | Étudiants d'une séance |
+| POST | `/absences/declarer` | Déclarer des absences |
+| PUT | `/absences/:id/justifier` | Justifier une absence |
+| DELETE | `/absences/:id` | Supprimer une absence |
+
+### Endpoints Notifications
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/notifications` | Liste des notifications |
+| GET | `/notifications/unread` | Notifications non lues |
+| PUT | `/notifications/:id/read` | Marquer comme lue |
+| PUT | `/notifications/read-all` | Tout marquer comme lu |
+| DELETE | `/notifications/:id` | Supprimer une notification |
+
+### Endpoints Salles
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/salles` | Liste des salles (avec filtres) |
+| GET | `/salles/:id` | Détail d'une salle |
+| GET | `/salles/:id/disponibilite` | Disponibilité d'une salle |
+| GET | `/salles/disponibles` | Salles disponibles |
+| POST | `/salles` | Créer une salle |
+| PUT | `/salles/:id` | Modifier une salle |
+| DELETE | `/salles/:id` | Supprimer une salle |
 
 ### Headers d'authentification
 ```http
@@ -515,6 +572,57 @@ Le tableau de bord s'adapte au rôle de l'utilisateur :
 ![Tableau de bord](screenshots/dashboard.png)
 
 *Vue du tableau de bord avec sidebar de navigation*
+
+## VII. Module Enseignant
+
+Le module enseignant offre une interface complète pour la gestion des activités pédagogiques :
+
+### Gestion des Cours (Enseignant)
+
+L'interface de gestion des cours permet aux enseignants de :
+- Visualiser la liste de leurs cours avec progression
+- Consulter les statistiques (heures effectuées vs heures totales)
+- Accéder aux détails de chaque cours
+
+**Fonctionnalités :**
+- Affichage en cartes avec indicateur de progression
+- Filtrage par classe et matière
+- Statistiques en temps réel
+
+### Déclaration d'Absences
+
+L'interface de déclaration d'absences permet aux enseignants de :
+- Sélectionner une séance de cours
+- Voir la liste des étudiants présents/absents
+- Déclarer les absences avec motif optionnel
+- Consulter l'historique des absences
+
+**Fonctionnalités :**
+- Sélection multiple d'étudiants
+- Justification des absences
+- Export des listes d'absences
+- Filtrage par date, cours et statut
+
+### Emploi du Temps Enseignant
+
+L'emploi du temps enseignant affiche :
+- Vue hebdomadaire personnalisée
+- Navigation par semaine (précédent/suivant)
+- Séances codées par couleur selon le type
+- Détails des séances (salle, classe, horaires)
+
+**Fonctionnalités :**
+- Annulation de séance avec motif
+- Export PDF de l'emploi du temps
+- Indicateurs de statut (planifié, en cours, terminé, annulé)
+
+### Routes Enseignant
+
+| Route | Description | Rôles autorisés |
+|-------|-------------|-----------------|
+| `/enseignant/emploi-temps` | Emploi du temps | Admin, Directeur, Resp. Péda., Enseignant |
+| `/enseignant/cours` | Gestion des cours | Admin, Directeur, Resp. Péda., Enseignant |
+| `/enseignant/absences` | Déclaration d'absences | Admin, Directeur, Resp. Péda., Enseignant |
 
 ---
 
