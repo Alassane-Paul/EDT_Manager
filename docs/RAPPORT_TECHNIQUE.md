@@ -23,12 +23,12 @@
 **FORMATION :** DÉVELOPPEMENT WEB & WEB MOBILE
 
 **Présenté et soutenu par :**
-KPONON-EKLOU Adjé Claude
+M. ALASSANE Paul
 
 **Superviseur :**
 M. TOGBA Lazare
 
-**ANNÉE ACADÉMIQUE 2024-2025**
+**ANNÉE ACADÉMIQUE 2025-2026**
 
 ---
 
@@ -578,7 +578,7 @@ Les diagrammes de classes sont disponibles dans le dossier `docs/diagrams/` :
 
 ### Prérequis
 - Node.js 18+
-- npm ou bun
+- npm
 - MySQL 8.0+
 
 ### Installation Frontend

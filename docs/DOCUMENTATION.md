@@ -287,18 +287,18 @@ Content-Type: application/json
 ### Flux d'authentification
 
 ```
-┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐
+┌─────────┐      ┌─────────┐      ┌─────────┐      ┌─────────┐
 │  User   │────▶│  Login  │────▶│  API    │────▶│   JWT   │
-│         │     │  Form   │     │ Verify  │     │  Token  │
-└─────────┘     └─────────┘     └─────────┘     └────┬────┘
+│         │      │  Form   │      │ Verify  │      │  Token  │
+└─────────┘      └─────────┘      └─────────┘      └────┬────┘
                                                       │
      ┌────────────────────────────────────────────────┘
      │
      ▼
-┌─────────┐     ┌─────────┐     ┌─────────┐
+┌─────────┐     ┌─────────┐      ┌─────────┐
 │  2FA    │────▶│ Verify  │────▶│  Access │
-│(si actif)│    │  Code   │     │ Granted │
-└─────────┘     └─────────┘     └─────────┘
+│(si actif)│    │  Code   │      │ Granted │
+└─────────┘     └─────────┘      └─────────┘
 ```
 
 ### Stockage du token
@@ -362,7 +362,7 @@ if (hasRole("admin")) {
 
 ### Prérequis
 - Node.js 18+
-- npm ou bun
+- npm
 - MySQL 8.0+ (pour le backend)
 
 ### Installation Frontend
@@ -374,13 +374,9 @@ cd projet-edt
 
 # Installer les dépendances
 npm install
-# ou
-bun install
 
 # Démarrer en développement
 npm run dev
-# ou
-bun dev
 ```
 
 ### Variables d'environnement
