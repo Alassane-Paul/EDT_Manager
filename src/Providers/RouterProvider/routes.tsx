@@ -8,6 +8,9 @@ import CoursEtudiant from "@/pages/etudiant/Cours";
 import NotificationsEtudiant from "@/pages/etudiant/Notifications";
 import EmploiTempsPersonnel from "@/pages/personnel/EmploiTemps";
 import SallesPersonnel from "@/pages/personnel/Salles";
+import EmploiTempsEnseignant from "@/pages/enseignant/EmploiTemps";
+import CoursEnseignant from "@/pages/enseignant/Cours";
+import AbsencesEnseignant from "@/pages/enseignant/Absences";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
@@ -119,10 +122,26 @@ const AppRoutes = () => {
       
       {/* Routes Enseignants */}
       <Route 
-        path="/enseignant/*" 
+        path="/enseignant/emploi-temps" 
         element={
           <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique', 'enseignant']}>
-            <Dashboard />
+            <EmploiTempsEnseignant />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/enseignant/cours" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique', 'enseignant']}>
+            <CoursEnseignant />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/enseignant/absences" 
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique', 'enseignant']}>
+            <AbsencesEnseignant />
           </ProtectedRoute>
         } 
       />

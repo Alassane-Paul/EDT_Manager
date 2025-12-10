@@ -82,6 +82,7 @@ const navigationGroups: NavGroup[] = [
     items: [
       { title: "Mon emploi du temps", url: "/enseignant/emploi-temps", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
       { title: "Mes cours", url: "/enseignant/cours", icon: BookOpen, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
+      { title: "Gestion absences", url: "/enseignant/absences", icon: UserCog, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
     ],
   },
   {
