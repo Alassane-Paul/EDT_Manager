@@ -1,10 +1,10 @@
-# MINISTÈRE DE L'ÉDUCATION NATIONALE
+<!-- # MINISTÈRE DE L'ÉDUCATION NATIONALE
 
 # RÉPUBLIQUE TOGOLAISE
 
 # Travail-Liberté-Patrie
 
----
+--- -->
 
 # RAPPORT TECHNIQUE DE PROJET
 
@@ -251,7 +251,7 @@ L'analyse du système a été réalisée en utilisant le langage de modélisatio
 
 ### Architecture 3-tiers
 
-```
+``` ù
 ┌─────────────────────────────────────────────────────────────┐
 │                   COUCHE PRÉSENTATION                        │
 │                   (React + TypeScript)                       │
@@ -678,9 +678,18 @@ Ce projet m'a permis de mettre en pratique les compétences acquises en dévelop
 
 Les diagrammes de classes sont disponibles dans le dossier `docs/diagrams/` :
 - `Gestion_diagram_de_class.pdf`
+
+     [Gestion_diagram_de_class](diagrams/Gestion_diagram_de_class.pdf)
 - `Generateur_EDT_diagram_de_class.pdf`
+
+     [Generateur_EDT_diagram_de_class](diagrams/Generateur_EDT_diagram_de_class.pdf)
 - `valeur_objet_diagram_de_class.pdf`
+
+     [valeur_objet_diagram_de_class](diagrams/valeur_objet_diagram_de_class.pdf)
 - `Enums_diagram_de_class.pdf`
+
+     [Enums_diagram_de_class](diagrams/Enums_diagram_de_class.pdf)
+- 
 
 ## Annexe B : Guide d'installation
 

@@ -90,8 +90,16 @@ export const authApi = {
   },
 
   async setup2FA(): Promise<{ qrCode: string; secret: string }> {
-    const response = await axiosInstance.post(`/auth/setup-2fa`, {
-    });
+    const response = await axiosInstance.post(`/auth/setup-2fa`);
+    
+    if (!response.status.toString().startsWith('2')) {
+      await handleApiError(response.data);
+    }
+    
+    return response.data;
+  },
+  async refreshToken(): Promise<{ qrCode: string; secret: string }> {
+    const response = await axiosInstance.post(`/auth/refresh-token`);
     
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
