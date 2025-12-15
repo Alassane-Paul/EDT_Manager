@@ -20,12 +20,14 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   requires2FA: boolean;
-  tempToken: string | null;
+  requires2FASetup: boolean;
+  setup2FAData: { qrCode: string; secret: string } | null;
   login: (email: string, password: string) => Promise<{ success: boolean; requires2FA?: boolean }>;
   verify2FA: (code: string) => Promise<boolean>;
-  signup: (email: string, password: string, firstName: string, lastName: string, role: UserRole, accessCode?: string) => Promise<boolean>;
+  signup: (email: string, password: string, firstName: string, lastName: string, role: UserRole, accessCode?: string) => Promise<{ success: boolean; requires2FASetup?: boolean; setup2FAData?: { qrCode: string; secret: string } }>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
+  clear2FASetup: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,7 +56,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [requires2FA, setRequires2FA] = useState(false);
-  const [tempToken, setTempToken] = useState<string | null>(null);
+  const [requires2FASetup, setRequires2FASetup] = useState(false);
+  const [setup2FAData, setSetup2FAData] = useState<{ qrCode: string; secret: string } | null>(null);
+  const [pending2FAEmail, setPending2FAEmail] = useState<string | null>(null);
 
   // Vérifier si l'utilisateur est déjà connecté au chargement
   useEffect(() => {
@@ -90,10 +94,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password: password,
       });
       console.log('Login response:', response);
+      
       // Si 2FA est requis
-      if (response.requires2FA && response.utilisateur?.deux_fa_active) {
+      if (response.requires2FA) {
         setRequires2FA(true);
-        setTempToken(response.token);
+        setPending2FAEmail(email);
         return { success: true, requires2FA: true };
       }
 
@@ -104,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(mappedUser);
         localStorage.setItem('user', JSON.stringify(mappedUser));
         setRequires2FA(false);
-        setTempToken(null);
+        setPending2FAEmail(null);
         return { success: true };
       }
 
@@ -116,23 +121,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const verify2FA = async (code: string): Promise<boolean> => {
-    if (!tempToken) {
-      throw new Error('Aucun token temporaire disponible');
+    if (!pending2FAEmail) {
+      throw new Error('Aucun email en attente de vérification 2FA');
     }
 
     try {
       const response = await authApi.verify2FA({
-        tempToken,
-        code,
+        email: pending2FAEmail,
+        twoFAToken: code,
       });
 
-      if (response.token && response.utilisateur) {
+      if (response.token) {
         setAuthToken(response.token);
-        const mappedUser = mapApiUserToUser(response.utilisateur);
+        // Récupérer le profil utilisateur pour avoir les informations complètes
+        const profile = await authApi.getProfile();
+        const mappedUser = mapApiUserToUser(profile);
         setUser(mappedUser);
         localStorage.setItem('user', JSON.stringify(mappedUser));
         setRequires2FA(false);
-        setTempToken(null);
+        setPending2FAEmail(null);
         return true;
       }
 
@@ -150,7 +157,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     lastName: string,
     role: UserRole,
     accessCode?: string
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; requires2FASetup?: boolean; setup2FAData?: { qrCode: string; secret: string } }> => {
     try {
       const response = await authApi.register({
         email,
@@ -166,22 +173,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const mappedUser = mapApiUserToUser(response.utilisateur);
         setUser(mappedUser);
         localStorage.setItem('user', JSON.stringify(mappedUser));
-        return true;
+        
+        // Si 2FA setup est requis, retourner les données
+        if (response.utilisateur.deux_fa_setup_required && response.utilisateur.qr_code_url && response.utilisateur.secret) {
+          setRequires2FASetup(true);
+          const setupData = {
+            qrCode: response.utilisateur.qr_code_url,
+            secret: response.utilisateur.secret
+          };
+          setSetup2FAData(setupData);
+          return { success: true, requires2FASetup: true, setup2FAData: setupData };
+        }
+        
+        return { success: true };
       }
 
       console.log(response);
-      return false;
+      return { success: false };
     } catch (error) {
       console.error('Signup error:', error);
       throw error;
     }
   };
 
+  const clear2FASetup = () => {
+    setRequires2FASetup(false);
+    setSetup2FAData(null);
+  };
+
   const logout = () => {
     clearAuthToken();
     setUser(null);
     setRequires2FA(false);
-    setTempToken(null);
+    setRequires2FASetup(false);
+    setSetup2FAData(null);
+    setPending2FAEmail(null);
   };
 
   const refreshProfile = async () => {
@@ -202,12 +228,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         isLoading,
         requires2FA,
-        tempToken,
+        requires2FASetup,
+        setup2FAData,
         login,
         verify2FA,
         signup,
         logout,
         refreshProfile,
+        clear2FASetup,
       }}
     >
       {children}

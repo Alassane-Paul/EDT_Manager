@@ -16,9 +16,12 @@ export interface RegisterRequest {
 export interface LoginResponse {
     message: string;
     requires2FA?: boolean;
-    tempToken?: string;
     utilisateur?: ApiUser;
     token?: string;
+}
+
+export interface RegisterResponse extends LoginResponse {
+    code?: string;
 }
 
 export interface ApiUser {
@@ -31,4 +34,7 @@ export interface ApiUser {
     etablissement_id?: string;
     deux_fa_active?: boolean;
     requires2FA?: boolean;
+    deux_fa_setup_required?: boolean;
+    qr_code_url?: string;
+    secret?: string;
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,18 +18,29 @@ interface TwoFactorSetupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  initialQrCode?: string;
+  initialSecret?: string;
 }
 
-export const TwoFactorSetup = ({ open, onOpenChange, onSuccess }: TwoFactorSetupProps) => {
+export const TwoFactorSetup = ({ open, onOpenChange, onSuccess, initialQrCode, initialSecret }: TwoFactorSetupProps) => {
   const { refreshProfile } = useAuth();
   const { toast } = useToast();
   
   const [step, setStep] = useState<"setup" | "verify">("setup");
   const [isLoading, setIsLoading] = useState(false);
-  const [qrCode, setQrCode] = useState<string | null>(null);
-  const [secret, setSecret] = useState<string | null>(null);
+  const [qrCode, setQrCode] = useState<string | null>(initialQrCode || null);
+  const [secret, setSecret] = useState<string | null>(initialSecret || null);
   const [verificationCode, setVerificationCode] = useState("");
   const [copied, setCopied] = useState(false);
+
+  // Utiliser les données initiales si fournies
+  useEffect(() => {
+    if (initialQrCode && initialSecret) {
+      setQrCode(initialQrCode);
+      setSecret(initialSecret);
+      setStep("verify");
+    }
+  }, [initialQrCode, initialSecret]);
 
   const handleSetup = async () => {
     setIsLoading(true);
@@ -94,11 +105,21 @@ export const TwoFactorSetup = ({ open, onOpenChange, onSuccess }: TwoFactorSetup
 
   const handleClose = () => {
     setStep("setup");
-    setQrCode(null);
-    setSecret(null);
+    if (!initialQrCode && !initialSecret) {
+      setQrCode(null);
+      setSecret(null);
+    }
     setVerificationCode("");
     onOpenChange(false);
   };
+
+  // Auto-démarre la génération du QR dès l'ouverture du modal (seulement si pas de données initiales)
+  useEffect(() => {
+    if (open && !qrCode && !isLoading && step === "setup" && !initialQrCode && !initialSecret) {
+      handleSetup();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, qrCode, isLoading, step, initialQrCode, initialSecret]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -119,20 +140,24 @@ export const TwoFactorSetup = ({ open, onOpenChange, onSuccess }: TwoFactorSetup
 
         {step === "setup" ? (
           <div className="flex flex-col items-center space-y-4 py-4">
-            <div className="w-32 h-32 bg-muted rounded-xl flex items-center justify-center">
-              <QrCode className="w-16 h-16 text-muted-foreground" />
+            <div className="w-32 h-32 bg-muted rounded-xl flex items-center justify-center border">
+              {isLoading ? (
+                <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
+              ) : (
+                <QrCode className="w-16 h-16 text-muted-foreground" />
+              )}
             </div>
             <p className="text-sm text-muted-foreground text-center max-w-xs">
-              Vous aurez besoin d'une application d'authentification comme Google Authenticator ou Authy
+              Scannez le QR code avec Google Authenticator, Authy, etc. pour générer vos codes OTP.
             </p>
             <Button onClick={handleSetup} disabled={isLoading} className="w-full">
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Configuration...
+                  Génération du QR...
                 </>
               ) : (
-                "Commencer la configuration"
+                "Régénérer le QR code"
               )}
             </Button>
           </div>

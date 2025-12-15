@@ -6,6 +6,6 @@ export interface ApiError {
 }
 
 export interface Verify2FARequest {
-  tempToken: string;
-  code: string;
+  email: string;
+  twoFAToken: string;
 }

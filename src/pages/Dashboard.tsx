@@ -15,8 +15,158 @@ import {
   Shield,
   Settings,
   UserCog,
-  Building2
+  Building2,
+  Calendar,
+  BookOpen,
+  GraduationCap,
+  Users
 } from "lucide-react";
+import { UserRole } from "@/contexts/AuthContext";
+
+interface DashboardPage {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description: string;
+  roles: UserRole[];
+  category: string;
+}
+
+const dashboardPages: DashboardPage[] = [
+  // Étudiant
+  { 
+    title: "Emploi du temps", 
+    url: "/etudiant/emploi-temps", 
+    icon: Calendar, 
+    description: "Consultez votre emploi du temps",
+    roles: ["admin", "etudiant"],
+    category: "Étudiant"
+  },
+  { 
+    title: "Mes cours", 
+    url: "/etudiant/cours", 
+    icon: BookOpen, 
+    description: "Liste de vos cours",
+    roles: ["admin", "etudiant"],
+    category: "Étudiant"
+  },
+  { 
+    title: "Notifications", 
+    url: "/etudiant/notifications", 
+    icon: Bell, 
+    description: "Vos notifications",
+    roles: ["admin", "etudiant"],
+    category: "Étudiant"
+  },
+  // Personnel
+  { 
+    title: "Emplois du temps", 
+    url: "/personnel/emplois-temps", 
+    icon: Calendar, 
+    description: "Gestion des emplois du temps",
+    roles: ["admin", "personnel"],
+    category: "Personnel"
+  },
+  { 
+    title: "Disponibilité salles", 
+    url: "/personnel/salles", 
+    icon: DoorOpen, 
+    description: "Gérer les salles",
+    roles: ["admin", "personnel"],
+    category: "Personnel"
+  },
+  // Enseignant
+  { 
+    title: "Mon emploi du temps", 
+    url: "/enseignant/emploi-temps", 
+    icon: Calendar, 
+    description: "Votre emploi du temps",
+    roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"],
+    category: "Enseignant"
+  },
+  { 
+    title: "Mes cours", 
+    url: "/enseignant/cours", 
+    icon: BookOpen, 
+    description: "Vos cours assignés",
+    roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"],
+    category: "Enseignant"
+  },
+  { 
+    title: "Gestion absences", 
+    url: "/enseignant/absences", 
+    icon: UserCog, 
+    description: "Déclarer les absences",
+    roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"],
+    category: "Enseignant"
+  },
+  // Gestion
+  { 
+    title: "Établissements", 
+    url: "/gestion/etablissements", 
+    icon: Building2, 
+    description: "Gérer les établissements",
+    roles: ["admin", "directeur"],
+    category: "Gestion"
+  },
+  { 
+    title: "Classes", 
+    url: "/gestion/classes", 
+    icon: GraduationCap, 
+    description: "Gérer les classes",
+    roles: ["admin", "directeur", "responsable_pedagogique"],
+    category: "Gestion"
+  },
+  { 
+    title: "Enseignants", 
+    url: "/gestion/teachers", 
+    icon: UserCog, 
+    description: "Gérer les enseignants",
+    roles: ["admin", "directeur", "responsable_pedagogique"],
+    category: "Gestion"
+  },
+  { 
+    title: "Salles", 
+    url: "/personnel/salles", 
+    icon: DoorOpen, 
+    description: "Gérer les salles",
+    roles: ["admin", "directeur", "responsable_pedagogique"],
+    category: "Gestion"
+  },
+  { 
+    title: "Matières", 
+    url: "/gestion/matieres", 
+    icon: BookOpen, 
+    description: "Gérer les matières",
+    roles: ["admin", "directeur", "responsable_pedagogique"],
+    category: "Gestion"
+  },
+  { 
+    title: "Rattrapages", 
+    url: "/gestion/rattrapages", 
+    icon: Calendar, 
+    description: "Gérer les rattrapages",
+    roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"],
+    category: "Gestion"
+  },
+  // Administration
+  { 
+    title: "Utilisateurs", 
+    url: "/admin/utilisateurs", 
+    icon: Users, 
+    description: "Gérer les utilisateurs",
+    roles: ["admin", "directeur"],
+    category: "Administration"
+  },
+  { 
+    title: "Paramètres", 
+    url: "/admin/parametres", 
+    icon: Settings, 
+    description: "Paramètres système",
+    roles: ["admin"],
+    category: "Administration"
+  },
+];
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -26,6 +176,22 @@ const Dashboard = () => {
   const handleActionClick = (route: string) => {
     navigate(route);
   };
+
+  const hasAccess = (roles: UserRole[]) => {
+    if (!user) return false;
+    return roles.includes(user.role);
+  };
+
+  // Grouper les pages par catégorie
+  const pagesByCategory = dashboardPages
+    .filter(page => hasAccess(page.roles))
+    .reduce((acc, page) => {
+      if (!acc[page.category]) {
+        acc[page.category] = [];
+      }
+      acc[page.category].push(page);
+      return acc;
+    }, {} as Record<string, DashboardPage[]>);
 
   return (
     <AppLayout>
@@ -46,7 +212,7 @@ const Dashboard = () => {
             <Button 
               variant="outline" 
               onClick={() => setShow2FASetup(true)}
-              className="hidden sm:flex items-center gap-2 border-orange-500/50 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950"
+              className="hidden sm:flex items-center gap-2 border-orange-500/50 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950 hover:text-orange-700"
             >
               <Shield className="h-4 w-4" />
               Activer 2FA
@@ -113,6 +279,45 @@ const Dashboard = () => {
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-4">Actions rapides</h3>
           <RoleBasedActions onActionClick={handleActionClick} />
+        </div>
+
+        {/* Pages disponibles organisées par catégorie */}
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground mb-4">Pages disponibles</h3>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Object.entries(pagesByCategory).map(([category, pages]) => (
+                <Card key={category} className="border-border">
+                  <CardHeader>
+                    <CardTitle className="text-base">{category}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {pages.map((page) => {
+                      const IconComponent = page.icon;
+                      return (
+                        <Button
+                          key={page.url}
+                          variant="ghost"
+                          className="w-full justify-start h-auto py-3 px-4 hover:bg-accent"
+                          onClick={() => navigate(page.url)}
+                        >
+                          <div className="flex items-start gap-3 w-full">
+                            <IconComponent className="h-5 w-5 mt-0.5 shrink-0 text-primary" />
+                            <div className="flex-1 text-left">
+                              <div className="font-medium text-sm">{page.title}</div>
+                              <div className="text-xs text-muted-foreground mt-0.5">
+                                {page.description}
+                              </div>
+                            </div>
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Admin Panel - uniquement visible pour les admins */}
