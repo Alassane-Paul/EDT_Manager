@@ -25,31 +25,6 @@ const getSubjectColor = (matiere: string) => {
   return colors[matiere] || "bg-muted border-border";
 };
 
-// Mock data fallback
-const mockSchedule: Record<string, Seance[]> = {
-  lundi: [
-    { id: "1", cours_id: "1", matiere_nom: "Mathématiques", enseignant_id: "1", enseignant_nom: "M. Dupont", classe_id: "1", classe_nom: "L3 Info", salle_id: "1", salle_nom: "A101", jour: "lundi", date: "", heure_debut: "08:00", heure_fin: "10:00", type: "cours", statut: "planifie" },
-    { id: "2", cours_id: "2", matiere_nom: "Physique", enseignant_id: "2", enseignant_nom: "Mme Martin", classe_id: "1", classe_nom: "L3 Info", salle_id: "2", salle_nom: "B203", jour: "lundi", date: "", heure_debut: "10:15", heure_fin: "12:15", type: "cours", statut: "planifie" },
-    { id: "3", cours_id: "3", matiere_nom: "Informatique", enseignant_id: "3", enseignant_nom: "M. Bernard", classe_id: "1", classe_nom: "L3 Info", salle_id: "3", salle_nom: "C301", jour: "lundi", date: "", heure_debut: "14:00", heure_fin: "16:00", type: "tp", statut: "planifie" },
-  ],
-  mardi: [
-    { id: "4", cours_id: "4", matiere_nom: "Anglais", enseignant_id: "4", enseignant_nom: "Mme Wilson", classe_id: "1", classe_nom: "L3 Info", salle_id: "4", salle_nom: "A102", jour: "mardi", date: "", heure_debut: "08:00", heure_fin: "10:00", type: "cours", statut: "planifie" },
-    { id: "5", cours_id: "5", matiere_nom: "Économie", enseignant_id: "5", enseignant_nom: "M. Laurent", classe_id: "1", classe_nom: "L3 Info", salle_id: "5", salle_nom: "B201", jour: "mardi", date: "", heure_debut: "10:15", heure_fin: "12:15", type: "cours", statut: "planifie" },
-  ],
-  mercredi: [
-    { id: "6", cours_id: "6", matiere_nom: "Projet Tuteuré", enseignant_id: "3", enseignant_nom: "M. Bernard", classe_id: "1", classe_nom: "L3 Info", salle_id: "6", salle_nom: "Labo Info", jour: "mercredi", date: "", heure_debut: "08:00", heure_fin: "12:00", type: "tp", statut: "planifie" },
-  ],
-  jeudi: [
-    { id: "7", cours_id: "7", matiere_nom: "Base de données", enseignant_id: "6", enseignant_nom: "M. Garcia", classe_id: "1", classe_nom: "L3 Info", salle_id: "7", salle_nom: "C302", jour: "jeudi", date: "", heure_debut: "08:00", heure_fin: "10:00", type: "cours", statut: "planifie" },
-    { id: "8", cours_id: "8", matiere_nom: "Réseaux", enseignant_id: "7", enseignant_nom: "Mme Petit", classe_id: "1", classe_nom: "L3 Info", salle_id: "8", salle_nom: "C303", jour: "jeudi", date: "", heure_debut: "10:15", heure_fin: "12:15", type: "cours", statut: "planifie" },
-    { id: "9", cours_id: "1", matiere_nom: "Mathématiques", enseignant_id: "1", enseignant_nom: "M. Dupont", classe_id: "1", classe_nom: "L3 Info", salle_id: "1", salle_nom: "A101", jour: "jeudi", date: "", heure_debut: "14:00", heure_fin: "16:00", type: "td", statut: "planifie" },
-  ],
-  vendredi: [
-    { id: "10", cours_id: "4", matiere_nom: "Anglais", enseignant_id: "4", enseignant_nom: "Mme Wilson", classe_id: "1", classe_nom: "L3 Info", salle_id: "4", salle_nom: "A102", jour: "vendredi", date: "", heure_debut: "08:00", heure_fin: "10:00", type: "cours", statut: "planifie" },
-    { id: "11", cours_id: "9", matiere_nom: "Communication", enseignant_id: "8", enseignant_nom: "Mme Dubois", classe_id: "1", classe_nom: "L3 Info", salle_id: "9", salle_nom: "B102", jour: "vendredi", date: "", heure_debut: "10:15", heure_fin: "12:15", type: "cours", statut: "planifie" },
-  ],
-};
-
 const EmploiTempsEtudiant = () => {
   const { user } = useAuth();
   const [selectedWeek, setSelectedWeek] = useState(0);
@@ -80,9 +55,7 @@ const EmploiTempsEtudiant = () => {
 
   const weekDates = getWeekDates(selectedWeek);
   
-  // Use API data or fallback to mock
-  const schedule = emploiTemps?.seances || mockSchedule;
-  const stats = emploiTemps?.statistiques || { heures_total: 24, nombre_seances: 11, matieres_count: 9 };
+  const { seances = [], statistiques } = emploiTemps || {};
 
   return (
     <AppLayout>
@@ -134,7 +107,7 @@ const EmploiTempsEtudiant = () => {
         {!isLoading && (
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {joursSemaine.map((jour, index) => {
-              const seances = schedule[jour] || [];
+              const seancesJour = seances.filter(s => s.jour === jour) || [];
               return (
                 <Card key={jour} className="overflow-hidden">
                   <CardHeader className="bg-muted/50 py-3">
@@ -143,8 +116,8 @@ const EmploiTempsEtudiant = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-3 space-y-2 min-h-[300px]">
-                    {seances.length > 0 ? (
-                      seances.map((seance) => (
+                    {seancesJour.length > 0 ? (
+                      seancesJour.map((seance) => (
                         <div
                           key={seance.id}
                           className={`p-3 rounded-lg border-l-4 ${getSubjectColor(seance.matiere_nom)} transition-all hover:shadow-md cursor-pointer`}
@@ -183,7 +156,7 @@ const EmploiTempsEtudiant = () => {
               <CardTitle className="text-sm text-muted-foreground">Heures cette semaine</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{stats.heures_total}h</p>
+              <p className="text-2xl font-bold">{statistiques?.heures_total || 0}h</p>
             </CardContent>
           </Card>
           <Card>
@@ -191,7 +164,7 @@ const EmploiTempsEtudiant = () => {
               <CardTitle className="text-sm text-muted-foreground">Nombre de cours</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{stats.nombre_seances}</p>
+              <p className="text-2xl font-bold">{statistiques?.nombre_seances || 0}</p>
             </CardContent>
           </Card>
           <Card>
@@ -199,7 +172,7 @@ const EmploiTempsEtudiant = () => {
               <CardTitle className="text-sm text-muted-foreground">Matières différentes</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{stats.matieres_count}</p>
+              <p className="text-2xl font-bold">{statistiques?.matieres_count || 0}</p>
             </CardContent>
           </Card>
         </div>

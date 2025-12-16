@@ -40,14 +40,14 @@ const skeletonRows = Array.from({ length: 5 });
 export default function ClasseList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statutFilter, setStatutFilter] = useState<StatutClasse | "">("");
-  const [niveauFilter, setNiveauFilter] = useState<string>("");
+  const [statutFilter, setStatutFilter] = useState<StatutClasse | "all">("all");
+  const [niveauFilter, setNiveauFilter] = useState<string>("all");
 
   const filters = useMemo(
     () => ({
       search: searchTerm || undefined,
-      statut: statutFilter || undefined,
-      niveau: niveauFilter || undefined,
+      statut: statutFilter && statutFilter !== "all" ? statutFilter : undefined,
+      niveau: niveauFilter && niveauFilter !== "all" ? niveauFilter : undefined,
     }),
     [searchTerm, statutFilter, niveauFilter]
   );
@@ -91,7 +91,7 @@ export default function ClasseList() {
                     <SelectValue placeholder="Niveau" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Tous les niveaux</SelectItem>
+                    <SelectItem value="all">Tous les niveaux</SelectItem>
                     <SelectItem value="L1">L1</SelectItem>
                     <SelectItem value="L2">L2</SelectItem>
                     <SelectItem value="L3">L3</SelectItem>
@@ -102,13 +102,13 @@ export default function ClasseList() {
 
                 <Select
                   value={statutFilter}
-                  onValueChange={(value) => setStatutFilter(value as StatutClasse | "")}
+                  onValueChange={(value) => setStatutFilter(value as StatutClasse | "all")}
                 >
                   <SelectTrigger className="w-full sm:w-40">
                     <SelectValue placeholder="Statut" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Tous les statuts</SelectItem>
+                    <SelectItem value="all">Tous les statuts</SelectItem>
                     <SelectItem value={StatutClasse.ACTIVE}>Active</SelectItem>
                     <SelectItem value={StatutClasse.ARCHIVEE}>Archivée</SelectItem>
                   </SelectContent>

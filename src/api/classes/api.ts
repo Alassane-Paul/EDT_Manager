@@ -22,12 +22,26 @@ export const classesApi = {
   },
 
   async create(data: ClasseFormData): Promise<Classe> {
-    const response = await axiosInstance.post("/classes", data);
+    const payload: any = { ...data };
+    // Filtrer les champs optionnels vides
+    if (!payload.filiere) delete payload.filiere;
+    if (!payload.salle_principale) delete payload.salle_principale;
+    
+    const response = await axiosInstance.post("/classes", payload);
     return response.data.classe;
   },
 
   async update(id: string, data: Partial<ClasseFormData>): Promise<Classe> {
-    const response = await axiosInstance.put(`/classes/${id}`, data);
+    const payload: any = { ...data };
+    // Filtrer les champs optionnels vides
+    if (payload.filiere === "" || payload.filiere == null) delete payload.filiere;
+    if (payload.salle_principale === "" || payload.salle_principale == null) delete payload.salle_principale;
+    // Toujours envoyer le statut s'il est défini
+    if (payload.statut === undefined && data.statut) {
+      payload.statut = data.statut;
+    }
+    
+    const response = await axiosInstance.put(`/classes/${id}`, payload);
     return response.data.classe;
   },
 

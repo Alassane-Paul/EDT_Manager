@@ -14,12 +14,12 @@ import { Plus, Search, Edit, Eye } from "lucide-react";
 export default function MatiereList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [categorieFilter, setCategorieFilter] = useState<CategorieMatiere | "">("");
+  const [categorieFilter, setCategorieFilter] = useState<CategorieMatiere | "all">("all");
 
   const filters = useMemo(
     () => ({
       search: searchTerm || undefined,
-      categorie: categorieFilter || undefined,
+      categorie: categorieFilter !== "all" ? categorieFilter : undefined,
     }),
     [searchTerm, categorieFilter]
   );
@@ -54,12 +54,12 @@ export default function MatiereList() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Select value={categorieFilter} onValueChange={(v) => setCategorieFilter(v as CategorieMatiere | "")}>
+              <Select value={categorieFilter} onValueChange={(v) => setCategorieFilter(v as CategorieMatiere | "all")}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Catégorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Toutes</SelectItem>
+                  <SelectItem value="all">Toutes</SelectItem>
                   {Object.values(CategorieMatiere).map((cat) => (
                     <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                   ))}

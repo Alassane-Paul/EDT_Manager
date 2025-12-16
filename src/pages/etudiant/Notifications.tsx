@@ -18,55 +18,6 @@ import { useState } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Notification } from "@/types/notifications";
 
-// Mock data fallback
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    type: "warning",
-    titre: "Changement de salle",
-    message: "Le cours de Mathématiques de demain a été déplacé en salle B102 au lieu de A101.",
-    lu: false,
-    date_creation: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    utilisateur_id: "1",
-  },
-  {
-    id: "2",
-    type: "error",
-    titre: "Cours annulé",
-    message: "Le cours d'Économie du mardi 15 janvier est annulé. Un rattrapage sera programmé.",
-    lu: false,
-    date_creation: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    utilisateur_id: "1",
-  },
-  {
-    id: "3",
-    type: "info",
-    titre: "Nouvel emploi du temps",
-    message: "Un nouvel emploi du temps est disponible pour le semestre 2. Consultez-le dans la section EDT.",
-    lu: false,
-    date_creation: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    utilisateur_id: "1",
-  },
-  {
-    id: "4",
-    type: "success",
-    titre: "Rattrapage programmé",
-    message: "Le rattrapage du cours de Physique est programmé le samedi 20 janvier de 10h à 12h en salle A201.",
-    lu: true,
-    date_creation: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    utilisateur_id: "1",
-  },
-  {
-    id: "5",
-    type: "info",
-    titre: "Changement d'horaire",
-    message: "Le cours d'Anglais du vendredi passe de 08h00-10h00 à 10h15-12h15.",
-    lu: true,
-    date_creation: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    utilisateur_id: "1",
-  },
-];
-
 const getNotificationIcon = (type: string) => {
   switch (type) {
     case "warning":
@@ -115,9 +66,8 @@ const NotificationsEtudiant = () => {
     deleteNotification 
   } = useNotifications();
 
-  // Use API data or fallback to mock
-  const notifications = apiNotifications.length > 0 ? apiNotifications : mockNotifications;
-  const unreadCount = apiNotifications.length > 0 ? apiUnreadCount : mockNotifications.filter(n => !n.lu).length;
+  const notifications = apiNotifications;
+  const unreadCount = apiUnreadCount;
 
   const filteredNotifications = notifications.filter((n) => {
     if (activeTab === "unread") return !n.lu;
@@ -126,21 +76,15 @@ const NotificationsEtudiant = () => {
   });
 
   const handleMarkAsRead = (id: string) => {
-    if (apiNotifications.length > 0) {
-      markAsRead(id);
-    }
+    markAsRead(id);
   };
 
   const handleMarkAllAsRead = () => {
-    if (apiNotifications.length > 0) {
-      markAllAsRead();
-    }
+    markAllAsRead();
   };
 
   const handleDelete = (id: string) => {
-    if (apiNotifications.length > 0) {
-      deleteNotification(id);
-    }
+    deleteNotification(id);
   };
 
   return (

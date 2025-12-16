@@ -51,12 +51,12 @@ const formatMinutes = (minutes?: number) => {
 export default function EnseignantsList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statutFilter, setStatutFilter] = useState<StatutProfessionnel | "">("");
+  const [statutFilter, setStatutFilter] = useState<StatutProfessionnel | "all">("all");
 
   const filters = useMemo(
     () => ({
       search: searchTerm || undefined,
-      statut: statutFilter || undefined,
+      statut: statutFilter && statutFilter !== "all" ? statutFilter : undefined,
     }),
     [searchTerm, statutFilter]
   );
@@ -96,13 +96,13 @@ export default function EnseignantsList() {
 
               <Select
                 value={statutFilter}
-                onValueChange={(value) => setStatutFilter(value as StatutProfessionnel | "")}
+                onValueChange={(value) => setStatutFilter(value as StatutProfessionnel | "all")}
               >
                 <SelectTrigger className="w-full sm:w-56">
                   <SelectValue placeholder="Statut professionnel" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les statuts</SelectItem>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
                   <SelectItem value={StatutProfessionnel.TITULAIRE}>Titulaire</SelectItem>
                   <SelectItem value={StatutProfessionnel.CONTRACTUEL}>Contractuel</SelectItem>
                   <SelectItem value={StatutProfessionnel.VACATAIRE}>Vacataire</SelectItem>

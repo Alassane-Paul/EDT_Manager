@@ -1,49 +1,18 @@
 import axiosInstance from "../axios_instance";
+import { Salle, SalleFilters, SalleFormData, SalleDisponibilite } from "@/types/salles";
 
-export interface Salle {
-  id: string;
-  nom: string;
-  capacite: number;
-  type: "cours" | "tp" | "td" | "amphi" | "labo";
-  equipements: string[];
-  etablissement_id: string;
-  batiment?: string;
-  etage?: number;
-  disponible: boolean;
-}
-
-export interface SalleDisponibilite {
-  salle: Salle;
-  creneaux_disponibles: CreneauDisponible[];
-  creneaux_occupes: CreneauOccupe[];
-}
-
-export interface CreneauDisponible {
-  date: string;
-  heure_debut: string;
-  heure_fin: string;
-}
-
-export interface CreneauOccupe {
-  date: string;
-  heure_debut: string;
-  heure_fin: string;
-  cours_id: string;
-  matiere_nom: string;
-  enseignant_nom: string;
-}
-
-export interface SalleFilters {
-  type?: string;
-  capacite_min?: number;
-  disponible?: boolean;
-  date?: string;
-  heure_debut?: string;
-  heure_fin?: string;
-}
+export type { Salle };
 
 export const sallesApi = {
-  async getAll(filters?: SalleFilters): Promise<Salle[]> {
+  async getAll(filters?: SalleFilters): Promise<{
+    salles: Salle[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      pages: number;
+    };
+  }> {
     const response = await axiosInstance.get("/salles", { params: filters });
     return response.data;
   },

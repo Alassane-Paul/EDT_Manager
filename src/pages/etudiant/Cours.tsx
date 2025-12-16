@@ -21,24 +21,11 @@ const getColorClasses = (color?: string) => {
   return colors[color || "blue"] || colors.blue;
 };
 
-// Mock data fallback
-const mockCours: Cours[] = [
-  { id: "1", matiere_id: "1", matiere_nom: "Mathématiques", enseignant_id: "1", enseignant_nom: "M. Dupont", classe_id: "1", classe_nom: "L3 Info", heures_total: 48, heures_effectuees: 24, couleur: "blue" },
-  { id: "2", matiere_id: "2", matiere_nom: "Physique", enseignant_id: "2", enseignant_nom: "Mme Martin", classe_id: "1", classe_nom: "L3 Info", heures_total: 36, heures_effectuees: 18, couleur: "purple" },
-  { id: "3", matiere_id: "3", matiere_nom: "Informatique", enseignant_id: "3", enseignant_nom: "M. Bernard", classe_id: "1", classe_nom: "L3 Info", heures_total: 60, heures_effectuees: 30, couleur: "green" },
-  { id: "4", matiere_id: "4", matiere_nom: "Anglais", enseignant_id: "4", enseignant_nom: "Mme Wilson", classe_id: "1", classe_nom: "L3 Info", heures_total: 30, heures_effectuees: 15, couleur: "yellow" },
-  { id: "5", matiere_id: "5", matiere_nom: "Économie", enseignant_id: "5", enseignant_nom: "M. Laurent", classe_id: "1", classe_nom: "L3 Info", heures_total: 24, heures_effectuees: 12, couleur: "orange" },
-  { id: "6", matiere_id: "6", matiere_nom: "Base de données", enseignant_id: "6", enseignant_nom: "M. Garcia", classe_id: "1", classe_nom: "L3 Info", heures_total: 40, heures_effectuees: 20, couleur: "cyan" },
-  { id: "7", matiere_id: "7", matiere_nom: "Réseaux", enseignant_id: "7", enseignant_nom: "Mme Petit", classe_id: "1", classe_nom: "L3 Info", heures_total: 32, heures_effectuees: 16, couleur: "red" },
-  { id: "8", matiere_id: "8", matiere_nom: "Communication", enseignant_id: "8", enseignant_nom: "Mme Dubois", classe_id: "1", classe_nom: "L3 Info", heures_total: 20, heures_effectuees: 10, couleur: "indigo" },
-];
-
 const CoursEtudiant = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { cours: apiCours, isLoading, error } = useMesCours();
 
-  // Use API data or fallback to mock
-  const cours = apiCours.length > 0 ? apiCours : mockCours;
+  const cours = apiCours;
 
   const filteredCours = cours.filter(
     (c) =>

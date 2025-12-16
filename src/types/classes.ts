@@ -25,11 +25,11 @@ export interface Classe {
 }
 
 export interface ClasseFormData {
-  nom_classe: string;
-  niveau: string;
+  nom_classe?: string;
+  niveau?: string;
   filiere?: string;
-  effectif: number;
-  annee_scolaire: string;
+  effectif?: number;
+  annee_scolaire?: string;
   salle_principale?: string;
   statut?: StatutClasse;
   etablissement_id?: string;

@@ -20,11 +20,11 @@ const STATUT_COLORS: Record<StatutRattrapage, string> = {
 
 export default function RattrapageList() {
   const navigate = useNavigate();
-  const [statutFilter, setStatutFilter] = useState<StatutRattrapage | "">("");
+  const [statutFilter, setStatutFilter] = useState<StatutRattrapage | "all">("all");
 
   const filters = useMemo(
     () => ({
-      statut: statutFilter || undefined,
+      statut: statutFilter !== "all" ? statutFilter : undefined,
     }),
     [statutFilter]
   );
@@ -55,7 +55,7 @@ export default function RattrapageList() {
                 <SelectValue placeholder="Filtrer par statut" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tous les statuts</SelectItem>
+                <SelectItem value="all">Tous les statuts</SelectItem>
                 {Object.values(StatutRattrapage).map((statut) => (
                   <SelectItem key={statut} value={statut}>{statut}</SelectItem>
                 ))}

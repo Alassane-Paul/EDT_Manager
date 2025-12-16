@@ -27,12 +27,26 @@ export const etablissementsApi = {
   },
 
   async create(data: EtablissementFormData): Promise<Etablissement> {
-    const response = await axiosInstance.post("/etablissements", data);
+    const payload: any = { ...data };
+    // Filtrer les champs optionnels vides
+    const optionalFields = ['code_acces', 'logo_url', 'adresse', 'ville', 'code_postal', 'telephone', 'email', 'site_web'];
+    optionalFields.forEach(field => {
+      if (!payload[field]) delete payload[field];
+    });
+
+    const response = await axiosInstance.post("/etablissements", payload);
     return response.data.etablissement;
   },
 
   async update(id: string, data: Partial<EtablissementFormData>): Promise<Etablissement> {
-    const response = await axiosInstance.put(`/etablissements/${id}`, data);
+    const payload: any = { ...data };
+    // Filtrer les champs optionnels vides
+    const optionalFields = ['code_acces', 'logo_url', 'adresse', 'ville', 'code_postal', 'telephone', 'email', 'site_web'];
+    optionalFields.forEach(field => {
+      if (payload[field] === "" || payload[field] == null) delete payload[field];
+    });
+
+    const response = await axiosInstance.put(`/etablissements/${id}`, payload);
     return response.data.etablissement;
   },
 

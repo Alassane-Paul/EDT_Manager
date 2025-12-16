@@ -624,6 +624,16 @@ L'emploi du temps enseignant affiche :
 | `/enseignant/cours` | Gestion des cours | Admin, Directeur, Resp. Péda., Enseignant |
 | `/enseignant/absences` | Déclaration d'absences | Admin, Directeur, Resp. Péda., Enseignant |
 
+## VII. Qualité de Code et Robustesse
+
+Afin de garantir une expérience utilisateur fluide et une maintenance aisée, des pratiques rigoureuses ont été adoptées :
+
+### Validation des données
+L'utilisation de **Zod** permet une validation stricte des données côté client avant tout envoi au serveur. Cela garantit que les relations entre entités (comme l'association d'une matière à un établissement) sont correctement établies, évitant ainsi les erreurs silencieuses.
+
+### Gestion centralisée des erreurs
+Les retours d'API sont gérés de manière uniforme. Les messages d'erreur du backend sont interceptés et affichés via des notifications (Toasts), permettant aux utilisateurs et administrateurs de comprendre immédiatement la cause d'un échec (ex: doublon, données manquantes).
+
 ---
 
 # D. BILAN ET PERSPECTIVES
@@ -644,6 +654,7 @@ Ce projet a permis de développer une application web complète de gestion d'emp
 - Gestion des états complexes avec React Query
 - Implémentation de l'authentification 2FA
 - Optimisation des performances pour les grands volumes de données
+- Assurer la cohérence des données lors des créations complexes (relations inter-entités)
 
 ## Perspectives d'évolution
 

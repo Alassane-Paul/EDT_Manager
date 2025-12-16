@@ -25,36 +25,30 @@ import { useState } from "react";
 import { useSalles } from "@/hooks/useSalles";
 import { Salle } from "@/api/salles/api";
 
-// Mock data fallback
-const mockSalles: Salle[] = [
-  { id: "1", nom: "A101", capacite: 40, type: "cours", equipements: ["Vidéoprojecteur", "Wifi", "Tableau blanc"], etablissement_id: "1", batiment: "Bâtiment A", etage: 1, disponible: true },
-  { id: "2", nom: "A102", capacite: 35, type: "cours", equipements: ["Vidéoprojecteur", "Wifi"], etablissement_id: "1", batiment: "Bâtiment A", etage: 1, disponible: false },
-  { id: "3", nom: "B201", capacite: 30, type: "cours", equipements: ["Vidéoprojecteur", "Wifi", "Climatisation"], etablissement_id: "1", batiment: "Bâtiment B", etage: 2, disponible: true },
-  { id: "4", nom: "C301", capacite: 25, type: "tp", equipements: ["Ordinateurs", "Vidéoprojecteur", "Wifi"], etablissement_id: "1", batiment: "Bâtiment C", etage: 3, disponible: false },
-  { id: "5", nom: "C302", capacite: 25, type: "tp", equipements: ["Ordinateurs", "Vidéoprojecteur", "Wifi"], etablissement_id: "1", batiment: "Bâtiment C", etage: 3, disponible: true },
-  { id: "6", nom: "Amphi 1", capacite: 200, type: "amphi", equipements: ["Vidéoprojecteur", "Wifi", "Microphone", "Sonorisation"], etablissement_id: "1", batiment: "Bâtiment Principal", etage: 0, disponible: true },
-  { id: "7", nom: "Labo IA", capacite: 20, type: "labo", equipements: ["Serveurs GPU", "Stations de travail", "Wifi"], etablissement_id: "1", batiment: "Bâtiment C", etage: 4, disponible: false },
-  { id: "8", nom: "B102", capacite: 45, type: "cours", equipements: ["Vidéoprojecteur", "Wifi", "Tableau interactif"], etablissement_id: "1", batiment: "Bâtiment B", etage: 1, disponible: true },
-];
-
 const getTypeLabel = (type: string) => {
   const labels: Record<string, string> = {
-    cours: "Salle de cours",
-    tp: "Salle TP",
-    td: "Salle TD",
-    amphi: "Amphithéâtre",
-    labo: "Laboratoire",
+    standard: "Salle Standard",
+    laboratoire: "Laboratoire",
+    gymnase: "Gymnase",
+    amphitheatre: "Amphithéâtre",
+    atelier: "Atelier",
+    informatique: "Informatique",
+    musique: "Musique",
+    arts: "Arts",
   };
   return labels[type] || type;
 };
 
 const getTypeColor = (type: string) => {
   const colors: Record<string, string> = {
-    cours: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-    tp: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-    td: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
-    amphi: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
-    labo: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
+    standard: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+    laboratoire: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+    gymnase: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
+    amphitheatre: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+    atelier: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
+    informatique: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
+    musique: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
+    arts: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300",
   };
   return colors[type] || "bg-muted text-muted-foreground";
 };
@@ -72,27 +66,25 @@ const SallesPersonnel = () => {
   const [filterDisponibilite, setFilterDisponibilite] = useState<string>("all");
 
   const { salles: apiSalles, isLoading, error } = useSalles({
-    type: filterType !== "all" ? filterType : undefined,
-    disponible: filterDisponibilite === "all" ? undefined : filterDisponibilite === "disponible",
+    type_salle: filterType !== "all" ? filterType : undefined,
   });
 
-  // Use API data or fallback to mock
-  const salles = apiSalles.length > 0 ? apiSalles : mockSalles;
+  const salles = apiSalles;
 
   const filteredSalles = salles.filter((salle) => {
-    const matchSearch = salle.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchSearch = salle.nom_salle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                        (salle.batiment?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
-    const matchType = filterType === "all" || salle.type === filterType;
+    const matchType = filterType === "all" || salle.type_salle === filterType;
     const matchDispo = filterDisponibilite === "all" || 
-                      (filterDisponibilite === "disponible" && salle.disponible) ||
-                      (filterDisponibilite === "occupee" && !salle.disponible);
+                      (filterDisponibilite === "disponible" && salle.statut === "disponible") ||
+                      (filterDisponibilite === "occupee" && salle.statut === "occupe");
     return matchSearch && matchType && matchDispo;
   });
 
   const stats = {
     total: salles.length,
-    disponibles: salles.filter(s => s.disponible).length,
-    occupees: salles.filter(s => !s.disponible).length,
+    disponibles: salles.filter(s => s.statut === "disponible").length,
+    occupees: salles.filter(s => s.statut === "occupe").length,
     capaciteTotale: salles.reduce((acc, s) => acc + s.capacite, 0),
   };
 
@@ -164,11 +156,14 @@ const SallesPersonnel = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les types</SelectItem>
-                  <SelectItem value="cours">Salle de cours</SelectItem>
-                  <SelectItem value="tp">Salle TP</SelectItem>
-                  <SelectItem value="td">Salle TD</SelectItem>
-                  <SelectItem value="amphi">Amphithéâtre</SelectItem>
-                  <SelectItem value="labo">Laboratoire</SelectItem>
+                  <SelectItem value="standard">Standard</SelectItem>
+                  <SelectItem value="laboratoire">Laboratoire</SelectItem>
+                  <SelectItem value="gymnase">Gymnase</SelectItem>
+                  <SelectItem value="amphitheatre">Amphithéâtre</SelectItem>
+                  <SelectItem value="atelier">Atelier</SelectItem>
+                  <SelectItem value="informatique">Informatique</SelectItem>
+                  <SelectItem value="musique">Musique</SelectItem>
+                  <SelectItem value="arts">Arts</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={filterDisponibilite} onValueChange={setFilterDisponibilite}>
@@ -199,7 +194,7 @@ const SallesPersonnel = () => {
               <Card 
                 key={salle.id}
                 className={`overflow-hidden transition-all hover:shadow-lg ${
-                  salle.disponible 
+                  salle.statut === "disponible" 
                     ? "border-green-500/30 hover:border-green-500/50" 
                     : "border-red-500/30 hover:border-red-500/50"
                 }`}
@@ -208,22 +203,22 @@ const SallesPersonnel = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        salle.disponible 
+                        salle.statut === "disponible" 
                           ? "bg-green-100 dark:bg-green-900/30" 
                           : "bg-red-100 dark:bg-red-900/30"
                       }`}>
                         <DoorOpen className={`h-5 w-5 ${
-                          salle.disponible ? "text-green-600" : "text-red-600"
+                          salle.statut === "disponible" ? "text-green-600" : "text-red-600"
                         }`} />
                       </div>
                       <div>
-                        <CardTitle className="text-lg">{salle.nom}</CardTitle>
+                        <CardTitle className="text-lg">{salle.nom_salle}</CardTitle>
                         <CardDescription>
                           {salle.batiment} {salle.etage !== undefined && `- Étage ${salle.etage}`}
                         </CardDescription>
                       </div>
                     </div>
-                    {salle.disponible ? (
+                    {salle.statut === "disponible" ? (
                       <Badge className="bg-green-500 hover:bg-green-600">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Libre
@@ -238,8 +233,8 @@ const SallesPersonnel = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline" className={getTypeColor(salle.type)}>
-                      {getTypeLabel(salle.type)}
+                    <Badge variant="outline" className={getTypeColor(salle.type_salle)}>
+                      {getTypeLabel(salle.type_salle)}
                     </Badge>
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <Users className="h-4 w-4" />
@@ -248,19 +243,21 @@ const SallesPersonnel = () => {
                   </div>
 
                   {/* Équipements */}
-                  <div className="flex flex-wrap gap-1">
-                    {salle.equipements.slice(0, 3).map((eq, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {getEquipmentIcon(eq)}
-                        <span className="ml-1">{eq}</span>
-                      </Badge>
-                    ))}
-                    {salle.equipements.length > 3 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{salle.equipements.length - 3}
-                      </Badge>
-                    )}
-                  </div>
+                  {salle.equipements && salle.equipements.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {salle.equipements.slice(0, 3).map((eq, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {getEquipmentIcon(eq)}
+                          <span className="ml-1">{eq}</span>
+                        </Badge>
+                      ))}
+                      {salle.equipements.length > 3 && (
+                        <Badge variant="secondary" className="text-xs">
+                          +{salle.equipements.length - 3}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}

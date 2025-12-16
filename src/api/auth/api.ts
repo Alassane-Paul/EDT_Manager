@@ -65,7 +65,8 @@ export const authApi = {
       await handleApiError(response.data);
     }
     
-    return response.data;
+    // L'API renvoie { utilisateur, code } — retourner l'objet utilisateur directement
+    return response.data.utilisateur || response.data;
   },
 
   async updateProfile(data: Partial<ApiUser>): Promise<ApiUser> {
@@ -74,8 +75,7 @@ export const authApi = {
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
-    
-    return response.data;
+    return response.data.utilisateur || response.data;
   },
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {

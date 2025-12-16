@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ArrowLeft, Save } from "lucide-react";
 import { useCreateClasse, useUpdateClasse, useClasse } from "@/hooks/useClasses";
+import { useEtablissements } from "@/hooks/useEtablissements";
 import { StatutClasse } from "@/types/classes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,15 +26,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/contexts/AuthContext";
 
 const formSchema = z.object({
   nom_classe: z.string().min(1, "Le nom de la classe est requis"),
   niveau: z.string().min(1, "Le niveau est requis"),
-  filiere: z.string().optional(),
-  effectif: z.coerce.number().min(1, "L'effectif doit être au moins 1").max(500),
+  filiere: z.string().optional().default(""),
+  effectif: z.coerce.number().min(1, "L'effectif doit être au moins 1").max(500).default(30),
   annee_scolaire: z.string().regex(/^\d{4}-\d{4}$/, "Format: 2024-2025"),
-  salle_principale: z.string().optional(),
+  salle_principale: z.string().optional().default(""),
   statut: z.nativeEnum(StatutClasse).default(StatutClasse.ACTIVE),
+  etablissement_id: z.string().min(1, "L'établissement est requis"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -42,6 +45,8 @@ export default function ClasseForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = !!id;
+  const { user } = useAuth();
+  const { etablissements, isLoading: etablissementsLoading } = useEtablissements();
 
   const { data: classe, isLoading } = useClasse(id || "");
   const createMutation = useCreateClasse();
@@ -57,6 +62,7 @@ export default function ClasseForm() {
       annee_scolaire: "2024-2025",
       salle_principale: "",
       statut: StatutClasse.ACTIVE,
+      etablissement_id: user?.establishmentId || "",
     },
   });
 
@@ -70,9 +76,13 @@ export default function ClasseForm() {
         annee_scolaire: classe.annee_scolaire,
         salle_principale: classe.salle_principale || "",
         statut: classe.statut,
+        etablissement_id: classe.etablissement_id || user?.establishmentId || "",
       });
+    } else if (!isEditMode) {
+      // Pour la création, mettre à jour juste l'établissement_id depuis le contexte utilisateur
+      form.setValue("etablissement_id", user?.establishmentId || "");
     }
-  }, [classe, isEditMode, form]);
+  }, [classe, isEditMode, form, user?.establishmentId]);
 
   const onSubmit = async (values: FormValues) => {
     if (isEditMode) {
@@ -126,6 +136,46 @@ export default function ClasseForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Établissement */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Établissement</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name="etablissement_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Établissement *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner un établissement" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {etablissementsLoading ? (
+                          <SelectItem value="loading" disabled>
+                            Chargement...
+                          </SelectItem>
+                        ) : (
+                          etablissements.map((etab) => (
+                            <SelectItem key={etab.id} value={etab.id}>
+                              {etab.nom} ({etab.ville})
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Informations générales */}
           <Card>
             <CardHeader>
               <CardTitle>Informations générales</CardTitle>
@@ -139,7 +189,7 @@ export default function ClasseForm() {
                     <FormItem>
                       <FormLabel>Nom de la classe *</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="L3 Informatique" />
+                        <Input {...field} placeholder="ex: L3 Informatique" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -173,34 +223,6 @@ export default function ClasseForm() {
 
                 <FormField
                   control={form.control}
-                  name="filiere"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Filière</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Informatique" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="effectif"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Effectif *</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="annee_scolaire"
                   render={({ field }) => (
                     <FormItem>
@@ -215,35 +237,13 @@ export default function ClasseForm() {
 
                 <FormField
                   control={form.control}
-                  name="salle_principale"
+                  name="filiere"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Salle principale</FormLabel>
+                      <FormLabel>Filière</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Salle A101" />
+                        <Input {...field} placeholder="ex: Informatique" />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="statut"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Statut</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value={StatutClasse.ACTIVE}>Active</SelectItem>
-                          <SelectItem value={StatutClasse.ARCHIVEE}>Archivée</SelectItem>
-                        </SelectContent>
-                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -252,6 +252,75 @@ export default function ClasseForm() {
             </CardContent>
           </Card>
 
+          {/* Détails de la classe */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Détails</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="effectif"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Effectif *</FormLabel>
+                      <FormControl>
+                        <Input type="number" {...field} min="1" max="500" placeholder="30" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="salle_principale"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Salle principale</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="ex: Salle A101" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Statut */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Statut</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FormField
+                control={form.control}
+                name="statut"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Statut de la classe</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={StatutClasse.ACTIVE}>Active</SelectItem>
+                        <SelectItem value={StatutClasse.ARCHIVEE}>Archivée</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Boutons d'action */}
           <div className="flex justify-end gap-4">
             <Button
               type="button"

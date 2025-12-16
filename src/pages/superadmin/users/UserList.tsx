@@ -15,12 +15,12 @@ import { Plus, Search, Edit, Eye } from "lucide-react";
 export default function UserList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState<RoleUtilisateur | "">("");
+  const [roleFilter, setRoleFilter] = useState<RoleUtilisateur | "all">("all");
 
   const filters = useMemo(
     () => ({
       search: searchTerm || undefined,
-      role: roleFilter || undefined,
+      role: roleFilter !== "all" ? roleFilter : undefined,
     }),
     [searchTerm, roleFilter]
   );
@@ -60,7 +60,7 @@ export default function UserList() {
                   <SelectValue placeholder="Rôle" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tous les rôles</SelectItem>
+                  <SelectItem value="all">Tous les rôles</SelectItem>
                   {Object.values(RoleUtilisateur).map((role) => (
                     <SelectItem key={role} value={role}>{role}</SelectItem>
                   ))}

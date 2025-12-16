@@ -92,7 +92,7 @@ const navigationGroups: NavGroup[] = [
       { title: "Établissements", url: "/gestion/etablissements", icon: Building2, roles: ["admin", "directeur"] },
       { title: "Classes", url: "/gestion/classes", icon: GraduationCap, roles: ["admin", "directeur", "responsable_pedagogique"] },
       { title: "Enseignants", url: "/gestion/teachers", icon: UserCog, roles: ["admin", "directeur", "responsable_pedagogique"] },
-      { title: "Salles", url: "/personnel/salles", icon: DoorOpen, roles: ["admin", "directeur", "responsable_pedagogique"] },
+      { title: "Salles", url: "/gestion/salles", icon: DoorOpen, roles: ["admin", "directeur", "responsable_pedagogique"] },
       { title: "Matières", url: "/gestion/matieres", icon: BookOpen, roles: ["admin", "directeur", "responsable_pedagogique"] },
       { title: "Rattrapages", url: "/gestion/rattrapages", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
     ],

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { sallesApi, Salle, SalleFilters } from "@/api/salles/api";
+import { sallesApi } from "@/api/salles/api";
+import { Salle, SalleFilters } from "@/types/salles";
 import { toast } from "sonner";
 
 export function useSalles(filters?: SalleFilters) {
@@ -9,7 +10,8 @@ export function useSalles(filters?: SalleFilters) {
   });
 
   return {
-    salles: data || [],
+    salles: data?.salles || [],
+    pagination: data?.pagination,
     isLoading,
     error,
   };

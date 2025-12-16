@@ -14,10 +14,11 @@ import AbsencesEnseignant from "@/pages/enseignant/Absences";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { EnseignantDetails, EnseignantForm, EnseignantsList } from "@/pages/superadmin/enseignants";
 import { ClasseDetails, ClasseForm, ClasseList } from "@/pages/superadmin/classes";
-import { MatiereList } from "@/pages/superadmin/matieres";
-import { RattrapageList } from "@/pages/superadmin/rattrapages";
+import { SalleList, SalleForm, SalleDetails } from "@/pages/superadmin/salles";
+import { MatiereList, MatiereForm, MatiereDetails } from "@/pages/superadmin/matieres";
+import { RattrapageList, RattrapageForm, RattrapageDetails } from "@/pages/superadmin/rattrapages";
 import { UserList } from "@/pages/superadmin/users";
-import { EtablissementList } from "@/pages/superadmin/etablissements";
+import { EtablissementList, EtablissementForm, EtablissementDetails } from "@/pages/superadmin/etablissements";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -174,12 +175,70 @@ const AppRoutes = () => {
         }
       />
 
+      {/* Routes Salles */}
+      <Route
+        path="/gestion/salles"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <SalleList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/salles/create"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <SalleForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/salles/:id"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <SalleDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/salles/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <SalleForm />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Routes Matières */}
       <Route
         path="/gestion/matieres"
         element={
           <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
             <MatiereList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/matieres/create"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <MatiereForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/matieres/:id"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <MatiereDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/matieres/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <MatiereForm />
           </ProtectedRoute>
         }
       />
@@ -193,6 +252,22 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/gestion/rattrapages/create"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique', 'enseignant']}>
+            <RattrapageForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/rattrapages/:id"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique', 'enseignant']}>
+            <RattrapageDetails />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Routes Établissements */}
       <Route
@@ -200,6 +275,30 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={['admin', 'directeur']}>
             <EtablissementList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/etablissements/create"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur']}>
+            <EtablissementForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/etablissements/:id"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur']}>
+            <EtablissementDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gestion/etablissements/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur']}>
+            <EtablissementForm />
           </ProtectedRoute>
         }
       />

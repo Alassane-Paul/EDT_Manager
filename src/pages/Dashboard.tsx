@@ -127,7 +127,7 @@ const dashboardPages: DashboardPage[] = [
   },
   { 
     title: "Salles", 
-    url: "/personnel/salles", 
+    url: "/gestion/salles", 
     icon: DoorOpen, 
     description: "Gérer les salles",
     roles: ["admin", "directeur", "responsable_pedagogique"],

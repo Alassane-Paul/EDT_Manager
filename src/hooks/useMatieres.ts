@@ -43,8 +43,9 @@ export function useCreateMatiere() {
       queryClient.invalidateQueries({ queryKey: ["matieres"] });
       toast.success("Matière créée avec succès");
     },
-    onError: () => {
-      toast.error("Erreur lors de la création de la matière");
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Erreur lors de la création de la matière";
+      toast.error(message);
     },
   });
 }
@@ -59,8 +60,9 @@ export function useUpdateMatiere() {
       queryClient.invalidateQueries({ queryKey: ["matieres"] });
       toast.success("Matière mise à jour");
     },
-    onError: () => {
-      toast.error("Erreur lors de la mise à jour");
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Erreur lors de la mise à jour";
+      toast.error(message);
     },
   });
 }
@@ -76,8 +78,9 @@ export function useAssignEnseignantsToMatiere() {
       queryClient.invalidateQueries({ queryKey: ["enseignants"] });
       toast.success("Enseignants assignés avec succès");
     },
-    onError: () => {
-      toast.error("Erreur lors de l'assignation");
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Erreur lors de l'assignation";
+      toast.error(message);
     },
   });
 }
