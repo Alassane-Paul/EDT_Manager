@@ -30,48 +30,48 @@ export const clearAuthToken = (): void => {
 export const authApi = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await axiosInstance.post(`/auth/login`, credentials);
-    
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
-    
+
     return response.data;
   },
 
   async register(data: RegisterRequest): Promise<LoginResponse> {
     const response = await axiosInstance.post(`/auth/register`, data);
-    
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
-    
+
     return response.data;
   },
 
   async verify2FA(data: Verify2FARequest): Promise<LoginResponse> {
     const response = await axiosInstance.post(`/auth/verify-2fa`, data);
-    
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
-    
+
     return response.data;
   },
 
   async getProfile(): Promise<ApiUser> {
     const response = await axiosInstance.get(`/auth/profile`);
-    
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
-    
+
     // L'API renvoie { utilisateur, code } — retourner l'objet utilisateur directement
     return response.data.utilisateur || response.data;
   },
 
   async updateProfile(data: Partial<ApiUser>): Promise<ApiUser> {
     const response = await axiosInstance.put(`/auth/profile`, data);
-    
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
@@ -82,8 +82,8 @@ export const authApi = {
     const response = await axiosInstance.post(`/auth/change-password`, {
       mot_de_passe_actuel: currentPassword,
       nouveau_mot_de_passe: newPassword,
-      });
-    
+    });
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
@@ -91,28 +91,32 @@ export const authApi = {
 
   async setup2FA(): Promise<{ qrCode: string; secret: string }> {
     const response = await axiosInstance.post(`/auth/setup-2fa`);
-    
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
-    
+
     return response.data;
   },
   async refreshToken(): Promise<{ qrCode: string; secret: string }> {
     const response = await axiosInstance.post(`/auth/refresh-token`);
-    
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
     }
-    
+
     return response.data;
   },
 
   async activate2FA(code: string): Promise<void> {
-    const response = await axiosInstance.post(`/auth/activate-2fa`, { code });
-    
+    const response = await axiosInstance.post(`/auth/activate-2fa`, { twoFAToken: code });
+
     if (!response.status.toString().startsWith('2')) {
       await handleApiError(response.data);
+    }
+
+    if (response.data.token) {
+      setAuthToken(response.data.token);
     }
   },
 };

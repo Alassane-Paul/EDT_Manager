@@ -52,6 +52,8 @@ Ce projet, basé sur l'utilisation de technologies modernes orientées vers Java
 
 L'objectif principal est de créer une plateforme permettant aux administrateurs, directeurs, responsables pédagogiques, enseignants et étudiants de gérer efficacement leurs emplois du temps, tout en offrant des fonctionnalités avancées telles que la génération automatique des plannings et l'authentification sécurisée avec support 2FA.
 
+---
+
 # SUMMARY
 
 This report presents the design and implementation of a complete timetable management system for schools and universities. The project uses modern JavaScript/TypeScript technologies including React for the frontend and Node.js/Express for the backend.
@@ -80,87 +82,51 @@ The main objective is to create a platform enabling administrators, directors, p
 | Express | Framework web minimaliste pour Node.js |
 | Axios | Client HTTP basé sur les promesses |
 | React Query | Bibliothèque de gestion d'état serveur pour React |
-| Shadcn/UI | Collection de composants UI réutilisables |
-
----
-
-# Technologies JavaScript/TypeScript Utilisées
-
-**Frontend :**
-- **React** - Bibliothèque JavaScript pour construire des interfaces utilisateur interactives
-- **TypeScript** - Langage de programmation avec typage statique
-- **Vite** - Outil de build et serveur de développement ultra-rapide
-- **TailwindCSS** - Framework CSS utilitaire pour le design responsive
-- **React Router** - Système de routage pour les applications React
-- **TanStack Query** - Gestion d'état serveur et cache intelligent
-- **Axios** - Client HTTP pour les appels API
-- **React Hook Form** - Gestion performante des formulaires
-- **Zod** - Validation de schémas TypeScript-first
-- **Lucide React** - Bibliothèque d'icônes modernes
-
-**Backend :**
-- **Node.js** - Environnement d'exécution JavaScript côté serveur
-- **Express** - Framework web minimaliste et flexible
-- **MySQL** - Base de données relationnelle
-- **Sequelize** - ORM pour la manipulation des données
-- **jsonwebtoken** - Création et vérification de JWT
-- **bcrypt** - Hachage sécurisé des mots de passe
-- **speakeasy** - Génération de codes 2FA
 
 ---
 
 # LISTE DES TABLEAUX
 
-| Tableau | Page |
-|---------|------|
-| Tableau 1 : Technologies Frontend | 10 |
-| Tableau 2 : Technologies Backend | 10 |
-| Tableau 3 : Endpoints API Authentification | 15 |
-| Tableau 4 : Endpoints API Cours | 16 |
-| Tableau 5 : Endpoints API Emploi du Temps | 16 |
-| Tableau 6 : Hiérarchie des Rôles | 17 |
-| Tableau 7 : Matrice des Permissions | 18 |
-
-# LISTE DES FIGURES
-
-| Figure | Page |
-|--------|------|
-| Figure 1 : Architecture globale du système | 8 |
-| Figure 2 : Diagramme de classes - Gestion | Annexe |
-| Figure 3 : Diagramme de classes - Générateur EDT | Annexe |
-| Figure 4 : Diagramme de classes - Valeurs Objets | Annexe |
-| Figure 5 : Diagramme de classes - Énumérations | Annexe |
-| Figure 6 : Interface - Page d'accueil | 20 |
-| Figure 7 : Interface - Page de connexion | 21 |
-| Figure 8 : Interface - Tableau de bord | 22 |
-| Figure 9 : Flux d'authentification 2FA | 17 |
+Tableau 1: Liste des fonctionnalités de l’application
+Tableau 2: Hiérarchie des rôles
+Tableau 3: Matrice des permissions
+Tableau 4: Technologies Frontend
+Tableau 5: Technologies Backend
 
 ---
 
-# SOMMAIRE
+# LISTE DES FIGURES
 
-## A. Cahier des charges
-- I. Contexte et définition du projet
-- II. Objectifs
-- III. Périmètre
-- IV. Description fonctionnelle
-- V. Contraintes techniques
+Figure 1: Logo UML
+Figure 2: Architecture globale du système
+Figure 3: Diagramme de classes - Gestion
+Figure 4: Interface - Page d'accueil
+Figure 5: Interface - Page de connexion
+Figure 6: Interface - Tableau de bord
+Figure 7: Diagramme de flux authentification 2FA
 
-## B. Analyse et Conception
-- I. Méthode d'analyse UML
-- II. Architecture du système
-- III. Modélisation des données
-- IV. Diagrammes de classes
+---
 
-## C. Implémentation
-- I. Structure du projet
-- II. Technologies utilisées
-- III. API Backend
-- IV. Authentification et Sécurité
-- V. Rôles et Permissions
-- VI. Présentation des interfaces
+# SOMMAIRE / TABLE DE MATIERES
 
-## D. Bilan et Perspectives
+- [INTRODUCTION](#introduction)
+- [A. CAHIER DE CHARGES](#a-cahier-de-charges)
+    - [I. Contexte et définition du projet](#i-contexte-et-définition-du-projet)
+    - [II. Objectifs](#ii-objectifs)
+    - [III. Périmètre](#iii-périmètre)
+    - [IV. Description fonctionnelle](#iv-description-fonctionnelle)
+    - [V. Enveloppe budgétaire](#v-enveloppe-budgétaire)
+    - [VI. Delai de realisation](#vi-delai-de-realisation)
+    - [VII. Etude l’existant](#vii-etude-lexistant)
+- [B. ANALYSE ET CONCEPTION](#b-analyse-et-conception)
+    - [I. Présentation de la méthode d’analyse - UML](#i-présentation-de-la-méthode-danalyse---uml)
+    - [II. Outil de modélisation](#ii-outil-de-modélisation)
+    - [III. Outil de conception](#iii-outil-de-conception)
+    - [IV. Etude et conception de la solution](#iv-etude-et-conception-de-la-solution)
+    - [V. Mise en oeuvre du projet](#v-mise-en-oeuvre-du-projet)
+- [C. BILAN DU PROJET ET PERSPECTIVES D'AMÉLIORATION](#c-bilan-du-projet-et-perspectives-damélioration)
+- [CONCLUSION](#conclusion)
+- [BIBLIOGRAPHIE & WEBOGRAPHIE](#bibliographie--webographie)
 
 ---
 
@@ -176,10 +142,9 @@ En somme, notre plateforme vise à moderniser la gestion des emplois du temps, �
 
 ---
 
-# A. CAHIER DES CHARGES
+# A. CAHIER DE CHARGES
 
 ## I. Contexte et définition du projet
-
 Dans le secteur éducatif, la planification des emplois du temps constitue un défi organisationnel majeur. Les responsables pédagogiques doivent jongler avec de nombreuses contraintes : disponibilité des enseignants, capacité des salles, respect des volumes horaires, cohérence des parcours étudiants.
 
 Ce projet vise à développer une application web moderne permettant :
@@ -189,9 +154,7 @@ Ce projet vise à développer une application web moderne permettant :
 - Une interface responsive accessible sur tous les appareils
 
 ## II. Objectifs
-
 Le projet consiste à développer une plateforme qui :
-
 - **Centralise** la gestion des emplois du temps pour plusieurs établissements
 - **Automatise** la génération des plannings en respectant les contraintes
 - **Personnalise** l'affichage selon le rôle (admin, directeur, enseignant, étudiant)
@@ -200,7 +163,6 @@ Le projet consiste à développer une plateforme qui :
 - **Exporte** les emplois du temps au format PDF
 
 ## III. Périmètre
-
 Cette application est destinée à :
 - **Administrateurs système** : gestion globale de la plateforme
 - **Directeurs d'établissement** : supervision de leur établissement
@@ -210,7 +172,7 @@ Cette application est destinée à :
 
 ## IV. Description fonctionnelle
 
-### Tableau des fonctionnalités
+**Tableau 1: Liste des fonctionnalités de l’application**
 
 | Fonctionnalité | Description | Acteurs |
 |----------------|-------------|---------|
@@ -226,295 +188,7 @@ Cette application est destinée à :
 | Déclaration d'absences | Signalement des absences par les enseignants | Enseignants |
 | Gestion des rattrapages | Planification des cours de rattrapage | Admin, Directeur, Resp. Péda. |
 
-## V. Contraintes techniques
-
-- **Responsive Design** : Interface adaptée aux mobiles, tablettes et desktop
-- **Performance** : Temps de chargement < 3 secondes
-- **Sécurité** : Authentification JWT, chiffrement des mots de passe, protection CSRF
-- **Compatibilité** : Navigateurs modernes (Chrome, Firefox, Safari, Edge)
-- **Scalabilité** : Architecture permettant la montée en charge
-
----
-
-# B. ANALYSE ET CONCEPTION
-
-## I. Méthode d'analyse UML
-
-L'analyse du système a été réalisée en utilisant le langage de modélisation UML (Unified Modeling Language), permettant une représentation visuelle claire des différents aspects de l'application.
-
-### Outils utilisés
-- **Lucidchart** : Création des diagrammes UML en ligne
-- **PlantUML** : Génération de diagrammes à partir de code
-- **Figma** : Conception des maquettes d'interface
-
-## II. Architecture du système
-
-### Architecture 3-tiers
-
-``` ù
-┌─────────────────────────────────────────────────────────────┐
-│                   COUCHE PRÉSENTATION                        │
-│                   (React + TypeScript)                       │
-│                                                              │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │  Pages   │  │Components│  │  Hooks   │  │ Contexts │    │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
-└───────────────────────────┬──────────────────────────────────┘
-                            │ HTTP/REST (Axios)
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    COUCHE MÉTIER                             │
-│                (Node.js + Express)                           │
-│                                                              │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │  Routes  │  │Controllers│ │ Services │  │Middleware│    │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
-└───────────────────────────┬──────────────────────────────────┘
-                            │ Sequelize ORM
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   COUCHE DONNÉES                             │
-│                    (MySQL)                                   │
-│                                                              │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │Utilisateurs│ │  Cours  │  │  Salles  │  │   EDT    │    │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Description des couches
-
-| Couche | Rôle | Technologies |
-|--------|------|--------------|
-| Présentation | Interface utilisateur, interactions | React, TypeScript, TailwindCSS |
-| Métier | Logique applicative, règles métier | Node.js, Express, JWT |
-| Données | Persistance, stockage | MySQL, Sequelize |
-
-## III. Modélisation des données
-
-### Entités principales
-
-Le système est composé des entités suivantes :
-
-1. **Utilisateur** : Gestion des comptes et authentification
-2. **Établissement** : Configuration des établissements scolaires
-3. **Classe** : Organisation des élèves par niveau et filière
-4. **Matière** : Définition des cours et contenus pédagogiques
-5. **Enseignant** : Profil et disponibilités des professeurs
-6. **Salle** : Gestion des locaux et équipements
-7. **EmploiDuTemps** : Planification des séances
-8. **Notification** : Alertes et communications
-
-## IV. Diagrammes de classes
-
-Les diagrammes de classes complets sont disponibles en annexe :
-- **Diagramme de classes - Gestion** : Entités principales et leurs relations
-- **Diagramme de classes - Générateur EDT** : Algorithme de génération
-- **Diagramme de classes - Valeurs Objets** : Types et contraintes
-- **Diagramme de classes - Énumérations** : Constantes du système
-
----
-
-# C. IMPLÉMENTATION
-
-## I. Structure du projet Frontend
-
-```
-src/
-├── api/                    # Services API
-│   ├── auth/
-│   │   └── api.ts         # Endpoints authentification
-│   ├── absences/
-│   │   └── api.ts         # Endpoints absences
-│   ├── cours/
-│   │   └── api.ts         # Endpoints cours
-│   ├── emploi-temps/
-│   │   └── api.ts         # Endpoints emploi du temps
-│   ├── notifications/
-│   │   └── api.ts         # Endpoints notifications
-│   ├── salles/
-│   │   └── api.ts         # Endpoints salles
-│   └── axios_instance.ts  # Configuration Axios
-│
-├── components/            # Composants React réutilisables
-│   ├── layout/
-│   │   ├── AppLayout.tsx  # Layout principal avec sidebar
-│   │   ├── AppSidebar.tsx # Navigation latérale par rôle
-│   │   └── PageLayout.tsx # Layout de page
-│   ├── ui/                # Composants Shadcn/UI (60+)
-│   ├── NavLink.tsx        # Lien de navigation
-│   ├── RoleBasedActions.tsx # Actions selon rôle
-│   └── TwoFactorSetup.tsx # Configuration 2FA
-│
-├── contexts/              # Contextes React
-│   └── AuthContext.tsx    # Gestion de l'authentification
-│
-├── hooks/                 # Hooks personnalisés
-│   ├── useAbsences.ts     # Hook pour les absences
-│   ├── useCours.ts        # Hook pour les cours
-│   ├── useEmploiTemps.ts  # Hook pour l'emploi du temps
-│   ├── useNotifications.ts # Hook pour les notifications
-│   └── useSalles.ts       # Hook pour les salles
-│
-├── pages/                 # Pages de l'application
-│   ├── enseignant/        # Pages spécifiques enseignants
-│   │   ├── EmploiTemps.tsx # EDT enseignant
-│   │   ├── Cours.tsx      # Gestion des cours
-│   │   └── Absences.tsx   # Déclaration d'absences
-│   ├── etudiant/          # Pages spécifiques étudiants
-│   ├── personnel/         # Pages spécifiques personnel
-│   ├── Auth.tsx           # Authentification
-│   └── Dashboard.tsx      # Tableau de bord
-│
-├── types/                 # Types TypeScript
-│   ├── absences.ts        # Types pour les absences
-│   ├── cours.ts           # Types pour les cours
-│   ├── emploi-temps.ts    # Types pour l'emploi du temps
-│   └── notifications.ts   # Types pour les notifications
-│
-└── Providers/             # Providers React (Router, Query)
-```
-
-## II. Technologies utilisées
-
-### Frontend
-
-| Technologie | Version | Rôle |
-|-------------|---------|------|
-| React | 18.3.1 | Bibliothèque UI |
-| TypeScript | - | Typage statique |
-| Vite | - | Build tool |
-| TailwindCSS | - | Framework CSS |
-| React Router | 6.30.1 | Routage SPA |
-| TanStack Query | 5.83.0 | Gestion d'état serveur |
-| Axios | 1.13.2 | Client HTTP |
-| Shadcn/UI | - | Composants UI |
-| React Hook Form | 7.61.1 | Formulaires |
-| Zod | 3.25.76 | Validation |
-
-### Backend
-
-| Technologie | Rôle |
-|-------------|------|
-| Node.js | Runtime JavaScript |
-| Express | Framework web |
-| MySQL | Base de données |
-| Sequelize | ORM |
-| JWT | Authentification |
-| bcrypt | Hachage mots de passe |
-| speakeasy | 2FA |
-
-## III. API Backend
-
-### Base URL
-```
-Development: http://localhost:5000/api
-```
-
-### Endpoints Authentification
-
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/auth/login` | Connexion utilisateur |
-| POST | `/auth/register` | Inscription |
-| POST | `/auth/verify-2fa` | Vérification code 2FA |
-| GET | `/auth/profile` | Récupération profil |
-| POST | `/auth/logout` | Déconnexion |
-| POST | `/auth/2fa/setup` | Configuration 2FA |
-| POST | `/auth/2fa/enable` | Activation 2FA |
-
-### Endpoints Emploi du Temps
-
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/emplois-temps/me` | EDT personnel |
-| GET | `/emplois-temps/classe/:id` | EDT par classe |
-| GET | `/emplois-temps/enseignant/:id` | EDT par enseignant |
-| POST | `/emplois-temps/seances` | Créer une séance |
-| PUT | `/emplois-temps/seances/:id` | Modifier une séance |
-| DELETE | `/emplois-temps/seances/:id` | Supprimer une séance |
-| PUT | `/emplois-temps/seances/:id/annuler` | Annuler une séance |
-| GET | `/emplois-temps/export/pdf` | Export PDF |
-
-### Endpoints Cours
-
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/cours` | Liste des cours (avec filtres) |
-| GET | `/cours/:id` | Détail d'un cours |
-| GET | `/cours/mes-cours` | Mes cours (enseignant) |
-| POST | `/cours` | Créer un cours |
-| PUT | `/cours/:id` | Modifier un cours |
-| DELETE | `/cours/:id` | Supprimer un cours |
-
-### Endpoints Absences
-
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/absences` | Liste des absences (avec filtres) |
-| GET | `/absences/seance/:id` | Absences d'une séance |
-| GET | `/seances/:id/etudiants` | Étudiants d'une séance |
-| POST | `/absences/declarer` | Déclarer des absences |
-| PUT | `/absences/:id/justifier` | Justifier une absence |
-| DELETE | `/absences/:id` | Supprimer une absence |
-
-### Endpoints Notifications
-
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/notifications` | Liste des notifications |
-| GET | `/notifications/unread` | Notifications non lues |
-| PUT | `/notifications/:id/read` | Marquer comme lue |
-| PUT | `/notifications/read-all` | Tout marquer comme lu |
-| DELETE | `/notifications/:id` | Supprimer une notification |
-
-### Endpoints Salles
-
-| Méthode | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/salles` | Liste des salles (avec filtres) |
-| GET | `/salles/:id` | Détail d'une salle |
-| GET | `/salles/:id/disponibilite` | Disponibilité d'une salle |
-| GET | `/salles/disponibles` | Salles disponibles |
-| POST | `/salles` | Créer une salle |
-| PUT | `/salles/:id` | Modifier une salle |
-| DELETE | `/salles/:id` | Supprimer une salle |
-
-### Headers d'authentification
-```http
-Authorization: Bearer <jwt_token>
-Content-Type: application/json
-```
-
-## IV. Authentification et Sécurité
-
-### Flux d'authentification
-
-```
-┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐
-│  User   │────▶│  Login  │────▶│  API    │────▶│   JWT   │
-│         │     │  Form   │     │ Verify  │     │  Token  │
-└─────────┘     └─────────┘     └─────────┘     └────┬────┘
-                                                      │
-     ┌────────────────────────────────────────────────┘
-     │
-     ▼
-┌─────────┐     ┌─────────┐     ┌─────────┐
-│  2FA    │────▶│ Verify  │────▶│  Access │
-│(si actif)│    │  Code   │     │ Granted │
-└─────────┘     └─────────┘     └─────────┘
-```
-
-### Sécurité 2FA
-
-L'application supporte l'authentification à deux facteurs avec :
-- **QR Code** : Scan rapide avec une application authenticator (Google Authenticator, Authy)
-- **Clé secrète manuelle** : Pour les utilisateurs ne pouvant pas scanner
-- **Codes à 6 chiffres** : Générés toutes les 30 secondes
-
-## V. Rôles et Permissions
-
-### Hiérarchie des rôles
+**Tableau 2: Hiérarchie des rôles**
 
 | Rôle | Niveau | Description |
 |------|--------|-------------|
@@ -524,7 +198,7 @@ L'application supporte l'authentification à deux facteurs avec :
 | `enseignant` | 4 | Enseignant |
 | `etudiant` | 5 | Étudiant |
 
-### Matrice des permissions
+**Tableau 3: Matrice des permissions**
 
 | Fonctionnalité | Admin | Directeur | Resp. Péda. | Enseignant | Étudiant |
 |----------------|-------|-----------|-------------|------------|----------|
@@ -536,201 +210,190 @@ L'application supporte l'authentification à deux facteurs avec :
 | Statistiques | ✓ | ✓ | ✓ | ✓* | ✗ |
 | Admin système | ✓ | ✗ | ✗ | ✗ | ✗ |
 
-*Limité à leurs propres cours
+*\*Limité à leurs propres cours*
 
-## VI. Présentation des interfaces
+## V. Enveloppe budgétaire
+*Note: Cette section est une estimation fictive dans le cadre de ce projet académique.*
 
-### Figure 6 : Page d'accueil
+| Poste de dépense | Estimation |
+|------------------|------------|
+| Hébergement (Cloud - AWS/Vercel) | 50€ / mois |
+| Nom de domaine | 15€ / an |
+| Outils de développement (Licences) | 0€ (Open Source) |
+| Ressource humaine (Développement) | 3000€ (Valorisation) |
+| **Total Estimé** | **~3100€ (Initial)** |
 
-La page d'accueil présente l'application avec ses fonctionnalités principales :
-- Génération automatique des emplois du temps
-- Support multi-établissements
-- Gestion complète des ressources
+## VI. Delai de realisation
+Le projet a été réalisé sur une période de **3 mois**, découpée comme suit :
+- **Mois 1** : Analyse, Conception, Maquettage
+- **Mois 2** : Développement Backend (API, BDD) et Frontend (Interface de base)
+- **Mois 3** : Intégration, Tests, Déploiement et Rédaction du rapport
 
-![Page d'accueil](screenshots/home.png)
-
-*Interface moderne avec gradient et cartes de fonctionnalités*
-
-### Figure 7 : Page de connexion
-
-L'interface de connexion offre :
-- Formulaire email/mot de passe
-- Onglet d'inscription
-- Design épuré et professionnel
-
-![Page de connexion](screenshots/auth.png)
-
-*Formulaire de connexion avec support des onglets Connexion/Inscription*
-
-### Figure 8 : Tableau de bord
-
-Le tableau de bord s'adapte au rôle de l'utilisateur :
-- Statistiques personnalisées
-- Actions rapides contextuelles
-- Notifications récentes
-
-![Tableau de bord](screenshots/dashboard.png)
-
-*Vue du tableau de bord avec sidebar de navigation*
-
-## VII. Module Enseignant
-
-Le module enseignant offre une interface complète pour la gestion des activités pédagogiques :
-
-### Gestion des Cours (Enseignant)
-
-L'interface de gestion des cours permet aux enseignants de :
-- Visualiser la liste de leurs cours avec progression
-- Consulter les statistiques (heures effectuées vs heures totales)
-- Accéder aux détails de chaque cours
-
-**Fonctionnalités :**
-- Affichage en cartes avec indicateur de progression
-- Filtrage par classe et matière
-- Statistiques en temps réel
-
-### Déclaration d'Absences
-
-L'interface de déclaration d'absences permet aux enseignants de :
-- Sélectionner une séance de cours
-- Voir la liste des étudiants présents/absents
-- Déclarer les absences avec motif optionnel
-- Consulter l'historique des absences
-
-**Fonctionnalités :**
-- Sélection multiple d'étudiants
-- Justification des absences
-- Export des listes d'absences
-- Filtrage par date, cours et statut
-
-### Emploi du Temps Enseignant
-
-L'emploi du temps enseignant affiche :
-- Vue hebdomadaire personnalisée
-- Navigation par semaine (précédent/suivant)
-- Séances codées par couleur selon le type
-- Détails des séances (salle, classe, horaires)
-
-**Fonctionnalités :**
-- Annulation de séance avec motif
-- Export PDF de l'emploi du temps
-- Indicateurs de statut (planifié, en cours, terminé, annulé)
-
-### Routes Enseignant
-
-| Route | Description | Rôles autorisés |
-|-------|-------------|-----------------|
-| `/enseignant/emploi-temps` | Emploi du temps | Admin, Directeur, Resp. Péda., Enseignant |
-| `/enseignant/cours` | Gestion des cours | Admin, Directeur, Resp. Péda., Enseignant |
-| `/enseignant/absences` | Déclaration d'absences | Admin, Directeur, Resp. Péda., Enseignant |
-
-## VII. Qualité de Code et Robustesse
-
-Afin de garantir une expérience utilisateur fluide et une maintenance aisée, des pratiques rigoureuses ont été adoptées :
-
-### Validation des données
-L'utilisation de **Zod** permet une validation stricte des données côté client avant tout envoi au serveur. Cela garantit que les relations entre entités (comme l'association d'une matière à un établissement) sont correctement établies, évitant ainsi les erreurs silencieuses.
-
-### Gestion centralisée des erreurs
-Les retours d'API sont gérés de manière uniforme. Les messages d'erreur du backend sont interceptés et affichés via des notifications (Toasts), permettant aux utilisateurs et administrateurs de comprendre immédiatement la cause d'un échec (ex: doublon, données manquantes).
+## VII. Etude l’existant
+Actuellement, de nombreux établissements gèrent encore leurs emplois du temps manuellement (Excel, papier) ou via des logiciels obsolètes et non connectés.
+- **Inconvénients actuels** : Erreurs fréquentes de saisie, difficultés de communication des changements, absence d'accès mobile, perte de temps considérable pour les responsables.
+- **Avantages de la solution proposée** : Centralisation, accessibilité web/mobile, automatisation, notifications en temps réel.
 
 ---
 
-# D. BILAN ET PERSPECTIVES
+# B. ANALYSE ET CONCEPTION
 
-## Bilan du projet
+## I. Présentation de la méthode d’analyse - UML
+Pour la modélisation de notre système, nous avons opté pour **UML (Unified Modeling Language)**. C'est un langage graphique standardisé permettant de visualiser, spécifier, construire et documenter les éléments d'un système logiciel.
 
-Ce projet a permis de développer une application web complète de gestion d'emplois du temps, répondant aux besoins identifiés :
+**Figure 1: Logo UML**
+*(Logo UML standard)*
 
-### Objectifs atteints
-- ✓ Interface utilisateur moderne et responsive
-- ✓ Authentification sécurisée avec support 2FA
-- ✓ Gestion des rôles et permissions
-- ✓ API REST complète pour toutes les fonctionnalités
-- ✓ Navigation adaptée selon le rôle utilisateur
-- ✓ Système de notifications
+### 1. Diagramme de cas d’utilisation
+Il représente les interactions entre les acteurs (utilisateurs) et le système. Il définit "qui fait quoi".
+### 2. Diagramme de classe
+Il décrit la structure statique du système en montrant les classes, leurs attributs, opérations et les relations entre elles.
+### 3. Diagramme de séquence (facultatif)
+Il détaille la chronologie des interactions entre les objets pour un cas d'utilisation donné.
 
-### Défis rencontrés
-- Gestion des états complexes avec React Query
-- Implémentation de l'authentification 2FA
-- Optimisation des performances pour les grands volumes de données
-- Assurer la cohérence des données lors des créations complexes (relations inter-entités)
+## II. Outil de modélisation
+Pour réaliser nos diagrammes et maquettes, nous avons utilisé :
+- **Lucidchart / PlantUML** : Pour la création des diagrammes UML (Classes, Cas d'utilisation). Ces outils permettent une collaboration en temps réel et une génération rapide.
 
-## Perspectives d'évolution
+## III. Outil de conception
+- **Figma** : Utilisé pour le prototypage des interfaces utilisateur (UI/UX). Il a permis de valider le design system (couleurs, typographie) avant le développement.
 
-### Court terme
-- Génération automatique des emplois du temps par algorithme
-- Export PDF complet des plannings
-- Gestion des rattrapages et absences
+## IV. Etude et conception de la solution
 
-### Moyen terme
-- Application mobile (PWA ou React Native)
-- Système de notifications push
-- Intégration calendrier (Google Calendar, iCal)
+### 1. Etude fonctionnelle
+L'application couvre plusieurs modules clés :
+- **Module Authentification** : Sécurisation des accès.
+- **Module Gestion** : Administration des données de référence (Salles, Matières, Utilisateurs).
+- **Module Planification** : Cœur du système, permettant de placer les cours sur une grille temporelle.
+- **Module Communication** : Notifications et absences.
 
-### Long terme
-- Intelligence artificielle pour l'optimisation des plannings
-- Analyse prédictive des conflits
-- Module de reporting avancé
+### 2. Etude technique
+Nous avons adopté une **architecture 3-tiers** :
+
+**Figure 2: Architecture globale du système**
+- **Frontend (Client)** : React.js (SPA)
+- **Backend (Serveur)** : Node.js avec Express
+- **Base de Données** : MySQL
+
+### 3. Les diagramme (Captures)
+
+#### a. Diagramme de classe
+**Figure 3: Diagramme de classes - Gestion**
+*(Voir Annexe A pour le diagramme complet)*
+Ce diagramme montre les relations entre `Utilisateur`, `Etablissement`, `Cours`, `Salle`, etc.
+
+#### b. Diagramme de cas d’utilisation
+*Acteurs principaux* : Admin, Enseignant, Étudiant.
+*Cas d'utilisation* : "Se connecter", "Consulter EDT", "Modifier EDT" (Admin seulement).
+
+#### c. Descriptions textuelles des cas d’utilisation
+
+**Cas 1 : Se connecter**
+- **Acteur** : Tout utilisateur
+- **Précondition** : Avoir un compte actif
+- **Scénario nominal** :
+  1. L'utilisateur saisit email et mot de passe.
+  2. Le système vérifie les identifiants.
+  3. Si 2FA activée, demande du code.
+  4. Le système redirige vers le tableau de bord.
+
+**Cas 2 : Générer un emploi du temps**
+- **Acteur** : Responsable Pédagogique
+- **Scénario nominal** :
+  1. Le responsable sélectionne une classe et une période.
+  2. Il lance l'algorithme de génération.
+  3. Le système vérifie les contraintes (dispo profs, salles).
+  4. Le système propose un planning.
+  5. Le responsable valide et publie.
+
+### 4. Choix technique
+
+**Tableau 4: Technologies Frontend**
+- **React** ![React Logo](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/20px-React-icon.svg.png) : Bibliothèque flexible et performante pour les interfaces dynamiques.
+- **TypeScript** : Apporte la sécurité du typage pour réduire les bugs.
+- **TailwindCSS** : Permet un design rapide et responsive.
+
+**Tableau 5: Technologies Backend**
+- **Node.js** : Performance grâce à son architecture non-bloquante.
+- **Express** : Légèreté et flexibilité pour créer des API REST.
+- **MySQL** : Robustesse pour les données relationnelles complexes.
+
+## V. Mise en oeuvre du projet
+
+### 1. Gestion de projet
+
+#### a. Planification et méthodologie (SCRUM)
+Nous avons suivi une approche **Agile Scrum** simplifiée :
+- **Sprints** de 2 semaines.
+- **Daily meetings** pour le suivi.
+- **Backlog** priorisé par valeur métier (Authentification d'abord, puis EDT, puis options).
+
+#### b. Découpage des fonctionnalités
+- **Lot 1** : Socle technique, Authentification, Base de données.
+- **Lot 2** : Gestion des utilisateurs et données de base (CRUD).
+- **Lot 3** : Moteur d'emploi du temps et affichage.
+- **Lot 4** : Notifications et finitions.
+
+### 2. Implémentation de la solution
+- **Couche Données** : Implémentée avec **Sequelize** (ORM). Les modèles `Utilisateur`, `Cours`, `Salle` sont synchronisés avec MySQL.
+- **Couche Métier (API)** : Structurée en Contrôleurs (logique), Services (traitement) et Routes. Utilisation de Middlewares pour l'auth.
+- **Couche Présentation** : Structure modulaire avec composants React (`/components`), pages (`/pages`) et gestion d'état (`Context API` + `TanStack Query`).
+
+### 3. Sécurité et contraintes techniques
+La sécurité a été une priorité :
+- **Authentification forte** : Implémentation de l'authentification à double facteur (2FA) avec algorithme TOTP (Time-based One-Time Password).
+- **Protection des données** : Mots de passe hachés avec `bcrypt`.
+- **Session** : Utilisation de **JWT (JSON Web Token)** pour sécuriser les appels API sans état (stateless).
+- **Validation** : Toutes les entrées sont validées par **Zod** (frontend) et **express-validator** (backend).
+
+### 4. Présentation de quelques interface
+
+**Figure 4: Interface - Page d'accueil**
+Page vitrine présentant l'application.
+
+**Figure 5: Interface - Page de connexion**
+Formulaire sécurisé avec gestion des erreurs et lien d'inscription.
+
+**Figure 6: Interface - Tableau de bord**
+Interface principale affichant les widgets, les prochains cours et les notifications.
+
+---
+
+# C. BILAN DU PROJET ET PERSPECTIVES D'AMÉLIORATION
+
+## Bilan
+Le projet a abouti à une application fonctionnelle et robuste.
+- **Forces** : Architecture moderne, code typé (TypeScript), sécurité avancée (2FA).
+- **Faiblesses** : L'algorithme de génération automatique peut être optimisé pour gérer plus de contraintes complexes.
+
+## Perspectives
+- **Court terme** : Export PDF natif plus complet.
+- **Moyen terme** : Application mobile native (React Native).
+- **Long terme** : Utilisation de l'IA pour optimiser le placement des cours automatiquement.
 
 ---
 
 # CONCLUSION
 
-Le développement de cette application de gestion d'emplois du temps représente une solution complète et moderne pour les établissements scolaires et universitaires. L'utilisation de technologies récentes (React, TypeScript, Node.js) garantit performance et maintenabilité.
-
-Ce projet m'a permis de mettre en pratique les compétences acquises en développement web full-stack, tout en répondant à un besoin réel du secteur éducatif.
+Le développement de ce Système de Gestion d'Emploi du Temps a été une expérience enrichissante, permettant de concrétiser les acquis de la formation Développement Web & Mobile. L'application répond aux exigences modernes de performance, sécurité et ergonomie. Elle offre une solution tangible aux problèmes d'organisation des établissements scolaires.
 
 ---
 
-# ANNEXES
+# BIBLIOGRAPHIE & WEBOGRAPHIE
 
-## Annexe A : Diagrammes de classes
-
-Les diagrammes de classes sont disponibles dans le dossier `docs/diagrams/` :
-- `Gestion_diagram_de_class.pdf`
-
-     [Gestion_diagram_de_class](diagrams/Gestion_diagram_de_class.pdf)
-- `Generateur_EDT_diagram_de_class.pdf`
-
-     [Generateur_EDT_diagram_de_class](diagrams/Generateur_EDT_diagram_de_class.pdf)
-- `valeur_objet_diagram_de_class.pdf`
-
-     [valeur_objet_diagram_de_class](diagrams/valeur_objet_diagram_de_class.pdf)
-- `Enums_diagram_de_class.pdf`
-
-     [Enums_diagram_de_class](diagrams/Enums_diagram_de_class.pdf)
-- 
-
-## Annexe B : Guide d'installation
-
-### Prérequis
-- Node.js 18+
-- npm
-- MySQL 8.0+
-
-### Installation Frontend
-```bash
-# Cloner le repository
-git clone <repository-url>
-cd projet-edt
-
-# Installer les dépendances
-npm install
-
-# Démarrer en développement
-npm run dev
-```
-
-### Variables d'environnement
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
-## Annexe C : Références techniques
-
+**DÉVELOPPEMENT WEB**
 - Documentation React : https://react.dev
-- Documentation TypeScript : https://www.typescriptlang.org
-- TailwindCSS : https://tailwindcss.com
-- Shadcn/UI : https://ui.shadcn.com
-- TanStack Query : https://tanstack.com/query
+- MDN Web Docs : https://developer.mozilla.org
+
+**BACKEND & BASE DE DONNÉES**
+- Documentation Node.js : https://nodejs.org
+- Documentation Sequelize : https://sequelize.org
+
+**SÉCURITÉ**
+- OWASP Top 10 : https://owasp.org
+- JWT.io Introduction : https://jwt.io/introduction
+
+**OUTILS**
+- Lucidchart : https://lucidchart.com
+- Figma : https://figma.com
+ 
