@@ -19,7 +19,7 @@ export const notificationsApi = {
   },
 
   async markAllAsRead(): Promise<void> {
-    await axiosInstance.put("/notifications/read-all");
+    await axiosInstance.put("/notifications/mark-all-read");
   },
 
   async delete(id: string): Promise<void> {

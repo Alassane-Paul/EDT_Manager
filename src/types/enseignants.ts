@@ -60,6 +60,7 @@ export interface Enseignant {
   cours_consecutifs_max: number;
   preference_horaire: PreferenceHoraire;
   multi_sites: boolean;
+  etablissement_id: string;
   utilisateur: EnseignantUtilisateur;
   matieres?: EnseignantMatiere[];
   cours?: EnseignantCours[];
@@ -91,5 +92,6 @@ export interface EnseignantFormData {
   cours_consecutifs_max: number;
   preference_horaire: PreferenceHoraire;
   multi_sites: boolean;
+  etablissement_id: string;
 }
 

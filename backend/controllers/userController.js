@@ -1,5 +1,16 @@
-// controllers/userController.js
-const { Utilisateur, Etablissement, LogConnexion, LogModification } = require('../database/models');
+const {
+  Utilisateur,
+  Etablissement,
+  LogConnexion,
+  LogModification,
+  Enseignant,
+  Eleve,
+  Directeur,
+  ResponsablePedagogique,
+  Sequelize
+} = require('../database/models');
+const bcrypt = require('bcryptjs');
+const { sequelize } = require('../config/database');
 const { validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const { RoleUtilisateur, TypeOperation } = require('../utils/enums');
@@ -11,14 +22,18 @@ const userController = {
    */
   getAllUsers: async (req, res) => {
     try {
-      const { page = 1, limit = 10, role, search } = req.query;
+      const { page = 1, limit = 100, role, search, statut } = req.query;
       const offset = (page - 1) * limit;
 
       const scopedEtablissementId = resolveScopedEtablissementId(req);
       const whereClause = applyEtablissementScope(req, {});
-      
+
       if (role) {
         whereClause.role = role;
+      }
+
+      if (req.query.actif !== undefined) {
+        whereClause.actif = req.query.actif === 'true';
       }
 
       if (search) {
@@ -71,10 +86,32 @@ const userController = {
       const utilisateur = await Utilisateur.findOne({
         where: applyEtablissementScope(req, { id }),
         attributes: { exclude: ['mot_de_passe_hash', 'deux_fa_secret'] },
-        include: [{
-          association: 'etablissement',
-          attributes: ['id', 'nom', 'type']
-        }]
+        include: [
+          {
+            association: 'etablissement',
+            attributes: ['id', 'nom', 'type']
+          },
+          {
+            association: 'enseignant',
+            required: false
+          },
+          {
+            association: 'eleve',
+            required: false,
+            include: [{
+              association: 'classe',
+              attributes: ['id', 'nom_classe']
+            }]
+          },
+          {
+            association: 'directeur',
+            required: false
+          },
+          {
+            association: 'responsablePedagogique',
+            required: false
+          }
+        ]
       });
 
       if (!utilisateur) {
@@ -85,7 +122,7 @@ const userController = {
       }
 
       res.json({
-        utilisateur,
+        user: utilisateur,
         code: 'USER_RETRIEVED'
       });
 
@@ -112,7 +149,15 @@ const userController = {
         });
       }
 
-      const { email, password, nom, prenom, role, telephone } = req.body;
+      const { email, password, mot_de_passe, nom, prenom, role, telephone, photo_url, actif } = req.body;
+      const actualPassword = password || mot_de_passe;
+
+      if (!actualPassword) {
+        return res.status(400).json({
+          error: 'Le mot de passe est obligatoire',
+          code: 'PASSWORD_REQUIRED'
+        });
+      }
 
       // Vérifier si l'utilisateur existe déjà
       const existingUser = await Utilisateur.findOne({ where: { email } });
@@ -124,9 +169,8 @@ const userController = {
       }
 
       // Hasher le mot de passe
-      const bcrypt = require('bcryptjs');
       const saltRounds = 12;
-      const motDePasseHash = await bcrypt.hash(password, saltRounds);
+      const motDePasseHash = await bcrypt.hash(actualPassword, saltRounds);
 
       // Créer l'utilisateur
       const targetEtablissementId = resolveScopedEtablissementId(req);
@@ -145,6 +189,8 @@ const userController = {
         prenom,
         role,
         telephone,
+        photo_url,
+        actif: actif !== undefined ? actif : true,
         etablissement_id: targetEtablissementId
       });
 
@@ -161,13 +207,15 @@ const userController = {
 
       res.status(201).json({
         message: 'Utilisateur créé avec succès',
-        utilisateur: {
+        user: {
           id: utilisateur.id,
           email: utilisateur.email,
           nom: utilisateur.nom,
           prenom: utilisateur.prenom,
           role: utilisateur.role,
-          telephone: utilisateur.telephone
+          telephone: utilisateur.telephone,
+          photo_url: utilisateur.photo_url,
+          actif: utilisateur.actif
         },
         code: 'USER_CREATED'
       });
@@ -175,7 +223,7 @@ const userController = {
     } catch (error) {
       console.error('Erreur création utilisateur:', error);
       res.status(500).json({
-        error: 'Erreur lors de la création de l\'utilisateur',
+        error: `Erreur lors de la création de l\'utilisateur ${error.message}`,
         code: 'USER_CREATION_ERROR'
       });
     }
@@ -196,10 +244,15 @@ const userController = {
       }
 
       const { id } = req.params;
-      const { nom, prenom, role, telephone, actif } = req.body;
+      const { nom, prenom, role, telephone, photo_url, actif } = req.body;
+
+      const whereClause = { id };
+      if (!isAdminSystem(req.utilisateur)) {
+        whereClause.etablissement_id = req.utilisateur.etablissement_id;
+      }
 
       const utilisateur = await Utilisateur.findOne({
-        where: applyEtablissementScope(req, { id })
+        where: whereClause
       });
 
       if (!utilisateur) {
@@ -215,6 +268,7 @@ const userController = {
         prenom: utilisateur.prenom,
         role: utilisateur.role,
         telephone: utilisateur.telephone,
+        photo_url: utilisateur.photo_url,
         actif: utilisateur.actif
       };
 
@@ -223,6 +277,7 @@ const userController = {
         prenom: prenom || utilisateur.prenom,
         role: role || utilisateur.role,
         telephone: telephone || utilisateur.telephone,
+        photo_url: photo_url || utilisateur.photo_url,
         actif: actif !== undefined ? actif : utilisateur.actif
       });
 
@@ -238,6 +293,7 @@ const userController = {
           prenom: utilisateur.prenom,
           role: utilisateur.role,
           telephone: utilisateur.telephone,
+          photo_url: utilisateur.photo_url,
           actif: utilisateur.actif
         },
         adresse_ip: req.ip
@@ -245,13 +301,14 @@ const userController = {
 
       res.json({
         message: 'Utilisateur mis à jour avec succès',
-        utilisateur: {
+        user: {
           id: utilisateur.id,
           email: utilisateur.email,
           nom: utilisateur.nom,
           prenom: utilisateur.prenom,
           role: utilisateur.role,
           telephone: utilisateur.telephone,
+          photo_url: utilisateur.photo_url,
           actif: utilisateur.actif
         },
         code: 'USER_UPDATED'
@@ -281,11 +338,15 @@ const userController = {
         });
       }
 
+      const whereClause = { id };
+
+      // Pour les non-admins, restreindre à leur établissement
+      if (!isAdminSystem(req.utilisateur)) {
+        whereClause.etablissement_id = req.utilisateur.etablissement_id;
+      }
+
       const utilisateur = await Utilisateur.findOne({
-        where: { 
-          id,
-          etablissement_id: req.utilisateur.etablissement_id 
-        }
+        where: whereClause
       });
 
       if (!utilisateur) {
@@ -349,9 +410,9 @@ const userController = {
       });
 
       const activeUsers = await Utilisateur.count({
-        where: { 
+        where: {
           etablissement_id: req.utilisateur.etablissement_id,
-          actif: true 
+          actif: true
         }
       });
 

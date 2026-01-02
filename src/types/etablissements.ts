@@ -7,7 +7,8 @@ export enum TypeEtablissement {
 }
 
 export enum StatutEtablissement {
-  ACTIVE = "active",
+  ACTIF = "actif",
+  INACTIF = "inactif",
   SUSPENDU = "suspendu",
   ARCHIVE = "archive",
 }

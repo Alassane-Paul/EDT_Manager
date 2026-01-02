@@ -1,10 +1,3 @@
-export enum StatutUtilisateur {
-  ACTIVE = "active",
-  INACTIF = "inactif",
-  EN_ATTENTE = "en_attente",
-  SUSPENDU = "suspendu",
-}
-
 export enum RoleUtilisateur {
   ADMIN = "admin",
   DIRECTEUR = "directeur",
@@ -22,15 +15,20 @@ export interface User {
   telephone?: string;
   photo_url?: string;
   role: RoleUtilisateur;
-  statut: StatutUtilisateur;
+  actif: boolean;
   etablissement_id?: string;
-  deux_fa_active?: boolean;
+  date_derniere_connexion?: string;
   created_at?: string;
   updated_at?: string;
   etablissement?: {
     id: string;
     nom: string;
+    type?: string;
   };
+  enseignant?: any;
+  eleve?: any;
+  directeur?: any;
+  responsablePedagogique?: any;
 }
 
 export interface UserFormData {
@@ -39,23 +37,23 @@ export interface UserFormData {
   prenom: string;
   telephone?: string;
   role: RoleUtilisateur;
-  statut?: StatutUtilisateur;
+  actif?: boolean;
   etablissement_id?: string;
   mot_de_passe?: string;
+  photo_url?: string;
 }
 
 export interface UserFilters {
   page?: number;
   limit?: number;
   role?: RoleUtilisateur;
-  statut?: StatutUtilisateur;
+  actif?: boolean;
   search?: string;
 }
 
 export interface UserStats {
   total: number;
   par_role: Record<RoleUtilisateur, number>;
-  par_statut: Record<StatutUtilisateur, number>;
   actifs: number;
   inactifs: number;
 }

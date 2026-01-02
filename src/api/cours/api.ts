@@ -13,9 +13,11 @@ export const coursApi = {
     return response.data;
   },
 
-  async getMesCours(): Promise<Cours[]> {
-    const response = await axiosInstance.get("/cours/mes-cours");
-    return response.data;
+  async getMesCours(enseignantId?: string): Promise<Cours[]> {
+    const response = await axiosInstance.get("/cours/me", {
+      params: { enseignantId }
+    });
+    return response.data.cours;
   },
 
   async create(data: Partial<Cours>): Promise<Cours> {

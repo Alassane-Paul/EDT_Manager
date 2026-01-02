@@ -4,7 +4,7 @@ import axiosInstance from "../axios_instance";
 
 export const usersApi = {
   async getAll(filters?: UserFilters): Promise<{
-    users: User[];
+    utilisateurs: User[];
     pagination: {
       page: number;
       limit: number;

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi, setAuthToken, clearAuthToken,  } from '@/api/auth/api';
+import { authApi, setAuthToken, clearAuthToken, } from '@/api/auth/api';
 import { ApiUser } from '@/types/auth';
 
-// Types pour les rôles - alignés avec ton API
+// Types pour les rôles - alignés avec l'API
 export type UserRole = 'admin' | 'directeur' | 'responsable_pedagogique' | 'enseignant' | 'etudiant' | 'personnel';
 
 export interface User {
@@ -13,7 +13,10 @@ export interface User {
   role: UserRole;
   status: string;
   establishmentId?: string;
+  establishmentCode?: string;
   twoFactorEnabled?: boolean;
+  photo_url?: string;
+  telephone?: string;
 }
 
 interface AuthContextType {
@@ -24,7 +27,7 @@ interface AuthContextType {
   setup2FAData: { qrCode: string; secret: string } | null;
   login: (email: string, password: string) => Promise<{ success: boolean; requires2FA?: boolean }>;
   verify2FA: (code: string) => Promise<boolean>;
-  signup: (email: string, password: string, firstName: string, lastName: string, role: UserRole, accessCode?: string) => Promise<{ success: boolean; requires2FASetup?: boolean; setup2FAData?: { qrCode: string; secret: string } }>;
+  signup: (email: string, password: string, firstName: string, lastName: string, role: UserRole, accessCode?: string, classeId?: string) => Promise<{ success: boolean; requires2FASetup?: boolean; setup2FAData?: { qrCode: string; secret: string } }>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
   clear2FASetup: () => void;
@@ -48,8 +51,11 @@ const mapApiUserToUser = (apiUser: ApiUser): User => ({
   lastName: apiUser.nom,
   role: apiUser.role as UserRole,
   status: apiUser.statut,
-  establishmentId: apiUser.etablissement_id,
+  establishmentId: apiUser.etablissement_id || apiUser.etablissement?.id,
+  establishmentCode: apiUser.etablissement?.code_acces,
   twoFactorEnabled: apiUser.deux_fa_active,
+  photo_url: apiUser.photo_url,
+  telephone: apiUser.telephone,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -65,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const initAuth = async () => {
       const token = localStorage.getItem('auth_token');
       const storedUser = localStorage.getItem('user');
-      
+
       if (token && storedUser) {
         try {
           // Valider le token en récupérant le profil
@@ -80,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setUser(null);
         }
       }
-      
+
       setIsLoading(false);
     };
 
@@ -94,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password: password,
       });
       console.log('Login response:', response);
-      
+
       // Si 2FA est requis
       if (response.requires2FA) {
         setRequires2FA(true);
@@ -156,7 +162,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     firstName: string,
     lastName: string,
     role: UserRole,
-    accessCode?: string
+    accessCode?: string,
+    classeId?: string
   ): Promise<{ success: boolean; requires2FASetup?: boolean; setup2FAData?: { qrCode: string; secret: string } }> => {
     try {
       const response = await authApi.register({
@@ -166,6 +173,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         nom: lastName,
         role,
         code_acces_etablissement: accessCode,
+        classe_id: classeId,
       });
 
       if (response.token && response.utilisateur) {
@@ -173,7 +181,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const mappedUser = mapApiUserToUser(response.utilisateur);
         setUser(mappedUser);
         localStorage.setItem('user', JSON.stringify(mappedUser));
-        
+
         // Si 2FA setup est requis, retourner les données
         if (response.utilisateur.deux_fa_setup_required && response.utilisateur.qr_code_url && response.utilisateur.secret) {
           setRequires2FASetup(true);
@@ -184,7 +192,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setSetup2FAData(setupData);
           return { success: true, requires2FASetup: true, setup2FAData: setupData };
         }
-        
+
         return { success: true };
       }
 

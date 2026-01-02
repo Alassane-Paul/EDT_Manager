@@ -177,15 +177,16 @@ Cette application est destinée à :
 | Fonctionnalité | Description | Acteurs |
 |----------------|-------------|---------|
 | Authentification | Connexion sécurisée avec email/mot de passe et support 2FA | Tous |
-| Gestion des utilisateurs | CRUD complet sur les utilisateurs et attribution des rôles | Admin, Directeur |
+| Inscription Spécialisée| Enregistrement par rôle (Directeur, Enseignant, Étudiant) via code d'accès établissement | Tous |
+| Gestion des utilisateurs | CRUD complet et fiche détaillée (User Details) avec métadonnées par rôle | Admin, Directeur |
 | Gestion des établissements | Configuration des établissements, classes, salles, matières | Admin, Directeur |
 | Gestion des emplois du temps | Création, modification, suppression des séances | Admin, Directeur, Resp. Péda. |
-| Consultation EDT | Affichage personnalisé de l'emploi du temps | Tous |
-| Génération automatique | Algorithme de génération optimisée des plannings | Admin, Directeur |
-| Gestion des salles | Disponibilité et réservation des salles | Admin, Directeur, Resp. Péda. |
+| Navigation par Rôle | Sidebar réorganisée en "Espaces" (Étudiant, Enseignant, Pédagogie, Admin) | Tous |
+| Consultation EDT | Affichage dynamique (React Query) et filtrage par semaine/classe | Tous |
+| Dashboard Dynamique | Statistiques personnalisées (Cours du jour, Absences, Effectifs) | Tous |
 | Notifications | Alertes en temps réel (changements, annulations, rattrapages) | Tous |
 | Export PDF | Génération de documents PDF des emplois du temps | Tous |
-| Déclaration d'absences | Signalement des absences par les enseignants | Enseignants |
+| Déclaration d'absences | Signalement des absences et suivi pour les étudiants | Enseignants, Étudiants |
 | Gestion des rattrapages | Planification des cours de rattrapage | Admin, Directeur, Resp. Péda. |
 
 **Tableau 2: Hiérarchie des rôles**
@@ -335,9 +336,10 @@ Nous avons suivi une approche **Agile Scrum** simplifiée :
 - **Lot 4** : Notifications et finitions.
 
 ### 2. Implémentation de la solution
-- **Couche Données** : Implémentée avec **Sequelize** (ORM). Les modèles `Utilisateur`, `Cours`, `Salle` sont synchronisés avec MySQL.
-- **Couche Métier (API)** : Structurée en Contrôleurs (logique), Services (traitement) et Routes. Utilisation de Middlewares pour l'auth.
-- **Couche Présentation** : Structure modulaire avec composants React (`/components`), pages (`/pages`) et gestion d'état (`Context API` + `TanStack Query`).
+- **Couche Données** : Implémentée avec **Sequelize** (ORM). Utilisation de modèles spécialisés (`Eleve`, `Enseignant`, `Directeur`, `ResponsablePedagogique`) liés à la table `Utilisateur` (Héritage/Composition).
+- **Couche Métier (API)** : Structurée en Contrôleurs (logique), Middlewares (Auth, Scope par établissement) et Routes. Intégration de la logique de création automatique de profils lors de l'inscription.
+- **Couche Présentation** : Structure modulaire avec composants React. Gestion performante des états serveurs via **TanStack Query** (React Query) pour le cache et la synchronisation en temps réel.
+- **UX Role-Based** : Système de navigation adaptatif basé sur la hiérarchie des rôles, isolant les fonctionnalités d'administration de l'espace étudiant.
 
 ### 3. Sécurité et contraintes techniques
 La sécurité a été une priorité :
@@ -355,7 +357,10 @@ Page vitrine présentant l'application.
 Formulaire sécurisé avec gestion des erreurs et lien d'inscription.
 
 **Figure 6: Interface - Tableau de bord**
-Interface principale affichant les widgets, les prochains cours et les notifications.
+Interface principale affichant les widgets, les prochains cours et les notifications. Le dashboard est contextuel (ex: stats d'absences pour les étudiants, effectifs pour les directeurs).
+
+**Figure 7: Interface - Détails de l'utilisateur**
+Fiche profil complète affichant les informations générales et les métadonnées spécifiques au rôle (ex: heures contractuelles pour un enseignant).
 
 ---
 

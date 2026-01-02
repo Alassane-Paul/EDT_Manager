@@ -99,7 +99,7 @@ const Etablissement = sequelize.define('Etablissement', {
   statut: {
     type: DataTypes.ENUM(...Object.values(StatutEtablissement)),
     allowNull: false,
-    defaultValue: StatutEtablissement.ACTIVE,
+    defaultValue: StatutEtablissement.ACTIF,
     validate: {
       isIn: [Object.values(StatutEtablissement)]
     }

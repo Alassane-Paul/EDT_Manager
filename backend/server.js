@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -17,7 +18,7 @@ app.use(cors({
   origin: 'http://localhost:1102',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-etablissement-code', 'x-etablissement-access-code']
 }));
 
 // Limitation de requêtes
@@ -50,8 +51,12 @@ const coursRoutes = require('./routes/cours');
 const emploiTempsRoutes = require('./routes/emplois-temps');
 const rattrapageRoutes = require('./routes/rattrapages');
 const absenceRoutes = require('./routes/absences');
+const teacherAbsenceRoutes = require('./routes/teacherAbsences');
 const statistiqueRoutes = require('./routes/statistiques');
 const notificationRoutes = require('./routes/notifications');
+const eleveRoutes = require('./routes/eleves');
+const directeurRoutes = require('./routes/directeurs');
+const rpRoutes = require('./routes/responsables');
 
 const { logAccess } = require('./middleware/auth');
 
@@ -60,6 +65,9 @@ app.use((req, res, next) => {
   // on logge tout ; action générique "global"
   return logAccess('global')(req, res, next);
 });
+
+// Servir les fichiers statiques (uploads)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes API
 app.use('/api/auth', authRoutes);
@@ -73,8 +81,12 @@ app.use('/api/cours', coursRoutes);
 app.use('/api/emplois-temps', emploiTempsRoutes);
 app.use('/api/rattrapages', rattrapageRoutes);
 app.use('/api/absences', absenceRoutes);
+app.use('/api/teacher/absences', teacherAbsenceRoutes);
 app.use('/api/statistiques', statistiqueRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/eleves', eleveRoutes);
+app.use('/api/directeurs', directeurRoutes);
+app.use('/api/responsables-pedagogiques', rpRoutes);
 
 // Routes système
 app.get('/api/health', (req, res) => {
@@ -161,8 +173,8 @@ app.use((error, req, res, next) => {
 
   // Erreur par défaut
   const status = error.status || 500;
-  const message = process.env.NODE_ENV === 'production' 
-    ? 'Erreur interne du serveur' 
+  const message = process.env.NODE_ENV === 'production'
+    ? 'Erreur interne du serveur'
     : error.message;
 
   res.status(status).json({
@@ -181,13 +193,45 @@ const startServer = async () => {
     // Test de la connexion à la base de données
     const { testConnection } = require('./config/database');
     await testConnection();
-    
+
+    // Configuration Socket.io
+    const http = require('http');
+    const { Server } = require("socket.io");
+    const server = http.createServer(app);
+    const io = new Server(server, {
+      cors: {
+        origin: 'http://localhost:1102',
+        methods: ["GET", "POST"],
+        allowedHeaders: ["my-custom-header"],
+        credentials: true
+      }
+    });
+
+    // Middleware pour rendre io accessible dans les routes
+    app.use((req, res, next) => {
+      req.io = io;
+      next();
+    });
+
+    io.on('connection', (socket) => {
+      console.log(`User connected: ${socket.id}`);
+
+      socket.on('join_room', (data) => {
+        socket.join(data);
+        console.log(`User with ID: ${socket.id} joined room: ${data}`);
+      });
+
+      socket.on('disconnect', () => {
+        console.log("User Disconnected", socket.id);
+      });
+    });
+
     // Synchronisation des modèles
     const { sequelize } = require('./config/database');
     await sequelize.sync({ force: false });
     console.log('✅ Base de données synchronisée');
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log('🚀 Serveur EDT Generator démarré avec succès!');
       console.log(`📍 Port: ${PORT}`);
       console.log(`🌍 Environnement: ${process.env.NODE_ENV || 'development'}`);

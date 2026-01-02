@@ -20,8 +20,8 @@ const Index = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary-light rounded-3xl flex items-center justify-center shadow-xl">
-              <GraduationCap className="w-10 h-10 text-primary-foreground" />
+            <div className="w-24 h-24 overflow-hidden flex items-center justify-center">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">

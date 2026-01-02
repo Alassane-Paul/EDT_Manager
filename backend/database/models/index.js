@@ -15,84 +15,157 @@ const Absence = require('./Absence');
 const Disponibilite = require('./Disponibilite');
 const Contrainte = require('./Contrainte');
 const Notification = require('./Notification');
+const Eleve = require('./Eleve');
+const Directeur = require('./Directeur');
+const ResponsablePedagogique = require('./ResponsablePedagogique');
 const { LogConnexion, LogModification } = require('./Log');
 const { Sequelize } = require('sequelize');
 
 // Définition des associations
 
 // Utilisateur - Etablissement
-Utilisateur.belongsTo(Etablissement, { 
-  foreignKey: 'etablissement_id', 
-  as: 'etablissement' 
+Utilisateur.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
 });
-Etablissement.hasMany(Utilisateur, { 
-  foreignKey: 'etablissement_id', 
-  as: 'utilisateurs' 
+Etablissement.hasMany(Utilisateur, {
+  foreignKey: 'etablissement_id',
+  as: 'utilisateurs'
 });
 
 // Etablissement - Classes
-Etablissement.hasMany(Classe, { 
-  foreignKey: 'etablissement_id', 
-  as: 'classes' 
+Etablissement.hasMany(Classe, {
+  foreignKey: 'etablissement_id',
+  as: 'classes'
 });
-Classe.belongsTo(Etablissement, { 
-  foreignKey: 'etablissement_id', 
-  as: 'etablissement' 
+Classe.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
 });
 
 // Etablissement - Matières
-Etablissement.hasMany(Matiere, { 
-  foreignKey: 'etablissement_id', 
-  as: 'matieres' 
+Etablissement.hasMany(Matiere, {
+  foreignKey: 'etablissement_id',
+  as: 'matieres'
 });
-Matiere.belongsTo(Etablissement, { 
-  foreignKey: 'etablissement_id', 
-  as: 'etablissement' 
+Matiere.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
 });
 
 // Etablissement - Salles
-Etablissement.hasMany(Salle, { 
-  foreignKey: 'etablissement_id', 
-  as: 'salles' 
+Etablissement.hasMany(Salle, {
+  foreignKey: 'etablissement_id',
+  as: 'salles'
 });
-Salle.belongsTo(Etablissement, { 
-  foreignKey: 'etablissement_id', 
-  as: 'etablissement' 
+Salle.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
 });
 
 // Enseignant - Utilisateur
-Enseignant.belongsTo(Utilisateur, { 
-  foreignKey: 'utilisateur_id', 
-  as: 'utilisateur' 
+Enseignant.belongsTo(Utilisateur, {
+  foreignKey: 'utilisateur_id',
+  as: 'utilisateur'
 });
-Utilisateur.hasOne(Enseignant, { 
-  foreignKey: 'utilisateur_id', 
-  as: 'enseignant' 
+Utilisateur.hasOne(Enseignant, {
+  foreignKey: 'utilisateur_id',
+  as: 'enseignant'
 });
 
 // Enseignant - Etablissement
-Enseignant.belongsTo(Etablissement, { 
-  foreignKey: 'etablissement_id', 
-  as: 'etablissement' 
+Enseignant.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
 });
-Etablissement.hasMany(Enseignant, { 
-  foreignKey: 'etablissement_id', 
-  as: 'enseignants' 
+Etablissement.hasMany(Enseignant, {
+  foreignKey: 'etablissement_id',
+  as: 'enseignants'
+});
+
+// Eleve - Utilisateur
+Eleve.belongsTo(Utilisateur, {
+  foreignKey: 'utilisateur_id',
+  as: 'utilisateur'
+});
+Utilisateur.hasOne(Eleve, {
+  foreignKey: 'utilisateur_id',
+  as: 'eleve'
+});
+
+// Eleve - Etablissement
+Eleve.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
+});
+Etablissement.hasMany(Eleve, {
+  foreignKey: 'etablissement_id',
+  as: 'eleves'
+});
+
+// Directeur - Utilisateur
+Directeur.belongsTo(Utilisateur, {
+  foreignKey: 'utilisateur_id',
+  as: 'utilisateur'
+});
+Utilisateur.hasOne(Directeur, {
+  foreignKey: 'utilisateur_id',
+  as: 'directeur'
+});
+
+// Directeur - Etablissement
+Directeur.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
+});
+Etablissement.hasMany(Directeur, {
+  foreignKey: 'etablissement_id',
+  as: 'directeurs'
+});
+
+// ResponsablePedagogique - Utilisateur
+ResponsablePedagogique.belongsTo(Utilisateur, {
+  foreignKey: 'utilisateur_id',
+  as: 'utilisateur'
+});
+Utilisateur.hasOne(ResponsablePedagogique, {
+  foreignKey: 'utilisateur_id',
+  as: 'responsablePedagogique'
+});
+
+// ResponsablePedagogique - Etablissement
+ResponsablePedagogique.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
+});
+Etablissement.hasMany(ResponsablePedagogique, {
+  foreignKey: 'etablissement_id',
+  as: 'responsablesPedagogiques'
+});
+
+// Eleve - Classe
+Eleve.belongsTo(Classe, {
+  foreignKey: 'classe_id',
+  as: 'classe'
+});
+Classe.hasMany(Eleve, {
+  foreignKey: 'classe_id',
+  as: 'eleves'
 });
 
 // Enseignant - Matières (Many-to-Many)
-const EnseignantMatiere = sequelize.define('EnseignantMatiere', {}, { 
+const EnseignantMatiere = sequelize.define('EnseignantMatiere', {}, {
   tableName: 'enseignants_matieres',
-  timestamps: false 
+  timestamps: false
 });
 
-Enseignant.belongsToMany(Matiere, { 
+Enseignant.belongsToMany(Matiere, {
   through: EnseignantMatiere,
   foreignKey: 'enseignant_id',
   otherKey: 'matiere_id',
   as: 'matieres'
 });
-Matiere.belongsToMany(Enseignant, { 
+Matiere.belongsToMany(Enseignant, {
   through: EnseignantMatiere,
   foreignKey: 'matiere_id',
   otherKey: 'enseignant_id',
@@ -100,184 +173,193 @@ Matiere.belongsToMany(Enseignant, {
 });
 
 // Cours
-Cours.belongsTo(Classe, { 
-  foreignKey: 'classe_id', 
-  as: 'classe' 
+Cours.belongsTo(Classe, {
+  foreignKey: 'classe_id',
+  as: 'classe'
 });
-Classe.hasMany(Cours, { 
-  foreignKey: 'classe_id', 
-  as: 'cours' 
-});
-
-Cours.belongsTo(Matiere, { 
-  foreignKey: 'matiere_id', 
-  as: 'matiere' 
-});
-Matiere.hasMany(Cours, { 
-  foreignKey: 'matiere_id', 
-  as: 'cours' 
+Classe.hasMany(Cours, {
+  foreignKey: 'classe_id',
+  as: 'cours'
 });
 
-Cours.belongsTo(Enseignant, { 
-  foreignKey: 'enseignant_id', 
-  as: 'enseignant' 
+Cours.belongsTo(Matiere, {
+  foreignKey: 'matiere_id',
+  as: 'matiere'
 });
-Enseignant.hasMany(Cours, { 
-  foreignKey: 'enseignant_id', 
-  as: 'cours' 
+Matiere.hasMany(Cours, {
+  foreignKey: 'matiere_id',
+  as: 'cours'
 });
 
-Cours.belongsTo(Salle, { 
-  foreignKey: 'salle_id', 
-  as: 'salle' 
+Cours.belongsTo(Enseignant, {
+  foreignKey: 'enseignant_id',
+  as: 'enseignant'
 });
-Salle.hasMany(Cours, { 
-  foreignKey: 'salle_id', 
-  as: 'cours' 
+Enseignant.hasMany(Cours, {
+  foreignKey: 'enseignant_id',
+  as: 'cours'
+});
+
+Cours.belongsTo(Salle, {
+  foreignKey: 'salle_id',
+  as: 'salle'
+});
+Salle.hasMany(Cours, {
+  foreignKey: 'salle_id',
+  as: 'cours'
 });
 
 // EmploiTemps
-EmploiTemps.belongsTo(Classe, { 
-  foreignKey: 'classe_id', 
-  as: 'classe' 
+EmploiTemps.belongsTo(Classe, {
+  foreignKey: 'classe_id',
+  as: 'classe'
 });
-Classe.hasMany(EmploiTemps, { 
-  foreignKey: 'classe_id', 
-  as: 'emplois_temps' 
-});
-
-EmploiTemps.belongsTo(Etablissement, { 
-  foreignKey: 'etablissement_id', 
-  as: 'etablissement' 
-});
-Etablissement.hasMany(EmploiTemps, { 
-  foreignKey: 'etablissement_id', 
-  as: 'emplois_temps' 
+Classe.hasMany(EmploiTemps, {
+  foreignKey: 'classe_id',
+  as: 'emplois_temps'
 });
 
-EmploiTemps.belongsTo(Utilisateur, { 
-  foreignKey: 'generateur_id', 
-  as: 'generateur' 
+EmploiTemps.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
 });
-Utilisateur.hasMany(EmploiTemps, { 
-  foreignKey: 'generateur_id', 
-  as: 'emplois_temps_generes' 
+Etablissement.hasMany(EmploiTemps, {
+  foreignKey: 'etablissement_id',
+  as: 'emplois_temps'
+});
+
+EmploiTemps.belongsTo(Utilisateur, {
+  foreignKey: 'generateur_id',
+  as: 'generateur'
+});
+Utilisateur.hasMany(EmploiTemps, {
+  foreignKey: 'generateur_id',
+  as: 'emplois_temps_generes'
 });
 
 // CreneauCours
-CreneauCours.belongsTo(EmploiTemps, { 
-  foreignKey: 'emploi_temps_id', 
-  as: 'emploi_temps' 
+CreneauCours.belongsTo(EmploiTemps, {
+  foreignKey: 'emploi_temps_id',
+  as: 'emploi_temps'
 });
-EmploiTemps.hasMany(CreneauCours, { 
-  foreignKey: 'emploi_temps_id', 
-  as: 'creneaux' 
-});
-
-CreneauCours.belongsTo(Cours, { 
-  foreignKey: 'cours_id', 
-  as: 'cours' 
-});
-Cours.hasMany(CreneauCours, { 
-  foreignKey: 'cours_id', 
-  as: 'creneaux' 
+EmploiTemps.hasMany(CreneauCours, {
+  foreignKey: 'emploi_temps_id',
+  as: 'creneaux'
 });
 
-CreneauCours.belongsTo(Salle, { 
-  foreignKey: 'salle_id', 
-  as: 'salle' 
+CreneauCours.belongsTo(Cours, {
+  foreignKey: 'cours_id',
+  as: 'cours'
 });
-Salle.hasMany(CreneauCours, { 
-  foreignKey: 'salle_id', 
-  as: 'creneaux' 
+Cours.hasMany(CreneauCours, {
+  foreignKey: 'cours_id',
+  as: 'creneaux'
+});
+
+CreneauCours.belongsTo(Salle, {
+  foreignKey: 'salle_id',
+  as: 'salle'
+});
+Salle.hasMany(CreneauCours, {
+  foreignKey: 'salle_id',
+  as: 'creneaux'
 });
 
 // Rattrapage
-Rattrapage.belongsTo(Cours, { 
-  foreignKey: 'cours_id', 
-  as: 'cours' 
+Rattrapage.belongsTo(Cours, {
+  foreignKey: 'cours_id',
+  as: 'cours'
 });
-Cours.hasMany(Rattrapage, { 
-  foreignKey: 'cours_id', 
-  as: 'rattrapages' 
+Cours.hasMany(Rattrapage, {
+  foreignKey: 'cours_id',
+  as: 'rattrapages'
 });
 
-Rattrapage.belongsTo(CreneauCours, { 
-  foreignKey: 'creneau_planifie_id', 
-  as: 'creneau_planifie' 
+Rattrapage.belongsTo(CreneauCours, {
+  foreignKey: 'creneau_planifie_id',
+  as: 'creneau_planifie'
 });
-CreneauCours.hasOne(Rattrapage, { 
-  foreignKey: 'creneau_planifie_id', 
-  as: 'rattrapage' 
+CreneauCours.hasOne(Rattrapage, {
+  foreignKey: 'creneau_planifie_id',
+  as: 'rattrapage'
 });
 
 // Absence
-Absence.belongsTo(Enseignant, { 
-  foreignKey: 'enseignant_id', 
-  as: 'enseignant' 
+Absence.belongsTo(Enseignant, {
+  foreignKey: 'enseignant_id',
+  as: 'enseignant'
 });
-Enseignant.hasMany(Absence, { 
-  foreignKey: 'enseignant_id', 
-  as: 'absences' 
+Enseignant.hasMany(Absence, {
+  foreignKey: 'enseignant_id',
+  as: 'absences'
 });
 
-Absence.belongsTo(Cours, { 
-  foreignKey: 'cours_id', 
-  as: 'cours' 
+Absence.belongsTo(Cours, {
+  foreignKey: 'cours_id',
+  as: 'cours'
 });
-Cours.hasMany(Absence, { 
-  foreignKey: 'cours_id', 
-  as: 'absences' 
+Cours.hasMany(Absence, {
+  foreignKey: 'cours_id',
+  as: 'absences'
+});
+
+Absence.belongsTo(Eleve, {
+  foreignKey: 'eleve_id',
+  as: 'eleve'
+});
+Eleve.hasMany(Absence, {
+  foreignKey: 'eleve_id',
+  as: 'absences'
 });
 
 // Disponibilite
-Disponibilite.belongsTo(Enseignant, { 
-  foreignKey: 'enseignant_id', 
-  as: 'enseignant' 
+Disponibilite.belongsTo(Enseignant, {
+  foreignKey: 'enseignant_id',
+  as: 'enseignant'
 });
-Enseignant.hasMany(Disponibilite, { 
-  foreignKey: 'enseignant_id', 
-  as: 'disponibilites' 
+Enseignant.hasMany(Disponibilite, {
+  foreignKey: 'enseignant_id',
+  as: 'disponibilites'
 });
 
 // Notification
-Notification.belongsTo(Utilisateur, { 
-  foreignKey: 'utilisateur_id', 
-  as: 'utilisateur' 
+Notification.belongsTo(Utilisateur, {
+  foreignKey: 'utilisateur_id',
+  as: 'utilisateur'
 });
-Utilisateur.hasMany(Notification, { 
-  foreignKey: 'utilisateur_id', 
-  as: 'notifications' 
+Utilisateur.hasMany(Notification, {
+  foreignKey: 'utilisateur_id',
+  as: 'notifications'
 });
 
 // Contrainte
-Contrainte.belongsTo(Etablissement, { 
-  foreignKey: 'etablissement_id', 
-  as: 'etablissement' 
+Contrainte.belongsTo(Etablissement, {
+  foreignKey: 'etablissement_id',
+  as: 'etablissement'
 });
-Etablissement.hasMany(Contrainte, { 
-  foreignKey: 'etablissement_id', 
-  as: 'contraintes' 
+Etablissement.hasMany(Contrainte, {
+  foreignKey: 'etablissement_id',
+  as: 'contraintes'
 });
 
 // LogConnexion
-LogConnexion.belongsTo(Utilisateur, { 
-  foreignKey: 'utilisateur_id', 
-  as: 'utilisateur' 
+LogConnexion.belongsTo(Utilisateur, {
+  foreignKey: 'utilisateur_id',
+  as: 'utilisateur'
 });
-Utilisateur.hasMany(LogConnexion, { 
-  foreignKey: 'utilisateur_id', 
-  as: 'logs_connexion' 
+Utilisateur.hasMany(LogConnexion, {
+  foreignKey: 'utilisateur_id',
+  as: 'logs_connexion'
 });
 
 // LogModification
-LogModification.belongsTo(Utilisateur, { 
-  foreignKey: 'utilisateur_id', 
-  as: 'utilisateur' 
+LogModification.belongsTo(Utilisateur, {
+  foreignKey: 'utilisateur_id',
+  as: 'utilisateur'
 });
-Utilisateur.hasMany(LogModification, { 
-  foreignKey: 'utilisateur_id', 
-  as: 'logs_modification' 
+Utilisateur.hasMany(LogModification, {
+  foreignKey: 'utilisateur_id',
+  as: 'logs_modification'
 });
 
 module.exports = {
@@ -298,5 +380,8 @@ module.exports = {
   Notification,
   LogConnexion,
   LogModification,
-  EnseignantMatiere
+  EnseignantMatiere,
+  Eleve,
+  Directeur,
+  ResponsablePedagogique
 };

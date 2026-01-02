@@ -47,7 +47,10 @@ export const authApi = {
 
     return response.data;
   },
-
+  async getEtablissementPublicInfo(accessCode: string): Promise<{ etablissement: any; classes: any[] }> {
+    const response = await axiosInstance.get(`/auth/etablissement-public-info/${accessCode}`);
+    return response.data;
+  },
   async verify2FA(data: Verify2FARequest): Promise<LoginResponse> {
     const response = await axiosInstance.post(`/auth/verify-2fa`, data);
 
@@ -118,6 +121,19 @@ export const authApi = {
     if (response.data.token) {
       setAuthToken(response.data.token);
     }
+  },
+
+  async uploadAvatar(data: FormData): Promise<{ message: string; photo_url: string }> {
+    const response = await axiosInstance.post(`/auth/avatar`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (!response.status.toString().startsWith('2')) {
+      await handleApiError(response.data);
+    }
+    return response.data;
   },
 };
 

@@ -25,7 +25,8 @@ module.exports = {
     INSTITUT: "institut"
   },
   StatutEtablissement: {
-    ACTIVE: "active",
+    ACTIF: "actif",
+    INACTIF: "inactif",
     SUSPENDU: "suspendu",
     ARCHIVE: "archive",
   },
@@ -62,6 +63,12 @@ module.exports = {
     VALIDE: "valide",
     PUBLIE: "publie",
     ARCHIVE: "archive"
+  },
+
+  StatutCreneau: {
+    PLANIFIE: "planifie",
+    CONFIRME: "confirme",
+    ANNULE: "annule"
   },
 
   StatutRattrapage: {

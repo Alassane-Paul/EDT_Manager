@@ -28,25 +28,39 @@ const getSubjectColor = (matiere: string) => {
 const EmploiTempsEtudiant = () => {
   const { user } = useAuth();
   const [selectedWeek, setSelectedWeek] = useState(0);
-  
+
+  // Helper to get ISO week number
+  const getISOWeek = (date: Date) => {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  };
+
   const getWeekString = (offset: number) => {
     const today = new Date();
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - today.getDay() + 1 + (offset * 7));
-    return monday.toISOString().split('T')[0];
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + (offset * 7));
+
+    const year = targetDate.getFullYear();
+    const week = getISOWeek(targetDate);
+
+    // Format: YYYY-Www (e.g., 2024-W51)
+    return `${year}-W${week.toString().padStart(2, '0')}`;
   };
 
   const { emploiTemps, isLoading, error } = useMonEmploiTemps(getWeekString(selectedWeek));
   const { exportPDF, isExporting } = useExportEmploiTemps();
-  
+
   const getWeekDates = (offset: number) => {
     const today = new Date();
     const monday = new Date(today);
     monday.setDate(today.getDate() - today.getDay() + 1 + (offset * 7));
-    
+
     const friday = new Date(monday);
     friday.setDate(monday.getDate() + 4);
-    
+
     return {
       start: monday.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
       end: friday.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }),
@@ -54,7 +68,7 @@ const EmploiTempsEtudiant = () => {
   };
 
   const weekDates = getWeekDates(selectedWeek);
-  
+
   const { seances = [], statistiques } = emploiTemps || {};
 
   return (
@@ -65,10 +79,10 @@ const EmploiTempsEtudiant = () => {
           <div>
             <h2 className="text-2xl font-bold text-foreground">Mon Emploi du Temps</h2>
             <p className="text-muted-foreground">
-              Classe: <span className="font-medium">L3 Informatique - Groupe A</span>
+              Classe: <span className="font-medium">{emploiTemps?.classe?.nom_classe || "Non assignée"}</span>
             </p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" onClick={() => setSelectedWeek(prev => prev - 1)}>
               <ChevronLeft className="h-4 w-4" />
@@ -80,8 +94,8 @@ const EmploiTempsEtudiant = () => {
             <Button variant="outline" size="icon" onClick={() => setSelectedWeek(prev => prev + 1)}>
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="ml-2"
               onClick={() => exportPDF({ semaine: getWeekString(selectedWeek) })}
               disabled={isExporting}

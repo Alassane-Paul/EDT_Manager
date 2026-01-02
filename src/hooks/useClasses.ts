@@ -95,3 +95,36 @@ export function useActivateClasse() {
   });
 }
 
+export function useClassesActions() {
+  const queryClient = useQueryClient();
+
+  const assignStudent = useMutation({
+    mutationFn: ({ classeId, data }: { classeId: string, data: { utilisateur_id: string, matricule?: string } }) =>
+      classesApi.assignStudent(classeId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["classe", variables.classeId] }); // Invalidate details used by useClasse
+      toast.success("Étudiant assigné avec succès");
+    },
+    onError: () => {
+      toast.error("Erreur lors de l'assignation");
+    }
+  });
+
+  const removeStudent = useMutation({
+    mutationFn: ({ classeId, studentId }: { classeId: string, studentId: string }) =>
+      classesApi.removeStudent(classeId, studentId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["classe", variables.classeId] });
+      toast.success("Étudiant retiré avec succès");
+    },
+    onError: () => {
+      toast.error("Erreur lors du retrait");
+    }
+  });
+
+  return {
+    assignStudent,
+    removeStudent
+  };
+}
+

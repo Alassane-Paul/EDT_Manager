@@ -11,6 +11,7 @@ export interface RegisterRequest {
     nom: string;
     role?: string;
     code_acces_etablissement?: string;
+    classe_id?: string;
 }
 
 export interface LoginResponse {
@@ -32,9 +33,19 @@ export interface ApiUser {
     role: string;
     statut: string;
     etablissement_id?: string;
+    etablissement?: {
+        id: string;
+        nom: string;
+        type: string;
+        ville?: string;
+        statut: string;
+        code_acces?: string;
+    };
     deux_fa_active?: boolean;
     requires2FA?: boolean;
     deux_fa_setup_required?: boolean;
     qr_code_url?: string;
     secret?: string;
+    photo_url?: string;
+    telephone?: string;
 }

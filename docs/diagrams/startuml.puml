@@ -1,0 +1,268 @@
+@startuml
+
+!define ENTITY class
+!define ENUM enum
+
+ENTITY Utilisateur {
+  - id: string
+  - email: string
+  - motDePasse: string
+  - nom: string
+  - prenom: string
+  - telephone: string
+  - photoProfil: string
+  - role: RoleUtilisateur
+  - statut: StatutUtilisateur
+  - deuxFacteurs: boolean
+  - dateCreation: Date
+  - dateModification: Date
+  - connecte: boolean
+  - preferences: PreferenceUtilisateur
+  + authentifier(motDePasse: string): boolean
+  + changerMotDePasse(ancienMotDePasse: string, nouveauMotDePasse: string): void
+  + creerMotDePasse(nom: string, nouveauMotDePasse: string): void
+  + getPermissions(): Permission[]
+}
+
+ENTITY Etablissement {
+  - id: string
+  - email: string
+  - type: TypeEtablissement
+  - nom: string
+  - telephone: string
+  - email: string
+  - siteWeb: string
+  - logo: string
+  - codeAcces: string
+  - nomResponsable: string
+  - ligneBudget: string
+  - serviceComptabilite: string
+  - dateCreation: Date
+  - statut: StatutEtablissement
+  - configuration: ConfigurationEtablissement
+  - classes: Classe[]
+  - enseignants: Enseignant[]
+  + ajouterClasse(classe: Classe): void
+  + ajouterEnseignant(enseignant: Enseignant): void
+  + ajouterSalle(salle: Salle): void
+  + ajouterMatiere(matiere: Matiere): void
+  + getStatistiques(): StatistiqueEtablissement
+}
+
+ENTITY Classe {
+  - id: string
+  - nomClasse: string
+  - niveau: string
+  - filiere: string
+  - specialite: string
+  - effectif: number
+  - delegue: string
+  - ajouterEnseignant(enseignant: Enseignant): void
+  - retirerEnseignant(enseignant: Enseignant): void
+  - estComplet(): boolean
+}
+
+ENTITY Groupe {
+  - id: string
+  - nomGroupe: string
+  - type: TypeGroupe
+  - effectif: number
+  - delegue: string
+  + ajouterEnseignant(enseignant: Enseignant): void
+  + retirerEnseignant(enseignant: Enseignant): void
+  + estComplet(): boolean
+}
+
+ENTITY Matiere {
+  - id: string
+  - nomMatiere: string
+  - codeMatiere: string
+  - enseignant: Enseignant
+  - codeCours: number
+  - codeMatiere: string
+  - typeCours: TypeCours
+  - dureeStandard: number
+  - processusApprentissageSpecial: boolean
+  - preferences: PreferenceMatiere
+  - postCours: boolean
+  - contenus: ContenuCours[]
+  + setContenusCours(contenus: Contenu[]): boolean
+  + getContenus(): Contenu[]
+}
+
+ENTITY Enseignant {
+  - id: string
+  - utilisateurId: string
+  - matieres: string[]
+  - statut: StatutEnseignant
+  - dateEmbauche: Date
+  - heuresCours: number
+  - heuresTravail: number
+  - coutHeure: number
+  - competences: string
+  - matieres: Matiere[]
+  - classes: Classe[]
+  - disponibilites: DisponibiliteEnseignant[]
+  - cours: Cours[]
+  + ajouterMatiere(matiere: Matiere): void
+  + ajouterDisponibilite(disponibilite: DisponibiliteEnseignant): void
+  + getCreneauxDisponibles(): Creneau[]
+  + getHeuresTravail(): number
+  + setStatutActif(actif: boolean): void
+  + getEmploiDuTemps(semaine: number): CreneauCours[]
+  + peutEnseigner(matiere: Matiere): boolean
+}
+
+ENTITY Salle {
+  - id: string
+  - nomSalle: string
+  - batiment: string
+  - etage: string
+  - typeSalle: TypeSalle
+  - capacite: number
+  - superficie: number
+  - equipements: Equipement[]
+  - accessibilite: boolean
+  - statut: StatutSalle
+  - reservations: CreneauCours[]
+  + setDisponibilite(creneau: Creneau): boolean
+  + peutAccueillir(classe: Classe): boolean
+  + getEquipements(): string[]
+  + getTauxOccupation(periode: Periode): number
+  + ajouterReservation(reservation: CreneauCours): void
+}
+
+ENTITY Cours {
+  - id: string
+  - nomCours: string
+  - classe: string
+  - enseignant: string
+  - salle: string
+  - volumeHoraire: number
+  - nombreSeances: number
+  - dureeSeance: number
+  - typeCours: TypeCours
+  - estObligatoire: boolean
+  - effectifMax: number
+  - couleur: string
+  - groupe: string
+  - creneaux: CreneauCours[]
+  - contenus: ContenuCours[]
+  + ajouterCreneau(creneau: CreneauCours): void
+  + verifierConformite(): boolean
+  + getProchainCreneau(): CreneauCours
+  + calculerProgression(): number
+}
+
+ENTITY CreneauCours {
+  - id: string
+  - cours: string
+  - salle: string
+  - jourSemaine: JourSemaine
+  - heureDebut: Time
+  - heureFin: Time
+  - dateDebut: Date
+  - dateFin: Date
+  - sequence: number
+  - estModifiable: boolean
+  - statut: StatutCreneau
+  - dateCreation: Date
+  - coursId: string
+  + getDuree(): number
+  + chevaucheAvec(creneau: CreneauCours): boolean
+  + annuler(raison: string): void
+  + modifier(creneau: CreneauCours): void
+}
+
+ENTITY EmploiDuTemps {
+  - id: string
+  - utilisateurId: string
+  - nomVersion: string
+  - dateDebut: Date
+  - dateFin: Date
+  - statut: StatutEmploiDuTemps
+  - scoreQualite: number
+  - dateGeneration: Date
+  - dureeGeneration: number
+  - generateur: string
+  - parametres: ParametreGeneration
+  - commentaire: string
+  - creneaux: CreneauCours[]
+  - contraintes: Contrainte[]
+  + valider(): boolean
+  + notifier(): void
+  + appliquer(): void
+  + exporter(format: FormatExport): Blob
+  + optimiser(): void
+  + comparerAvec(autre: EmploiDuTemps): Comparaison
+}
+
+ENTITY Rattrapage {
+  - id: string
+  - cours: string
+  - enseignant: string
+  - typeRattrapage: TypeRattrapage
+  - datePrevue: Date
+  - duree: number
+  - elevesConcernes: string[]
+  - statut: StatutRattrapage
+  - dateCompletion: Date
+  - commentaire: string
+  - creneauInitial: CreneauCours
+  + planifier(creneau: CreneauCours): void
+  + annuler(raison: string): void
+  + confirmer(): void
+  + notifierParticipants(): void
+  + getParticipants(): Utilisateur[]
+}
+
+ENTITY Absence {
+  - id: string
+  - enseignantId: string
+  - classeId: string
+  - dateDebut: Date
+  - dateFin: Date
+  - motif: string
+  - statut: StatutAbsence
+  - processusValidation: boolean
+  - concernes: string[]
+  - dateDeclaration: Date
+  - rattrapages: Rattrapage[]
+  + valider(): void
+  + refuser(raison: string): void
+  + creerRattrapage(): Rattrapage[]
+  + notifierConcernes(): void
+}
+
+ENTITY DisponibiliteEnseignant {
+  - id: string
+  - enseignantId: string
+  - jourSemaine: JourSemaine
+  - heureDebut: Time
+  - heureFin: Time
+  - type: TypeDisponibilite
+  - recurrence: boolean
+  - dateDebut: Date
+  - dateFin: Date
+  - motif: string
+  + estDisponible(creneau: Creneau): boolean
+  + chevaucheAvec(creneau: Creneau): boolean
+}
+
+' Relations avec multiplicités
+Utilisateur "1..*" -- "0..*" Etablissement : appartenance >
+Etablissement "1" -- "0..*" Classe
+Etablissement "1" -- "0..*" Matiere
+Etablissement "1" -- "0..*" Salle
+Enseignant "N" -- "M" Matiere : enseigne >
+Enseignant "N" -- "M" Classe : intervient dans >
+Cours "N..1" -- "1" Matiere
+Cours "N..1" -- "1" Classe
+Cours "N..1" -- "1" Enseignant
+CreneauCours "N..*" -- "1" Cours
+CreneauCours "N..*" -- "1" Salle
+EmploiDuTemps "1" -- "0..*" CreneauCours
+Rattrapage "N..1" -- "1" Cours
+Rattrapage "N..1" -- "0..1" Absence
+
+@enduml

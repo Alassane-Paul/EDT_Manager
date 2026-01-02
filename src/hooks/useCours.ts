@@ -18,10 +18,10 @@ export function useCours(filters?: CoursFilters) {
   };
 }
 
-export function useMesCours() {
+export function useMesCours(enseignantId?: string) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["mes-cours"],
-    queryFn: coursApi.getMesCours,
+    queryKey: ["mes-cours", enseignantId],
+    queryFn: () => coursApi.getMesCours(enseignantId),
   });
 
   return {

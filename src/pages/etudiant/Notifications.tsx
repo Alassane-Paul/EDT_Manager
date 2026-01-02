@@ -3,12 +3,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Bell, 
-  Calendar, 
-  AlertTriangle, 
-  CheckCircle, 
-  Info, 
+import {
+  Bell,
+  Calendar,
+  AlertTriangle,
+  CheckCircle,
+  Info,
   Clock,
   X,
   Check,
@@ -57,20 +57,20 @@ const formatDate = (dateString: string) => {
 
 const NotificationsEtudiant = () => {
   const [activeTab, setActiveTab] = useState("all");
-  const { 
-    notifications: apiNotifications, 
-    unreadCount: apiUnreadCount, 
-    isLoading, 
-    markAsRead, 
-    markAllAsRead, 
-    deleteNotification 
+  const {
+    notifications: apiNotifications,
+    unreadCount: apiUnreadCount,
+    isLoading,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification
   } = useNotifications();
 
   const notifications = apiNotifications;
   const unreadCount = apiUnreadCount;
 
   const filteredNotifications = notifications.filter((n) => {
-    if (activeTab === "unread") return !n.lu;
+    if (activeTab === "unread") return !n.lue;
     if (activeTab === "changes") return n.type === "warning" || n.type === "error";
     return true;
   });
@@ -106,7 +106,7 @@ const NotificationsEtudiant = () => {
               Restez informé des changements et mises à jour
             </p>
           </div>
-          
+
           {unreadCount > 0 && (
             <Button variant="outline" onClick={handleMarkAllAsRead}>
               <Check className="h-4 w-4 mr-2" />
@@ -141,13 +141,12 @@ const NotificationsEtudiant = () => {
               <div className="space-y-3">
                 {filteredNotifications.length > 0 ? (
                   filteredNotifications.map((notification) => (
-                    <Card 
+                    <Card
                       key={notification.id}
-                      className={`transition-all ${
-                        !notification.lu 
-                          ? "border-primary/50 bg-primary/5" 
-                          : "hover:bg-muted/50"
-                      }`}
+                      className={`transition-all ${!notification.lue
+                        ? "border-primary/50 bg-primary/5"
+                        : "hover:bg-muted/50"
+                        }`}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-start gap-4">
@@ -160,7 +159,7 @@ const NotificationsEtudiant = () => {
                                 {notification.titre}
                               </h4>
                               {getNotificationBadge(notification.type)}
-                              {!notification.lu && (
+                              {!notification.lue && (
                                 <span className="w-2 h-2 bg-primary rounded-full" />
                               )}
                             </div>
@@ -173,9 +172,9 @@ const NotificationsEtudiant = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">
-                            {!notification.lu && (
-                              <Button 
-                                variant="ghost" 
+                            {!notification.lue && (
+                              <Button
+                                variant="ghost"
                                 size="icon"
                                 onClick={() => handleMarkAsRead(notification.id)}
                                 title="Marquer comme lu"
@@ -183,8 +182,8 @@ const NotificationsEtudiant = () => {
                                 <Check className="h-4 w-4" />
                               </Button>
                             )}
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="icon"
                               onClick={() => handleDelete(notification.id)}
                               title="Supprimer"

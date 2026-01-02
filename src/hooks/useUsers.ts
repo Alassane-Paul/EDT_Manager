@@ -10,7 +10,7 @@ export function useUsers(filters?: UserFilters) {
   });
 
   return {
-    users: query.data?.users ?? [],
+    users: query.data?.utilisateurs ?? [],
     pagination: query.data?.pagination,
     isLoading: query.isLoading,
     error: query.error,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,33 @@ const Auth = () => {
   const [signupLastName, setSignupLastName] = useState("");
   const [signupRole, setSignupRole] = useState<UserRole>("enseignant");
   const [accessCode, setAccessCode] = useState("");
+  const [signupClasseId, setSignupClasseId] = useState("");
+  const [availableClasses, setAvailableClasses] = useState<any[]>([]);
+  const [isFetchingClasses, setIsFetchingClasses] = useState(false);
+
+  // Charger les classes si c'est un étudiant et que le code d'accès est présent
+  useEffect(() => {
+    const fetchClasses = async () => {
+      if (signupRole === "etudiant" && accessCode.length >= 4) {
+        setIsFetchingClasses(true);
+        try {
+          const result = await authApi.getEtablissementPublicInfo(accessCode);
+          setAvailableClasses(result.classes || []);
+        } catch (error) {
+          console.error("Erreur lors de la récupération des classes:", error);
+          setAvailableClasses([]);
+        } finally {
+          setIsFetchingClasses(false);
+        }
+      } else {
+        setAvailableClasses([]);
+        setSignupClasseId("");
+      }
+    };
+
+    const timer = setTimeout(fetchClasses, 500); // Debounce
+    return () => clearTimeout(timer);
+  }, [accessCode, signupRole]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,7 +182,8 @@ const Auth = () => {
         signupFirstName,
         signupLastName,
         signupRole,
-        accessCode || undefined
+        accessCode || undefined,
+        signupClasseId || undefined
       );
 
       console.log(result);
@@ -193,8 +221,8 @@ const Auth = () => {
       <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 flex items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-xl border-primary/20">
           <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-              <Shield className="w-8 h-8 text-primary" />
+            <div className="mx-auto w-20 h-20 overflow-hidden flex items-center justify-center">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <CardTitle className="text-2xl font-bold">Vérification 2FA</CardTitle>
             <CardDescription>
@@ -271,8 +299,8 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-xl border-primary/20">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <Calendar className="w-8 h-8 text-primary" />
+          <div className="mx-auto w-24 h-24 overflow-hidden flex items-center justify-center mb-2">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <CardTitle className="text-2xl font-bold">Edt Manager</CardTitle>
           <CardDescription>
@@ -412,7 +440,10 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="access-code">Code d'accès établissement (optionnel)</Label>
+                  <Label htmlFor="access-code">
+                    Code d'accès établissement
+                    {signupRole !== "personnel" && <span className="text-destructive ml-1">*</span>}
+                  </Label>
                   <Input
                     id="access-code"
                     type="text"
@@ -420,8 +451,43 @@ const Auth = () => {
                     value={accessCode}
                     onChange={(e) => setAccessCode(e.target.value)}
                     disabled={isLoading}
+                    required={signupRole !== "personnel"}
                   />
+                  {signupRole !== "personnel" && (
+                    <p className="text-xs text-muted-foreground">
+                      Requis pour rejoindre votre établissement
+                    </p>
+                  )}
                 </div>
+
+                {signupRole === "etudiant" && accessCode.length >= 4 && (
+                  <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <Label htmlFor="signup-classe">Classe <span className="text-destructive">*</span></Label>
+                    <Select
+                      value={signupClasseId}
+                      onValueChange={setSignupClasseId}
+                      disabled={isLoading || isFetchingClasses}
+                      required
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={isFetchingClasses ? "Chargement des classes..." : "Sélectionnez votre classe"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableClasses.length > 0 ? (
+                          availableClasses.map((classe) => (
+                            <SelectItem key={classe.id} value={classe.id}>
+                              {classe.nom_classe} ({classe.niveau})
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="none" disabled>
+                            {isFetchingClasses ? "Chargement..." : "Aucune classe trouvée pour ce code"}
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (

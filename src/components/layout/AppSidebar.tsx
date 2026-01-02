@@ -1,21 +1,24 @@
 import { useState } from "react";
-import { 
-  Calendar, 
-  BookOpen, 
-  Bell, 
-  Building2, 
-  LayoutDashboard, 
-  Users, 
-  Settings, 
+import {
+  Calendar,
+  BookOpen,
+  Bell,
+  Building2,
+  LayoutDashboard,
+  Users,
+  Settings,
   GraduationCap,
   UserCog,
   DoorOpen,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  FileText
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
+import { useNotifications } from "@/hooks/useNotifications";
+import { Badge } from "@/components/ui/badge";
 
 import {
   Sidebar,
@@ -57,52 +60,53 @@ const navigationGroups: NavGroup[] = [
     label: "Principal",
     items: [
       { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Notifications", url: "/etudiant/notifications", icon: Bell },
     ],
   },
   {
-    label: "Étudiant",
+    label: "Mon Espace Étudiant",
     roles: ["admin", "etudiant"],
     items: [
       { title: "Emploi du temps", url: "/etudiant/emploi-temps", icon: Calendar, roles: ["admin", "etudiant"] },
       { title: "Mes cours", url: "/etudiant/cours", icon: BookOpen, roles: ["admin", "etudiant"] },
-      { title: "Notifications", url: "/etudiant/notifications", icon: Bell, roles: ["admin", "etudiant"] },
+      { title: "Mes absences", url: "/etudiant/absences", icon: FileText, roles: ["admin", "etudiant"] },
     ],
   },
   {
-    label: "Personnel",
-    roles: ["admin", "personnel"],
+    label: "Mon Espace Enseignant",
+    roles: ["admin", "enseignant"],
     items: [
-      { title: "Emplois du temps", url: "/personnel/emplois-temps", icon: Calendar, roles: ["admin", "personnel"] },
-      { title: "Disponibilité salles", url: "/personnel/salles", icon: DoorOpen, roles: ["admin", "personnel"] },
+      { title: "Mon emploi du temps", url: "/enseignant/emploi-temps", icon: Calendar, roles: ["admin", "enseignant"] },
+      { title: "Mes cours", url: "/enseignant/cours", icon: BookOpen, roles: ["admin", "enseignant"] },
+      { title: "Gestion absences", url: "/enseignant/absences", icon: UserCog, roles: ["admin", "enseignant"] },
+      { title: "Mes rattrapages", url: "/enseignant/rattrapages", icon: Calendar, roles: ["admin", "enseignant"] },
     ],
   },
   {
-    label: "Enseignant",
-    roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"],
-    items: [
-      { title: "Mon emploi du temps", url: "/enseignant/emploi-temps", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
-      { title: "Mes cours", url: "/enseignant/cours", icon: BookOpen, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
-      { title: "Gestion absences", url: "/enseignant/absences", icon: UserCog, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
-    ],
-  },
-  {
-    label: "Gestion",
+    label: "Pédagogie",
     roles: ["admin", "directeur", "responsable_pedagogique"],
     items: [
-      { title: "Établissements", url: "/gestion/etablissements", icon: Building2, roles: ["admin", "directeur"] },
       { title: "Classes", url: "/gestion/classes", icon: GraduationCap, roles: ["admin", "directeur", "responsable_pedagogique"] },
       { title: "Enseignants", url: "/gestion/teachers", icon: UserCog, roles: ["admin", "directeur", "responsable_pedagogique"] },
-      { title: "Salles", url: "/gestion/salles", icon: DoorOpen, roles: ["admin", "directeur", "responsable_pedagogique"] },
       { title: "Matières", url: "/gestion/matieres", icon: BookOpen, roles: ["admin", "directeur", "responsable_pedagogique"] },
+      { title: "Emplois du temps", url: "/gestion/emplois-temps", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique"] },
       { title: "Rattrapages", url: "/gestion/rattrapages", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
     ],
   },
   {
-    label: "Administration",
-    roles: ["admin"],
+    label: "Ressources",
+    roles: ["admin", "directeur", "responsable_pedagogique", "personnel"],
     items: [
-      { title: "Utilisateurs", url: "/admin/utilisateurs", icon: Users, roles: ["admin"] },
-      { title: "Paramètres", url: "/admin/parametres", icon: Settings, roles: ["admin"] },
+      { title: "Salles", url: "/gestion/salles", icon: DoorOpen, roles: ["admin", "directeur", "responsable_pedagogique", "personnel"] },
+    ],
+  },
+  {
+    label: "Administration",
+    roles: ["admin", "directeur"],
+    items: [
+      { title: "Établissements", url: "/gestion/etablissements", icon: Building2, roles: ["admin", "directeur"] },
+      { title: "Utilisateurs", url: "/admin/utilisateurs", icon: Users, roles: ["admin", "directeur"] },
+      { title: "Paramètres", url: "/gestion/settings", icon: Settings, roles: ["admin", "directeur"] },
     ],
   },
 ];
@@ -125,10 +129,11 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
-  
+
   const hasAccess = (roles?: UserRole[]) => {
     if (!roles || !user) return true;
     return roles.includes(user.role);
@@ -148,8 +153,8 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Calendar className="h-5 w-5 text-primary-foreground" />
+          <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           {!collapsed && (
             <div className="flex flex-col">
@@ -163,7 +168,7 @@ export function AppSidebar() {
       <SidebarContent className="px-2 py-4">
         {navigationGroups.map((group) => {
           if (!hasAccess(group.roles)) return null;
-          
+
           const visibleItems = group.items.filter(item => hasAccess(item.roles));
           if (visibleItems.length === 0) return null;
 
@@ -181,14 +186,27 @@ export function AppSidebar() {
                         isActive={isActive(item.url)}
                         tooltip={collapsed ? item.title : undefined}
                       >
-                        <NavLink 
-                          to={item.url} 
-                          end 
+                        <NavLink
+                          to={item.url}
+                          end
                           className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-sidebar-accent"
                           activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                         >
-                          <item.icon className="h-4 w-4 shrink-0" />
+                          <div className="relative">
+                            <item.icon className="h-4 w-4 shrink-0" />
+                            {collapsed && item.url.includes("notifications") && unreadCount > 0 && (
+                              <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
+                              </span>
+                            )}
+                          </div>
                           {!collapsed && <span>{item.title}</span>}
+                          {!collapsed && item.url.includes("notifications") && unreadCount > 0 && (
+                            <Badge variant="destructive" className="ml-auto px-1.5 py-0 h-5 min-w-5 flex items-center justify-center text-[10px] font-bold">
+                              {unreadCount > 9 ? "9+" : unreadCount}
+                            </Badge>
+                          )}
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -200,35 +218,6 @@ export function AppSidebar() {
         })}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-4">
-        {user && (
-          <div className="flex items-center gap-3">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                {getInitials()}
-              </AvatarFallback>
-            </Avatar>
-            {!collapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">
-                  {user.firstName} {user.lastName}
-                </p>
-                <p className="text-xs text-sidebar-foreground/60 truncate">
-                  {getRoleLabel(user.role)}
-                </p>
-              </div>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleLogout}
-              className="shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -1,4 +1,4 @@
-import { EmploiTemps, EmploiTempsFilters, Seance } from "@/types/emploi-temps";
+import { EmploiTemps, EmploiTempsFilters, Seance, GenerationParams, EmploiTempsListItem } from "@/types/emploi-temps";
 import axiosInstance from "../axios_instance";
 
 
@@ -7,7 +7,7 @@ export const emploiTempsApi = {
     const response = await axiosInstance.get("/emplois-temps/me", {
       params: { semaine },
     });
-    return response.data;
+    return response.data.emploi_temps || response.data;
   },
 
   async getByClasse(classeId: string, semaine?: string): Promise<EmploiTemps> {
@@ -24,9 +24,32 @@ export const emploiTempsApi = {
     return response.data;
   },
 
-  async getAll(filters?: EmploiTempsFilters
-  ): Promise<EmploiTemps[]> {
+  async getById(id: string): Promise<EmploiTempsListItem> {
+    const response = await axiosInstance.get(`/emplois-temps/${id}`);
+    return response.data;
+  },
+
+  async getStatus(id: string): Promise<{
+    id: string;
+    statut: string;
+    is_generating: boolean;
+    is_complete: boolean;
+    score_qualite: number;
+    duree_generation: number;
+    nombre_creneaux: number;
+    commentaires?: string;
+  }> {
+    const response = await axiosInstance.get(`/emplois-temps/${id}/status`);
+    return response.data;
+  },
+
+  async getAll(filters?: EmploiTempsFilters): Promise<{ emplois_temps: EmploiTempsListItem[], pagination: any }> {
     const response = await axiosInstance.get("/emplois-temps", { params: filters });
+    return response.data;
+  },
+
+  async genererEmploiTemps(data: GenerationParams): Promise<any> {
+    const response = await axiosInstance.post("/emplois-temps/generer", data);
     return response.data;
   },
 
@@ -45,7 +68,17 @@ export const emploiTempsApi = {
   },
 
   async annulerSeance(id: string, motif: string): Promise<Seance> {
-    const response = await axiosInstance.put(`/emplois-temps/seances/${id}/annuler`, { motif });
+    const response = await axiosInstance.put(`/emplois-temps/${id}/annuler`, { motif });
+    return response.data;
+  },
+
+  async validerEmploiTemps(id: string): Promise<any> {
+    const response = await axiosInstance.post(`/emplois-temps/${id}/validate`);
+    return response.data;
+  },
+
+  async publierEmploiTemps(id: string): Promise<any> {
+    const response = await axiosInstance.post(`/emplois-temps/${id}/publish`);
     return response.data;
   },
 

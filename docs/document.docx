@@ -1,0 +1,590 @@
+
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset="utf-8">
+            <title>Exported Document</title>
+            <style>
+                body { font-family: Arial, sans-serif; }
+            </style>
+        </head>
+        <body>
+            <!-- # MINISTÈRE DE L'ÉDUCATION NATIONALE
+
+# RÉPUBLIQUE TOGOLAISE
+
+# Travail-Liberté-Patrie
+
+--- -->
+<h1 id="rapporttechniquedeprojet">RAPPORT TECHNIQUE DE PROJET</h1>
+<h1 id="envuedelaprsentationdu">EN VUE DE LA PRÉSENTATION DU</h1>
+<h1 id="systmedegestiondemploidutemps">SYSTÈME DE GESTION D'EMPLOI DU TEMPS</h1>
+<hr />
+<h2 id="thme">THÈME :</h2>
+<p><strong>Application Web de Génération et Gestion d'Emplois du Temps pour Établissements Scolaires et Universitaires</strong></p>
+<hr />
+<p><strong>FORMATION :</strong> DÉVELOPPEMENT WEB &amp; WEB MOBILE</p>
+<p><strong>Présenté et soutenu par :</strong>
+M. ALASSANE Paul</p>
+<p><strong>Superviseur :</strong>
+M. TOGBA Lazare</p>
+<p><strong>ANNÉE ACADÉMIQUE 2025-2026</strong></p>
+<hr />
+<h1 id="remerciements">REMERCIEMENTS</h1>
+<p>Je tiens à exprimer toute ma gratitude à mon superviseur et formateur, M. TOGBA Lazare, pour son soutien précieux et ses conseils éclairés tout au long de ce projet. Son accompagnement a été une source d'inspiration et de réussite.</p>
+<p>Je souhaite également remercier chaleureusement l'équipe pédagogique de l'Académie Digitale Numérique (ADN) dont l'initiative a permis à de nombreux jeunes de bénéficier d'un cadre d'apprentissage exceptionnel.</p>
+<p>Je n'oublie pas mes collègues développeurs pour leurs remarques constructives qui ont contribué à l'amélioration de ce travail.</p>
+<p>Enfin, un grand merci à ma famille pour leur soutien indéfectible tout au long de mon parcours.</p>
+<hr />
+<h1 id="rsum">RÉSUMÉ</h1>
+<p>Dans le cadre de la réalisation d'un projet pratique portant sur le développement d'une application de gestion d'emplois du temps, ce rapport présente la conception et l'implémentation d'un système complet destiné aux établissements scolaires et universitaires.</p>
+<p>Ce projet, basé sur l'utilisation de technologies modernes orientées vers JavaScript et TypeScript, a été développé avec des outils adaptés à la création d'applications web performantes : React pour le frontend et Node.js/Express pour le backend.</p>
+<p>L'objectif principal est de créer une plateforme permettant aux administrateurs, directeurs, responsables pédagogiques, enseignants et étudiants de gérer efficacement leurs emplois du temps, tout en offrant des fonctionnalités avancées telles que la génération automatique des plannings et l'authentification sécurisée avec support 2FA.</p>
+<hr />
+<h1 id="summary">SUMMARY</h1>
+<p>This report presents the design and implementation of a complete timetable management system for schools and universities. The project uses modern JavaScript/TypeScript technologies including React for the frontend and Node.js/Express for the backend.</p>
+<p>The main objective is to create a platform enabling administrators, directors, pedagogical managers, teachers, and students to efficiently manage their schedules while offering advanced features such as automatic schedule generation and secure authentication with 2FA support.</p>
+<hr />
+<h1 id="glossaire">GLOSSAIRE</h1>
+<table>
+<thead>
+<tr>
+<th>Termes</th>
+<th>Définition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API</td>
+<td>Application Programming Interface, une interface permettant à deux applications de communiquer</td>
+</tr>
+<tr>
+<td>JWT</td>
+<td>JSON Web Token, standard ouvert pour l'échange sécurisé de jetons entre plusieurs parties</td>
+</tr>
+<tr>
+<td>2FA</td>
+<td>Authentification à deux facteurs, méthode de sécurité exigeant deux formes d'identification</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td>Object-Relational Mapping, technique de programmation pour convertir les données entre systèmes incompatibles</td>
+</tr>
+<tr>
+<td>REST</td>
+<td>Representational State Transfer, style d'architecture pour les systèmes distribués</td>
+</tr>
+<tr>
+<td>SPA</td>
+<td>Single Page Application, application web chargeant une seule page HTML</td>
+</tr>
+<tr>
+<td>CORS</td>
+<td>Cross-Origin Resource Sharing, mécanisme permettant les requêtes cross-origin</td>
+</tr>
+<tr>
+<td>React</td>
+<td>Bibliothèque JavaScript pour construire des interfaces utilisateur</td>
+</tr>
+<tr>
+<td>TypeScript</td>
+<td>Langage de programmation typé basé sur JavaScript</td>
+</tr>
+<tr>
+<td>Vite</td>
+<td>Outil de build rapide pour les projets web modernes</td>
+</tr>
+<tr>
+<td>TailwindCSS</td>
+<td>Framework CSS utilitaire pour le design</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>Système de gestion de base de données relationnelle</td>
+</tr>
+<tr>
+<td>Sequelize</td>
+<td>ORM pour Node.js supportant MySQL, PostgreSQL, SQLite, etc.</td>
+</tr>
+<tr>
+<td>Express</td>
+<td>Framework web minimaliste pour Node.js</td>
+</tr>
+<tr>
+<td>Axios</td>
+<td>Client HTTP basé sur les promesses</td>
+</tr>
+<tr>
+<td>React Query</td>
+<td>Bibliothèque de gestion d'état serveur pour React</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="listedestableaux">LISTE DES TABLEAUX</h1>
+<p>Tableau 1: Liste des fonctionnalités de l’application
+Tableau 2: Hiérarchie des rôles
+Tableau 3: Matrice des permissions
+Tableau 4: Technologies Frontend
+Tableau 5: Technologies Backend</p>
+<hr />
+<h1 id="listedesfigures">LISTE DES FIGURES</h1>
+<p>Figure 1: Logo UML
+Figure 2: Architecture globale du système
+Figure 3: Diagramme de classes - Gestion
+Figure 4: Interface - Page d'accueil
+Figure 5: Interface - Page de connexion
+Figure 6: Interface - Tableau de bord
+Figure 7: Diagramme de flux authentification 2FA</p>
+<hr />
+<h1 id="sommairetabledematieres">SOMMAIRE / TABLE DE MATIERES</h1>
+<ul>
+<li><a href="#introduction">INTRODUCTION</a></li>
+<li><a href="#a-cahier-de-charges">A. CAHIER DE CHARGES</a><ul>
+<li><a href="#i-contexte-et-définition-du-projet">I. Contexte et définition du projet</a></li>
+<li><a href="#ii-objectifs">II. Objectifs</a></li>
+<li><a href="#iii-périmètre">III. Périmètre</a></li>
+<li><a href="#iv-description-fonctionnelle">IV. Description fonctionnelle</a></li>
+<li><a href="#v-enveloppe-budgétaire">V. Enveloppe budgétaire</a></li>
+<li><a href="#vi-delai-de-realisation">VI. Delai de realisation</a></li>
+<li><a href="#vii-etude-lexistant">VII. Etude l’existant</a></li></ul></li>
+<li><a href="#b-analyse-et-conception">B. ANALYSE ET CONCEPTION</a><ul>
+<li><a href="#i-présentation-de-la-méthode-danalyse---uml">I. Présentation de la méthode d’analyse - UML</a></li>
+<li><a href="#ii-outil-de-modélisation">II. Outil de modélisation</a></li>
+<li><a href="#iii-outil-de-conception">III. Outil de conception</a></li>
+<li><a href="#iv-etude-et-conception-de-la-solution">IV. Etude et conception de la solution</a></li>
+<li><a href="#v-mise-en-oeuvre-du-projet">V. Mise en oeuvre du projet</a></li></ul></li>
+<li><a href="#c-bilan-du-projet-et-perspectives-damélioration">C. BILAN DU PROJET ET PERSPECTIVES D'AMÉLIORATION</a></li>
+<li><a href="#conclusion">CONCLUSION</a></li>
+<li><a href="#bibliographie--webographie">BIBLIOGRAPHIE & WEBOGRAPHIE</a></li>
+</ul>
+<hr />
+<h1 id="introduction">INTRODUCTION</h1>
+<p>Dans un contexte éducatif où la gestion du temps et des ressources devient de plus en plus complexe, les établissements scolaires et universitaires font face à des défis majeurs pour organiser efficacement leurs emplois du temps. La multiplicité des contraintes (disponibilité des enseignants, capacité des salles, cohérence pédagogique) rend cette tâche particulièrement ardue lorsqu'elle est effectuée manuellement.</p>
+<p>Ce projet propose donc la création d'une application web complète dédiée à la gestion et la génération automatique des emplois du temps. Cette solution facilitera le travail des administrateurs et offrira à chaque acteur (directeurs, enseignants, étudiants) une vue personnalisée de son planning.</p>
+<p>Grâce à une interface intuitive et moderne, les utilisateurs pourront naviguer facilement dans leurs emplois du temps, recevoir des notifications en temps réel, et bénéficier d'une authentification sécurisée avec support de l'authentification à deux facteurs (2FA).</p>
+<p>En somme, notre plateforme vise à moderniser la gestion des emplois du temps, à réduire les erreurs de planification et à améliorer la communication au sein des établissements éducatifs.</p>
+<hr />
+<h1 id="acahierdecharges">A. CAHIER DE CHARGES</h1>
+<h2 id="icontexteetdfinitionduprojet">I. Contexte et définition du projet</h2>
+<p>Dans le secteur éducatif, la planification des emplois du temps constitue un défi organisationnel majeur. Les responsables pédagogiques doivent jongler avec de nombreuses contraintes : disponibilité des enseignants, capacité des salles, respect des volumes horaires, cohérence des parcours étudiants.</p>
+<p>Ce projet vise à développer une application web moderne permettant :</p>
+<ul>
+<li>La gestion centralisée des emplois du temps multi-établissements</li>
+<li>La génération automatique de plannings optimisés</li>
+<li>Un accès personnalisé selon le rôle de l'utilisateur</li>
+<li>Une interface responsive accessible sur tous les appareils</li>
+</ul>
+<h2 id="iiobjectifs">II. Objectifs</h2>
+<p>Le projet consiste à développer une plateforme qui :</p>
+<ul>
+<li><strong>Centralise</strong> la gestion des emplois du temps pour plusieurs établissements</li>
+<li><strong>Automatise</strong> la génération des plannings en respectant les contraintes</li>
+<li><strong>Personnalise</strong> l'affichage selon le rôle (admin, directeur, enseignant, étudiant)</li>
+<li><strong>Sécurise</strong> l'accès avec authentification JWT et support 2FA</li>
+<li><strong>Notifie</strong> les utilisateurs des changements en temps réel</li>
+<li><strong>Exporte</strong> les emplois du temps au format PDF</li>
+</ul>
+<h2 id="iiiprimtre">III. Périmètre</h2>
+<p>Cette application est destinée à :</p>
+<ul>
+<li><strong>Administrateurs système</strong> : gestion globale de la plateforme</li>
+<li><strong>Directeurs d'établissement</strong> : supervision de leur établissement</li>
+<li><strong>Responsables pédagogiques</strong> : gestion des plannings et ressources</li>
+<li><strong>Enseignants</strong> : consultation de leur emploi du temps et déclaration d'absences</li>
+<li><strong>Étudiants</strong> : consultation de leur emploi du temps et notifications</li>
+</ul>
+<h2 id="ivdescriptionfonctionnelle">IV. Description fonctionnelle</h2>
+<p><strong>Tableau 1: Liste des fonctionnalités de l’application</strong></p>
+<table>
+<thead>
+<tr>
+<th>Fonctionnalité</th>
+<th>Description</th>
+<th>Acteurs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authentification</td>
+<td>Connexion sécurisée avec email/mot de passe et support 2FA</td>
+<td>Tous</td>
+</tr>
+<tr>
+<td>Inscription Spécialisée</td>
+<td>Enregistrement par rôle (Directeur, Enseignant, Étudiant) via code d'accès établissement</td>
+<td>Tous</td>
+</tr>
+<tr>
+<td>Gestion des utilisateurs</td>
+<td>CRUD complet et fiche détaillée (User Details) avec métadonnées par rôle</td>
+<td>Admin, Directeur</td>
+</tr>
+<tr>
+<td>Gestion des établissements</td>
+<td>Configuration des établissements, classes, salles, matières</td>
+<td>Admin, Directeur</td>
+</tr>
+<tr>
+<td>Gestion des emplois du temps</td>
+<td>Création, modification, suppression des séances</td>
+<td>Admin, Directeur, Resp. Péda.</td>
+</tr>
+<tr>
+<td>Navigation par Rôle</td>
+<td>Sidebar réorganisée en "Espaces" (Étudiant, Enseignant, Pédagogie, Admin)</td>
+<td>Tous</td>
+</tr>
+<tr>
+<td>Consultation EDT</td>
+<td>Affichage dynamique (React Query) et filtrage par semaine/classe</td>
+<td>Tous</td>
+</tr>
+<tr>
+<td>Dashboard Dynamique</td>
+<td>Statistiques personnalisées (Cours du jour, Absences, Effectifs)</td>
+<td>Tous</td>
+</tr>
+<tr>
+<td>Notifications</td>
+<td>Alertes en temps réel (changements, annulations, rattrapages)</td>
+<td>Tous</td>
+</tr>
+<tr>
+<td>Export PDF</td>
+<td>Génération de documents PDF des emplois du temps</td>
+<td>Tous</td>
+</tr>
+<tr>
+<td>Déclaration d'absences</td>
+<td>Signalement des absences et suivi pour les étudiants</td>
+<td>Enseignants, Étudiants</td>
+</tr>
+<tr>
+<td>Gestion des rattrapages</td>
+<td>Planification des cours de rattrapage</td>
+<td>Admin, Directeur, Resp. Péda.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tableau 2: Hiérarchie des rôles</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rôle</th>
+<th>Niveau</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>admin</code></td>
+<td>1</td>
+<td>Administrateur système complet</td>
+</tr>
+<tr>
+<td><code>directeur</code></td>
+<td>2</td>
+<td>Directeur d'établissement</td>
+</tr>
+<tr>
+<td><code>responsable_pedagogique</code></td>
+<td>3</td>
+<td>Responsable pédagogique</td>
+</tr>
+<tr>
+<td><code>enseignant</code></td>
+<td>4</td>
+<td>Enseignant</td>
+</tr>
+<tr>
+<td><code>etudiant</code></td>
+<td>5</td>
+<td>Étudiant</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tableau 3: Matrice des permissions</strong></p>
+<table>
+<thead>
+<tr>
+<th>Fonctionnalité</th>
+<th>Admin</th>
+<th>Directeur</th>
+<th>Resp. Péda.</th>
+<th>Enseignant</th>
+<th>Étudiant</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Voir son EDT</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Modifier EDT</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Gérer utilisateurs</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Gérer salles</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Gérer cours</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓*</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Statistiques</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓*</td>
+<td>✗</td>
+</tr>
+<tr>
+<td>Admin système</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+</tbody>
+</table>
+<p><em>*Limité à leurs propres cours</em></p>
+<h2 id="venveloppebudgtaire">V. Enveloppe budgétaire</h2>
+<p><em>Note: Cette section est une estimation fictive dans le cadre de ce projet académique.</em></p>
+<table>
+<thead>
+<tr>
+<th>Poste de dépense</th>
+<th>Estimation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hébergement (Cloud - AWS/Vercel)</td>
+<td>50€ / mois</td>
+</tr>
+<tr>
+<td>Nom de domaine</td>
+<td>15€ / an</td>
+</tr>
+<tr>
+<td>Outils de développement (Licences)</td>
+<td>0€ (Open Source)</td>
+</tr>
+<tr>
+<td>Ressource humaine (Développement)</td>
+<td>3000€ (Valorisation)</td>
+</tr>
+<tr>
+<td><strong>Total Estimé</strong></td>
+<td><strong>~3100€ (Initial)</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="videlaiderealisation">VI. Delai de realisation</h2>
+<p>Le projet a été réalisé sur une période de <strong>3 mois</strong>, découpée comme suit :</p>
+<ul>
+<li><strong>Mois 1</strong> : Analyse, Conception, Maquettage</li>
+<li><strong>Mois 2</strong> : Développement Backend (API, BDD) et Frontend (Interface de base)</li>
+<li><strong>Mois 3</strong> : Intégration, Tests, Déploiement et Rédaction du rapport</li>
+</ul>
+<h2 id="viietudelexistant">VII. Etude l’existant</h2>
+<p>Actuellement, de nombreux établissements gèrent encore leurs emplois du temps manuellement (Excel, papier) ou via des logiciels obsolètes et non connectés.</p>
+<ul>
+<li><strong>Inconvénients actuels</strong> : Erreurs fréquentes de saisie, difficultés de communication des changements, absence d'accès mobile, perte de temps considérable pour les responsables.</li>
+<li><strong>Avantages de la solution proposée</strong> : Centralisation, accessibilité web/mobile, automatisation, notifications en temps réel.</li>
+</ul>
+<hr />
+<h1 id="banalyseetconception">B. ANALYSE ET CONCEPTION</h1>
+<h2 id="iprsentationdelamthodedanalyseuml">I. Présentation de la méthode d’analyse - UML</h2>
+<p>Pour la modélisation de notre système, nous avons opté pour <strong>UML (Unified Modeling Language)</strong>. C'est un langage graphique standardisé permettant de visualiser, spécifier, construire et documenter les éléments d'un système logiciel.</p>
+<p><strong>Figure 1: Logo UML</strong>
+<em>(Logo UML standard)</em></p>
+<h3 id="1diagrammedecasdutilisation">1. Diagramme de cas d’utilisation</h3>
+<p>Il représente les interactions entre les acteurs (utilisateurs) et le système. Il définit "qui fait quoi".</p>
+<h3 id="2diagrammedeclasse">2. Diagramme de classe</h3>
+<p>Il décrit la structure statique du système en montrant les classes, leurs attributs, opérations et les relations entre elles.</p>
+<h3 id="3diagrammedesquencefacultatif">3. Diagramme de séquence (facultatif)</h3>
+<p>Il détaille la chronologie des interactions entre les objets pour un cas d'utilisation donné.</p>
+<h2 id="iioutildemodlisation">II. Outil de modélisation</h2>
+<p>Pour réaliser nos diagrammes et maquettes, nous avons utilisé :</p>
+<ul>
+<li><strong>Lucidchart / PlantUML</strong> : Pour la création des diagrammes UML (Classes, Cas d'utilisation). Ces outils permettent une collaboration en temps réel et une génération rapide.</li>
+</ul>
+<h2 id="iiioutildeconception">III. Outil de conception</h2>
+<ul>
+<li><strong>Figma</strong> : Utilisé pour le prototypage des interfaces utilisateur (UI/UX). Il a permis de valider le design system (couleurs, typographie) avant le développement.</li>
+</ul>
+<h2 id="ivetudeetconceptiondelasolution">IV. Etude et conception de la solution</h2>
+<h3 id="1etudefonctionnelle">1. Etude fonctionnelle</h3>
+<p>L'application couvre plusieurs modules clés :</p>
+<ul>
+<li><strong>Module Authentification</strong> : Sécurisation des accès.</li>
+<li><strong>Module Gestion</strong> : Administration des données de référence (Salles, Matières, Utilisateurs).</li>
+<li><strong>Module Planification</strong> : Cœur du système, permettant de placer les cours sur une grille temporelle.</li>
+<li><strong>Module Communication</strong> : Notifications et absences.</li>
+</ul>
+<h3 id="2etudetechnique">2. Etude technique</h3>
+<p>Nous avons adopté une <strong>architecture 3-tiers</strong> :</p>
+<p><strong>Figure 2: Architecture globale du système</strong></p>
+<ul>
+<li><strong>Frontend (Client)</strong> : React.js (SPA)</li>
+<li><strong>Backend (Serveur)</strong> : Node.js avec Express</li>
+<li><strong>Base de Données</strong> : MySQL</li>
+</ul>
+<h3 id="3lesdiagrammecaptures">3. Les diagramme (Captures)</h3>
+<h4 id="adiagrammedeclasse">a. Diagramme de classe</h4>
+<p><strong>Figure 3: Diagramme de classes - Gestion</strong>
+<em>(Voir Annexe A pour le diagramme complet)</em>
+Ce diagramme montre les relations entre <code>Utilisateur</code>, <code>Etablissement</code>, <code>Cours</code>, <code>Salle</code>, etc.</p>
+<h4 id="bdiagrammedecasdutilisation">b. Diagramme de cas d’utilisation</h4>
+<p><em>Acteurs principaux</em> : Admin, Enseignant, Étudiant.
+<em>Cas d'utilisation</em> : "Se connecter", "Consulter EDT", "Modifier EDT" (Admin seulement).</p>
+<h4 id="cdescriptionstextuellesdescasdutilisation">c. Descriptions textuelles des cas d’utilisation</h4>
+<p><strong>Cas 1 : Se connecter</strong></p>
+<ul>
+<li><strong>Acteur</strong> : Tout utilisateur</li>
+<li><strong>Précondition</strong> : Avoir un compte actif</li>
+<li><strong>Scénario nominal</strong> :</li>
+</ul>
+<ol>
+<li>L'utilisateur saisit email et mot de passe.</li>
+<li>Le système vérifie les identifiants.</li>
+<li>Si 2FA activée, demande du code.</li>
+<li>Le système redirige vers le tableau de bord.</li>
+</ol>
+<p><strong>Cas 2 : Générer un emploi du temps</strong></p>
+<ul>
+<li><strong>Acteur</strong> : Responsable Pédagogique</li>
+<li><strong>Scénario nominal</strong> :</li>
+</ul>
+<ol>
+<li>Le responsable sélectionne une classe et une période.</li>
+<li>Il lance l'algorithme de génération.</li>
+<li>Le système vérifie les contraintes (dispo profs, salles).</li>
+<li>Le système propose un planning.</li>
+<li>Le responsable valide et publie.</li>
+</ol>
+<h3 id="4choixtechnique">4. Choix technique</h3>
+<p><strong>Tableau 4: Technologies Frontend</strong></p>
+<ul>
+<li><strong>React</strong> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/20px-React-icon.svg.png" alt="React Logo" /> : Bibliothèque flexible et performante pour les interfaces dynamiques.</li>
+<li><strong>TypeScript</strong> : Apporte la sécurité du typage pour réduire les bugs.</li>
+<li><strong>TailwindCSS</strong> : Permet un design rapide et responsive.</li>
+</ul>
+<p><strong>Tableau 5: Technologies Backend</strong></p>
+<ul>
+<li><strong>Node.js</strong> : Performance grâce à son architecture non-bloquante.</li>
+<li><strong>Express</strong> : Légèreté et flexibilité pour créer des API REST.</li>
+<li><strong>MySQL</strong> : Robustesse pour les données relationnelles complexes.</li>
+</ul>
+<h2 id="vmiseenoeuvreduprojet">V. Mise en oeuvre du projet</h2>
+<h3 id="1gestiondeprojet">1. Gestion de projet</h3>
+<h4 id="aplanificationetmthodologiescrum">a. Planification et méthodologie (SCRUM)</h4>
+<p>Nous avons suivi une approche <strong>Agile Scrum</strong> simplifiée :</p>
+<ul>
+<li><strong>Sprints</strong> de 2 semaines.</li>
+<li><strong>Daily meetings</strong> pour le suivi.</li>
+<li><strong>Backlog</strong> priorisé par valeur métier (Authentification d'abord, puis EDT, puis options).</li>
+</ul>
+<h4 id="bdcoupagedesfonctionnalits">b. Découpage des fonctionnalités</h4>
+<ul>
+<li><strong>Lot 1</strong> : Socle technique, Authentification, Base de données.</li>
+<li><strong>Lot 2</strong> : Gestion des utilisateurs et données de base (CRUD).</li>
+<li><strong>Lot 3</strong> : Moteur d'emploi du temps et affichage.</li>
+<li><strong>Lot 4</strong> : Notifications et finitions.</li>
+</ul>
+<h3 id="2implmentationdelasolution">2. Implémentation de la solution</h3>
+<ul>
+<li><strong>Couche Données</strong> : Implémentée avec <strong>Sequelize</strong> (ORM). Utilisation de modèles spécialisés (<code>Eleve</code>, <code>Enseignant</code>, <code>Directeur</code>, <code>ResponsablePedagogique</code>) liés à la table <code>Utilisateur</code> (Héritage/Composition).</li>
+<li><strong>Couche Métier (API)</strong> : Structurée en Contrôleurs (logique), Middlewares (Auth, Scope par établissement) et Routes. Intégration de la logique de création automatique de profils lors de l'inscription.</li>
+<li><strong>Couche Présentation</strong> : Structure modulaire avec composants React. Gestion performante des états serveurs via <strong>TanStack Query</strong> (React Query) pour le cache et la synchronisation en temps réel.</li>
+<li><strong>UX Role-Based</strong> : Système de navigation adaptatif basé sur la hiérarchie des rôles, isolant les fonctionnalités d'administration de l'espace étudiant.</li>
+</ul>
+<h3 id="3scuritetcontraintestechniques">3. Sécurité et contraintes techniques</h3>
+<p>La sécurité a été une priorité :</p>
+<ul>
+<li><strong>Authentification forte</strong> : Implémentation de l'authentification à double facteur (2FA) avec algorithme TOTP (Time-based One-Time Password).</li>
+<li><strong>Protection des données</strong> : Mots de passe hachés avec <code>bcrypt</code>.</li>
+<li><strong>Session</strong> : Utilisation de <strong>JWT (JSON Web Token)</strong> pour sécuriser les appels API sans état (stateless).</li>
+<li><strong>Validation</strong> : Toutes les entrées sont validées par <strong>Zod</strong> (frontend) et <strong>express-validator</strong> (backend).</li>
+</ul>
+<h3 id="4prsentationdequelquesinterface">4. Présentation de quelques interface</h3>
+<p><strong>Figure 4: Interface - Page d'accueil</strong>
+Page vitrine présentant l'application.</p>
+<p><strong>Figure 5: Interface - Page de connexion</strong>
+Formulaire sécurisé avec gestion des erreurs et lien d'inscription.</p>
+<p><strong>Figure 6: Interface - Tableau de bord</strong>
+Interface principale affichant les widgets, les prochains cours et les notifications. Le dashboard est contextuel (ex: stats d'absences pour les étudiants, effectifs pour les directeurs).</p>
+<p><strong>Figure 7: Interface - Détails de l'utilisateur</strong>
+Fiche profil complète affichant les informations générales et les métadonnées spécifiques au rôle (ex: heures contractuelles pour un enseignant).</p>
+<hr />
+<h1 id="cbilanduprojetetperspectivesdamlioration">C. BILAN DU PROJET ET PERSPECTIVES D'AMÉLIORATION</h1>
+<h2 id="bilan">Bilan</h2>
+<p>Le projet a abouti à une application fonctionnelle et robuste.</p>
+<ul>
+<li><strong>Forces</strong> : Architecture moderne, code typé (TypeScript), sécurité avancée (2FA).</li>
+<li><strong>Faiblesses</strong> : L'algorithme de génération automatique peut être optimisé pour gérer plus de contraintes complexes.</li>
+</ul>
+<h2 id="perspectives">Perspectives</h2>
+<ul>
+<li><strong>Court terme</strong> : Export PDF natif plus complet.</li>
+<li><strong>Moyen terme</strong> : Application mobile native (React Native).</li>
+<li><strong>Long terme</strong> : Utilisation de l'IA pour optimiser le placement des cours automatiquement.</li>
+</ul>
+<hr />
+<h1 id="conclusion">CONCLUSION</h1>
+<p>Le développement de ce Système de Gestion d'Emploi du Temps a été une expérience enrichissante, permettant de concrétiser les acquis de la formation Développement Web &amp; Mobile. L'application répond aux exigences modernes de performance, sécurité et ergonomie. Elle offre une solution tangible aux problèmes d'organisation des établissements scolaires.</p>
+<hr />
+<h1 id="bibliographiewebographie">BIBLIOGRAPHIE &amp; WEBOGRAPHIE</h1>
+<p><strong>DÉVELOPPEMENT WEB</strong></p>
+<ul>
+<li>Documentation React : <a href="https://react.dev">https://react.dev</a></li>
+<li>MDN Web Docs : <a href="https://developer.mozilla.org">https://developer.mozilla.org</a></li>
+</ul>
+<p><strong>BACKEND & BASE DE DONNÉES</strong></p>
+<ul>
+<li>Documentation Node.js : <a href="https://nodejs.org">https://nodejs.org</a></li>
+<li>Documentation Sequelize : <a href="https://sequelize.org">https://sequelize.org</a></li>
+</ul>
+<p><strong>SÉCURITÉ</strong></p>
+<ul>
+<li>OWASP Top 10 : <a href="https://owasp.org">https://owasp.org</a></li>
+<li>JWT.io Introduction : <a href="https://jwt.io/introduction">https://jwt.io/introduction</a></li>
+</ul>
+<p><strong>OUTILS</strong></p>
+<ul>
+<li>Lucidchart : <a href="https://lucidchart.com">https://lucidchart.com</a></li>
+<li>Figma : <a href="https://figma.com">https://figma.com</a></li>
+</ul>
+        </body>
+        </html>
+      

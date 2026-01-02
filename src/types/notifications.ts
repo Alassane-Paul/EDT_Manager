@@ -3,13 +3,19 @@ export interface Notification {
   type: "info" | "warning" | "success" | "error";
   titre: string;
   message: string;
-  lu: boolean;
+  lue: boolean;
   date_creation: string;
   utilisateur_id: string;
 }
 
 export interface NotificationsResponse {
-  notifications: Notification[];
-  total: number;
-  non_lues: number;
+  success: boolean;
+  data: Notification[];
+  unreadCount: number;
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
 }

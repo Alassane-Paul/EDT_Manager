@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUsers } from "@/hooks/useUsers";
-import { RoleUtilisateur, StatutUtilisateur } from "@/types/users";
+import { RoleUtilisateur } from "@/types/users";
 import { Plus, Search, Edit, Eye } from "lucide-react";
 
 export default function UserList() {
@@ -55,7 +55,7 @@ export default function UserList() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v as RoleUtilisateur | "")}>
+              <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v as RoleUtilisateur | "all")}>
                 <SelectTrigger className="w-full sm:w-48">
                   <SelectValue placeholder="Rôle" />
                 </SelectTrigger>
@@ -99,14 +99,20 @@ export default function UserList() {
                   ) : (
                     users.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell>{user.prenom} {user.nom}</TableCell>
+                        <TableCell>
+                          <div className="font-medium">{user.prenom} {user.nom}</div>
+                          {user.enseignant && <div className="text-xs text-muted-foreground">Matricule: {user.enseignant.matricule}</div>}
+                          {user.eleve && <div className="text-xs text-muted-foreground">Matricule: {user.eleve.matricule}</div>}
+                          {user.directeur && <div className="text-xs text-muted-foreground">Matricule: {user.directeur.matricule}</div>}
+                          {user.responsable_pedagogique && <div className="text-xs text-muted-foreground">Matricule: {user.responsable_pedagogique.matricule}</div>}
+                        </TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>
                           <Badge variant="outline">{user.role}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={user.statut === StatutUtilisateur.ACTIVE ? "default" : "secondary"}>
-                            {user.statut}
+                          <Badge variant={user.actif ? "default" : "secondary"}>
+                            {user.actif ? "Actif" : "Inactif"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right space-x-2">

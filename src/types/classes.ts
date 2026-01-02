@@ -22,6 +22,7 @@ export interface Classe {
   };
   cours?: any[];
   emplois_temps?: any[];
+  eleves?: any[];
 }
 
 export interface ClasseFormData {

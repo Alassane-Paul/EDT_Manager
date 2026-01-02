@@ -3,17 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useRattrapage, usePlanifierRattrapage, useMarquerRattrapageRealise, useAnnulerRattrapage } from "@/hooks/useRattrapages";
+import { useRattrapage, useRattrapageActions } from "@/hooks/useRattrapages";
 import { ArrowLeft } from "lucide-react";
 
 export default function RattrapageDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: rattrapage, isLoading } = useRattrapage(id || "");
+  const { rattrapage, isLoading } = useRattrapage(id || "");
 
-  const planifier = usePlanifierRattrapage();
-  const marquer = useMarquerRattrapageRealise();
-  const annuler = useAnnulerRattrapage();
+  const { marquerRealise, cancelRattrapage } = useRattrapageActions();
 
   const r = (rattrapage as any) || {};
 
@@ -43,8 +41,8 @@ export default function RattrapageDetails() {
               <div><strong>Motif:</strong> {r.motif}</div>
             </div>
             <div className="mt-4 flex justify-end gap-2">
-              <Button onClick={() => marquer.mutate?.(r.id)}>Marquer réalisé</Button>
-              <Button variant="destructive" onClick={() => annuler.mutate?.(r.id)}>Annuler</Button>
+              <Button onClick={() => marquerRealise(r.id)}>Marquer réalisé</Button>
+              <Button variant="destructive" onClick={() => cancelRattrapage({ id: r.id, raison: "Annulation manuelle" })}>Annuler</Button>
             </div>
           </CardContent>
         </Card>

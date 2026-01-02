@@ -26,7 +26,7 @@ export const classesApi = {
     // Filtrer les champs optionnels vides
     if (!payload.filiere) delete payload.filiere;
     if (!payload.salle_principale) delete payload.salle_principale;
-    
+
     const response = await axiosInstance.post("/classes", payload);
     return response.data.classe;
   },
@@ -40,7 +40,7 @@ export const classesApi = {
     if (payload.statut === undefined && data.statut) {
       payload.statut = data.statut;
     }
-    
+
     const response = await axiosInstance.put(`/classes/${id}`, payload);
     return response.data.classe;
   },
@@ -56,6 +56,15 @@ export const classesApi = {
   async getStats(id: string): Promise<ClasseStats> {
     const response = await axiosInstance.get(`/classes/${id}/stats`);
     return response.data.stats;
+  },
+
+  async assignStudent(classeId: string, data: { utilisateur_id: string, matricule?: string }): Promise<any> {
+    const response = await axiosInstance.post(`/classes/${classeId}/students`, data);
+    return response.data;
+  },
+
+  async removeStudent(classeId: string, studentId: string): Promise<void> {
+    await axiosInstance.delete(`/classes/${classeId}/students/${studentId}`);
   },
 };
 

@@ -1,10 +1,10 @@
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Calendar, 
-  Users, 
-  BookOpen, 
-  Clock, 
+import {
+  Calendar,
+  Users,
+  BookOpen,
+  Clock,
   RefreshCw,
   GraduationCap,
   DoorOpen,
@@ -99,7 +99,7 @@ const roleActions: Record<UserRole, QuickAction[]> = {
       icon: Settings,
       color: "text-gray-600",
       bgColor: "bg-gray-100 dark:bg-gray-800/50",
-      route: "/admin/parametres",
+      route: "/gestion/settings",
     },
   ],
   directeur: [
@@ -304,7 +304,7 @@ interface RoleBasedActionsProps {
 
 export const RoleBasedActions = ({ onActionClick }: RoleBasedActionsProps) => {
   const { user } = useAuth();
-  
+
   if (!user) return null;
 
   const actions = roleActions[user.role] || roleActions.personnel;
@@ -318,8 +318,8 @@ export const RoleBasedActions = ({ onActionClick }: RoleBasedActionsProps) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {actions.map((action, index) => (
-        <Card 
-          key={index} 
+        <Card
+          key={index}
           className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-transparent hover:border-primary/20"
           onClick={() => handleClick(action.route)}
         >
@@ -347,26 +347,26 @@ interface HasRoleProps {
 
 export const HasRole = ({ roles, children, fallback = null }: HasRoleProps) => {
   const { user } = useAuth();
-  
+
   if (!user || !roles.includes(user.role)) {
     return <>{fallback}</>;
   }
-  
+
   return <>{children}</>;
 };
 
 // Hook pour vérifier les permissions
 export const useRoleCheck = () => {
   const { user } = useAuth();
-  
+
   const hasRole = (roles: UserRole[]) => {
     return user ? roles.includes(user.role) : false;
   };
-  
+
   const isAdmin = () => hasRole(['admin']);
   const isManagement = () => hasRole(['admin', 'directeur', 'responsable_pedagogique']);
   const isTeacher = () => hasRole(['enseignant']);
   const isStudent = () => hasRole(['etudiant']);
-  
+
   return { hasRole, isAdmin, isManagement, isTeacher, isStudent };
 };

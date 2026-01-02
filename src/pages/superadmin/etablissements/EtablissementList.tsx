@@ -11,7 +11,8 @@ import { StatutEtablissement } from "@/types/etablissements";
 import { Plus, Eye, Edit } from "lucide-react";
 
 const STATUT_COLORS: Record<StatutEtablissement, string> = {
-  [StatutEtablissement.ACTIVE]: "bg-green-500",
+  [StatutEtablissement.ACTIF]: "bg-green-500",
+  [StatutEtablissement.INACTIF]: "bg-red-500",
   [StatutEtablissement.SUSPENDU]: "bg-yellow-500",
   [StatutEtablissement.ARCHIVE]: "bg-gray-500",
 };

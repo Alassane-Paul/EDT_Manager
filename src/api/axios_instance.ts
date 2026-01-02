@@ -14,6 +14,18 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      try {
+        const user = JSON.parse(userJson);
+        if (user.establishmentCode) {
+          config.headers['x-etablissement-code'] = user.establishmentCode;
+        }
+      } catch (e) {
+        console.error('Error parsing user from localStorage', e);
+      }
+    }
     return config;
   },
   (error) => Promise.reject(error)
