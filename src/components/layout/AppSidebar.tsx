@@ -209,8 +209,9 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
-            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="w-full h-full object-contain" />
           </div>
+
           {!collapsed && (
             <div className="flex flex-col">
               <span className="font-semibold text-sidebar-foreground">EDT Manager</span>

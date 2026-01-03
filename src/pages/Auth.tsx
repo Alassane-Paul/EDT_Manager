@@ -222,7 +222,7 @@ const Auth = () => {
         <Card className="w-full max-w-md shadow-xl border-primary/20">
           <CardHeader className="text-center space-y-4">
             <div className="mx-auto w-20 h-20 overflow-hidden flex items-center justify-center">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+              <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="w-full h-full object-contain" />
             </div>
             <CardTitle className="text-2xl font-bold">Vérification 2FA</CardTitle>
             <CardDescription>
@@ -300,7 +300,7 @@ const Auth = () => {
       <Card className="w-full max-w-md shadow-xl border-primary/20">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-24 h-24 overflow-hidden flex items-center justify-center mb-2">
-            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="w-full h-full object-contain" />
           </div>
           <CardTitle className="text-2xl font-bold">Edt Manager</CardTitle>
           <CardDescription>

@@ -21,7 +21,7 @@ const Index = () => {
         <div className="text-center mb-16">
           <div className="flex justify-center mb-6">
             <div className="w-24 h-24 overflow-hidden flex items-center justify-center">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+              <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="w-full h-full object-contain" />
             </div>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">

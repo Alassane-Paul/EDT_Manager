@@ -30,13 +30,14 @@ const App = () => (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <TooltipProvider>
         <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <AuthProvider>
             <SocketProvider>
               <AppRoutes />
             </SocketProvider>
           </AuthProvider>
         </BrowserRouter>
+
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
