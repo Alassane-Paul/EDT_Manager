@@ -642,7 +642,9 @@ const coursController = {
             heures_total: c.volume_horaire_hebdo || 0, // Fallback if planned hours not available
             heures_effectuees: stats.heuresPlanifiees, // Using planned as proxy for now
             couleur: c.matiere?.couleur_affichage,
-            creneaux: c.creneaux
+            creneaux: c.creneaux,
+            matiere: c.matiere,
+            classe: eleve.classe
           };
         });
 
@@ -797,7 +799,9 @@ const coursController = {
           salle: prochainCreneau?.salle?.nom_salle || null,
           type_cours: c.type_cours,
           creneaux: c.creneaux,
-          eleves: elevesMappes
+          eleves: elevesMappes,
+          matiere: c.matiere,
+          classe: c.classe
         };
       });
 

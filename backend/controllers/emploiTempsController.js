@@ -218,7 +218,7 @@ const emploiTempsController = {
 
       if (classe_id) whereClause.classe_id = classe_id;
       if (statut) whereClause.statut = statut;
-      if (search) whereClause.nom_version = { [Op.iLike]: `%${search}%` };
+      if (search) whereClause.nom_version = { [Op.like]: `%${search}%` };
 
       const { count, rows: emploisTemps } = await EmploiTemps.findAndCountAll({
         where: whereClause,

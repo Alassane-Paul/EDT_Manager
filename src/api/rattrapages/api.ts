@@ -58,3 +58,14 @@ export const rattrapagesApi = {
   },
 };
 
+export const retakeExamsApi = {
+  getEligibleStudents: async (sessionId: string) => {
+    const response = await axiosInstance.get(`/sessions-examen/${sessionId}/eligible-students`);
+    return response.data;
+  },
+
+  createRetake: async (sessionId: string, data: { date_examen: string; heure_debut: string; heure_fin: string; eleves_eligibles: any[] }) => {
+    const response = await axiosInstance.post(`/sessions-examen/${sessionId}/create-retake`, data);
+    return response.data;
+  }
+};

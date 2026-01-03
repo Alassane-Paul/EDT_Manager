@@ -34,7 +34,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('Erreur API:', error);
+    if (error.response?.data) {
+      console.error('Détails erreur API:', error.response.data);
+    } else {
+      console.error('Erreur API:', error);
+    }
     return Promise.reject(error);
   }
 );

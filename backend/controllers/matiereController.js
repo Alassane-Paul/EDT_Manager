@@ -26,8 +26,8 @@ const matiereController = {
 
       if (search) {
         whereClause[Op.or] = [
-          { nom_matiere: { [Op.iLike]: `%${search}%` } },
-          { code_matiere: { [Op.iLike]: `%${search}%` } }
+          { nom_matiere: { [Op.like]: `%${search}%` } },
+          { code_matiere: { [Op.like]: `%${search}%` } }
         ];
       }
 

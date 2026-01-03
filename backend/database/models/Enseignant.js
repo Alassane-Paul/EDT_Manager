@@ -93,15 +93,7 @@ const Enseignant = sequelize.define('Enseignant', {
     }
   },
   indexes: [
-    {
-      fields: ['utilisateur_id']
-    },
-    {
-      fields: ['etablissement_id']
-    },
-    {
-      fields: ['matricule']
-    },
+
     {
       fields: ['statut']
     }

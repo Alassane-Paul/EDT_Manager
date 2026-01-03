@@ -3,16 +3,13 @@ const { Absence, Enseignant, Cours, Utilisateur, LogModification } = require('..
 const { validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const { StatutAbsence, TypeOperation } = require('../utils/enums');
-const { resolveEnseignantId } = require('../middleware/auth'); // helper to get teacher ID
+const { resolveEnseignantId } = require('../middleware/auth');
 
 /**
  * Helper to get the Enseignant ID for the logged‑in user.
  */
 const getEnseignantId = async (utilisateur) => {
-    // reuse the resolveEnseignantId logic from auth middleware
-    // It returns null if the user is not a teacher
-    const resolve = require('../middleware/auth').resolveEnseignantId;
-    return await resolve(utilisateur);
+    return await resolveEnseignantId(utilisateur);
 };
 
 const teacherAbsenceController = {

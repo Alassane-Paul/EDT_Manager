@@ -5,6 +5,7 @@ const { Op } = require('sequelize');
 const { TypeRattrapage, StatutRattrapage, TypeOperation } = require('../utils/enums');
 const NotificationService = require('../services/notificationService');
 const { resolveScopedEtablissementId } = require('../utils/scope');
+const { sequelize } = require('../config/database');
 
 const resolveEnseignantIdFromUser = async (utilisateur) => {
   if (!utilisateur || utilisateur.role !== 'enseignant') return null;
@@ -71,7 +72,7 @@ const rattrapageController = {
       if (search) {
         includeClause[0].include[0].where = {
           ...includeClause[0].include[0].where,
-          nom_classe: { [Op.iLike]: `%${search}%` }
+          nom_classe: { [Op.like]: `%${search}%` }
         };
       }
 

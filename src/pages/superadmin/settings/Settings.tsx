@@ -1,4 +1,5 @@
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PeriodesTab } from "./tabs/PeriodesTab";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,8 +34,13 @@ export default function Settings() {
                         <TabsList className="bg-muted/50 p-1">
                             <TabsTrigger value="general">Général</TabsTrigger>
                             <TabsTrigger value="academique">Académique</TabsTrigger>
+                            <TabsTrigger value="periodes">Périodes</TabsTrigger>
                             <TabsTrigger value="notifications">Notifications</TabsTrigger>
                         </TabsList>
+
+                        <TabsContent value="periodes" className="space-y-6">
+                            <PeriodesTab />
+                        </TabsContent>
 
                         <TabsContent value="general" className="space-y-6">
                             <Card>

@@ -38,9 +38,9 @@ const userController = {
 
       if (search) {
         whereClause[Op.or] = [
-          { nom: { [Op.iLike]: `%${search}%` } },
-          { prenom: { [Op.iLike]: `%${search}%` } },
-          { email: { [Op.iLike]: `%${search}%` } }
+          { nom: { [Op.like]: `%${search}%` } },
+          { prenom: { [Op.like]: `%${search}%` } },
+          { email: { [Op.like]: `%${search}%` } }
         ];
       }
 
@@ -445,6 +445,96 @@ const userController = {
         error: 'Erreur lors de la récupération des statistiques',
         code: 'USER_STATS_ERROR'
       });
+    }
+  },
+
+  /**
+   * Rechercher des utilisateurs pour le chat (accessible à tous)
+   */
+  searchUsers: async (req, res) => {
+    try {
+      const { q } = req.query;
+
+      if (!q || q.length < 2) {
+        return res.json({ users: [] });
+      }
+
+      const whereClause = {
+        etablissement_id: req.utilisateur.etablissement_id,
+        actif: true,
+        id: { [Op.ne]: req.utilisateur.id }, // Exclure soi-même
+        [Op.or]: [
+          { nom: { [Op.like]: `%${q}%` } },
+          { prenom: { [Op.like]: `%${q}%` } }
+        ]
+      };
+
+      const users = await Utilisateur.findAll({
+        where: whereClause,
+        attributes: ['id', 'nom', 'prenom', 'photo_url', 'role'], // Info publique seulement
+        limit: 20
+      });
+
+      res.json(users);
+    } catch (error) {
+      console.error('Erreur recherche utilisateurs:', error);
+      res.status(500).json({ error: 'Erreur serveur' });
+    }
+  },
+  /**
+   * Récupérer le répertoire complet (WhatsApp style)
+   */
+  getDirectory: async (req, res) => {
+    try {
+      // Pour les admins, on permet de spécifier l'établissement via query param, sinon on utilise celui du token
+      const etablissementId = resolveScopedEtablissementId(req);
+
+      console.log('DEBUG DIRECTORY: User ID:', req.utilisateur.id);
+      console.log('DEBUG DIRECTORY: Resolved Etablissement ID:', etablissementId);
+
+      if (!etablissementId) {
+        return res.json({}); // Pas d'établissement sélectionné = liste vide
+      }
+
+      const users = await Utilisateur.findAll({
+        where: {
+          actif: true,
+          id: { [Op.ne]: req.utilisateur.id },
+          [Op.or]: [
+            { etablissement_id: etablissementId },
+            { '$directeur.etablissement_id$': etablissementId },
+            { '$enseignant.etablissement_id$': etablissementId },
+            { '$eleve.etablissement_id$': etablissementId },
+            { '$responsablePedagogique.etablissement_id$': etablissementId }
+          ]
+        },
+        include: [
+          { association: 'directeur', required: false, attributes: ['id', 'etablissement_id'] },
+          { association: 'enseignant', required: false, attributes: ['id', 'etablissement_id'] },
+          { association: 'eleve', required: false, attributes: ['id', 'etablissement_id'] },
+          { association: 'responsablePedagogique', required: false, attributes: ['id', 'etablissement_id'] }
+        ],
+        attributes: ['id', 'nom', 'prenom', 'photo_url', 'role'],
+        order: [['role', 'ASC'], ['nom', 'ASC']]
+      });
+
+      console.log(`DEBUG DIRECTORY: Users for etab ${etablissementId}:`, users.length);
+      users.forEach(u => console.log(` - colleague: ${u.nom} (${u.role})`));
+
+      console.log('DEBUG DIRECTORY: Users found:', users.length);
+
+      // Groupement par rôle pour l'affichage
+      const grouped = users.reduce((acc, user) => {
+        const role = user.role;
+        if (!acc[role]) acc[role] = [];
+        acc[role].push(user);
+        return acc;
+      }, {});
+
+      res.json(grouped);
+    } catch (error) {
+      console.error('Erreur répertoire:', error);
+      res.status(500).json({ error: 'Erreur serveur' });
     }
   }
 };

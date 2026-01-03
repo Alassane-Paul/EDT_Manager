@@ -52,16 +52,10 @@ const Eleve = sequelize.define('Eleve', {
     },
     indexes: [
         {
-            fields: ['utilisateur_id']
-        },
-        {
             fields: ['etablissement_id']
         },
         {
             fields: ['classe_id']
-        },
-        {
-            fields: ['matricule']
         }
     ]
 });

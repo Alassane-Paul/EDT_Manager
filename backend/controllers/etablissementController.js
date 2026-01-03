@@ -25,8 +25,8 @@ const etablissementController = {
 
       if (search) {
         whereClause[Op.or] = [
-          { nom: { [Op.iLike]: `%${search}%` } },
-          { ville: { [Op.iLike]: `%${search}%` } }
+          { nom: { [Op.like]: `%${search}%` } },
+          { ville: { [Op.like]: `%${search}%` } }
         ];
       }
 

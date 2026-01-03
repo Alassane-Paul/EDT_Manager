@@ -26,8 +26,8 @@ const classeController = {
 
       if (search) {
         whereClause[Op.or] = [
-          { nom_classe: { [Op.iLike]: `%${search}%` } },
-          { filiere: { [Op.iLike]: `%${search}%` } }
+          { nom_classe: { [Op.like]: `%${search}%` } },
+          { filiere: { [Op.like]: `%${search}%` } }
         ];
       }
 

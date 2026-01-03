@@ -45,6 +45,8 @@ const pathLabels: Record<string, string> = {
   enseignants: "Enseignants",
   utilisateurs: "Utilisateurs",
   parametres: "Paramètres",
+  billing: "Facturation",
+  invoices: "Factures",
 };
 
 export function AppLayout({ children }: AppLayoutProps) {

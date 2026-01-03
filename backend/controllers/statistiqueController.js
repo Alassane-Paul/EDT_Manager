@@ -14,6 +14,7 @@ const {
 } = require('../database/models');
 const { Op } = require('sequelize');
 const { StatutClasse, StatutEmploiTemps, StatutRattrapage, StatutAbsence, RoleUtilisateur } = require('../utils/enums');
+const { sequelize } = require('../config/database');
 
 const statistiqueController = {
   /**

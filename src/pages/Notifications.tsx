@@ -55,7 +55,7 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('fr-FR');
 };
 
-const NotificationsEtudiant = () => {
+const Notifications = () => {
   const [activeTab, setActiveTab] = useState("all");
   const {
     notifications: apiNotifications,
@@ -212,4 +212,4 @@ const NotificationsEtudiant = () => {
   );
 };
 
-export default NotificationsEtudiant;
+export default Notifications;

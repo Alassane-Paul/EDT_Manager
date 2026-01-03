@@ -35,9 +35,9 @@ const rpController = {
 
             if (search) {
                 whereClause[Op.or] = [
-                    { '$utilisateur.nom$': { [Op.iLike]: `%${search}%` } },
-                    { '$utilisateur.prenom$': { [Op.iLike]: `%${search}%` } },
-                    { matricule: { [Op.iLike]: `%${search}%` } }
+                    { '$utilisateur.nom$': { [Op.like]: `%${search}%` } },
+                    { '$utilisateur.prenom$': { [Op.like]: `%${search}%` } },
+                    { matricule: { [Op.like]: `%${search}%` } }
                 ];
             }
 

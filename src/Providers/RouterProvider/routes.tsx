@@ -6,14 +6,22 @@ import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 import EmploiTempsEtudiant from "@/pages/etudiant/EmploiTemps";
 import CoursEtudiant from "@/pages/etudiant/Cours";
-import NotificationsEtudiant from "@/pages/etudiant/Notifications";
+import Notifications from "@/pages/Notifications";
 import AbsencesEtudiant from "@/pages/etudiant/Absences";
+import VirtualClassroom from "@/pages/etudiant/VirtualClassroom";
+import ExamRunner from "@/pages/etudiant/ExamRunner";
+import ExamTimetable from "@/pages/etudiant/ExamTimetable";
 import EmploiTempsPersonnel from "@/pages/personnel/EmploiTemps";
 import SallesPersonnel from "@/pages/personnel/Salles";
 import EmploiTempsEnseignant from "@/pages/enseignant/EmploiTemps";
 import CoursEnseignant from "@/pages/enseignant/Cours";
 import AbsencesEnseignant from "@/pages/enseignant/Absences";
 import RattrapagesEnseignant from "@/pages/enseignant/Rattrapages";
+import { NoteEntry } from "@/pages/enseignant/NoteEntry";
+import SubscriptionManagement from "@/pages/billing/SubscriptionManagement";
+import InvoiceList from "@/pages/billing/InvoiceList";
+import CourseManager from "@/pages/enseignant/CourseManager";
+import QuizCreator from "@/pages/enseignant/QuizCreator";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { EnseignantDetails, EnseignantForm, EnseignantsList } from "@/pages/superadmin/enseignants";
 import EnseignantSchedule from "@/pages/superadmin/enseignants/EnseignantSchedule";
@@ -27,7 +35,11 @@ import { EtablissementList, EtablissementForm, EtablissementDetails } from "@/pa
 import EmploiTempsList from "@/pages/superadmin/emplois_temps/EmploiTempsList";
 import GenerationEmploiTemps from "@/pages/superadmin/emplois_temps/GenerationEmploiTemps";
 import EmploiTempsDetails from "@/pages/superadmin/emplois_temps/EmploiTempsDetails";
+import BulletinManager from "@/pages/superadmin/bulletins/BulletinManager";
+import ExamScheduler from "@/pages/superadmin/examens/ExamScheduler";
 import Settings from "@/pages/superadmin/settings/Settings";
+import AccreditationPage from "@/pages/superadmin/accreditations/AccreditationPage";
+import ChatLayout from "@/pages/chat/ChatLayout";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -73,11 +85,22 @@ const AppRoutes = () => {
       />
 
       {/* Dashboard - accessible à tous les utilisateurs connectés */}
+      {/* Dashboard - accessible à tous les utilisateurs connectés */}
       <Route
         path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Messagerie */}
+      <Route
+        path="/chat"
+        element={
+          <ProtectedRoute>
+            <ChatLayout />
           </ProtectedRoute>
         }
       />
@@ -100,10 +123,10 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/etudiant/notifications"
+        path="/notifications"
         element={
-          <ProtectedRoute allowedRoles={['admin', 'etudiant']}>
-            <NotificationsEtudiant />
+          <ProtectedRoute>
+            <Notifications />
           </ProtectedRoute>
         }
       />
@@ -112,6 +135,30 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={['admin', 'etudiant']}>
             <AbsencesEtudiant />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/etudiant/classe-virtuelle"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'etudiant']}>
+            <VirtualClassroom />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/etudiant/examen/:examenId"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'etudiant']}>
+            <ExamRunner />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/etudiant/calendrier-examens"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'etudiant']}>
+            <ExamTimetable />
           </ProtectedRoute>
         }
       />
@@ -380,6 +427,16 @@ const AppRoutes = () => {
         }
       />
 
+      {/* Routes Accréditations */}
+      <Route
+        path="/admin/accreditations"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur']}>
+            <AccreditationPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Routes Enseignants */}
       <Route
         path="/enseignant/emploi-temps"
@@ -414,10 +471,34 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/enseignant/notes"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'enseignant']}>
+            <NoteEntry />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/enseignant/rattrapages"
         element={
           <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique', 'enseignant']}>
             <RattrapagesEnseignant />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/enseignant/contenu"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'enseignant']}>
+            <CourseManager />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/enseignant/quiz"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'enseignant']}>
+            <QuizCreator />
           </ProtectedRoute>
         }
       />
@@ -449,10 +530,46 @@ const AppRoutes = () => {
       />
 
       <Route
+        path="/gestion/bulletins"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <BulletinManager />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/gestion/examens-presentiel"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <ExamScheduler />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/gestion/settings"
         element={
           <ProtectedRoute allowedRoles={['admin', 'directeur']}>
             <Settings />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Routes Facturation */}
+      <Route
+        path="/billing"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur']}>
+            <SubscriptionManagement />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/billing/invoices"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur']}>
+            <InvoiceList />
           </ProtectedRoute>
         }
       />

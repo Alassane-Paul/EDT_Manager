@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Calendar,
   BookOpen,
@@ -12,13 +12,19 @@ import {
   DoorOpen,
   LogOut,
   ChevronDown,
-  FileText
+  Video,
+  ClipboardList,
+  CreditCard,
+  FileText,
+  ShieldCheck,
+  MessageCircle
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Badge } from "@/components/ui/badge";
+import { accreditationsApi } from "@/api/accreditations/api";
 
 import {
   Sidebar,
@@ -47,6 +53,7 @@ interface NavItem {
   url: string;
   icon: React.ComponentType<{ className?: string }>;
   roles?: UserRole[];
+  accreditation?: string; // Module required for access via accreditation
 }
 
 interface NavGroup {
@@ -60,7 +67,8 @@ const navigationGroups: NavGroup[] = [
     label: "Principal",
     items: [
       { title: "Tableau de bord", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Notifications", url: "/etudiant/notifications", icon: Bell },
+      { title: "Messagerie", url: "/chat", icon: MessageCircle },
+      { title: "Notifications", url: "/notifications", icon: Bell },
     ],
   },
   {
@@ -70,26 +78,33 @@ const navigationGroups: NavGroup[] = [
       { title: "Emploi du temps", url: "/etudiant/emploi-temps", icon: Calendar, roles: ["admin", "etudiant"] },
       { title: "Mes cours", url: "/etudiant/cours", icon: BookOpen, roles: ["admin", "etudiant"] },
       { title: "Mes absences", url: "/etudiant/absences", icon: FileText, roles: ["admin", "etudiant"] },
+      { title: "Classe virtuelle", url: "/etudiant/classe-virtuelle", icon: Video, roles: ["admin", "etudiant"] },
+      { title: "Calendrier examens", url: "/etudiant/calendrier-examens", icon: Calendar, roles: ["admin", "etudiant"] },
     ],
   },
   {
     label: "Mon Espace Enseignant",
-    roles: ["admin", "enseignant"],
+    roles: ["admin", "enseignant", "personnel"], // Personnel added to allow checking accreditations
     items: [
       { title: "Mon emploi du temps", url: "/enseignant/emploi-temps", icon: Calendar, roles: ["admin", "enseignant"] },
       { title: "Mes cours", url: "/enseignant/cours", icon: BookOpen, roles: ["admin", "enseignant"] },
-      { title: "Gestion absences", url: "/enseignant/absences", icon: UserCog, roles: ["admin", "enseignant"] },
+      { title: "Gestion absences", url: "/enseignant/absences", icon: UserCog, roles: ["admin", "enseignant"], accreditation: 'ABSENCES' },
       { title: "Mes rattrapages", url: "/enseignant/rattrapages", icon: Calendar, roles: ["admin", "enseignant"] },
+      { title: "Mes notes", url: "/enseignant/notes", icon: FileText, roles: ["admin", "enseignant"], accreditation: 'NOTES' },
+      { title: "Contenu de cours", url: "/enseignant/contenu", icon: BookOpen, roles: ["admin", "enseignant"] },
+      { title: "Quiz & Examens", url: "/enseignant/quiz", icon: ClipboardList, roles: ["admin", "enseignant"] },
     ],
   },
   {
     label: "Pédagogie",
-    roles: ["admin", "directeur", "responsable_pedagogique"],
+    roles: ["admin", "directeur", "responsable_pedagogique", "personnel"],
     items: [
-      { title: "Classes", url: "/gestion/classes", icon: GraduationCap, roles: ["admin", "directeur", "responsable_pedagogique"] },
+      { title: "Classes", url: "/gestion/classes", icon: GraduationCap, roles: ["admin", "directeur", "responsable_pedagogique"], accreditation: 'ELEVES' },
       { title: "Enseignants", url: "/gestion/teachers", icon: UserCog, roles: ["admin", "directeur", "responsable_pedagogique"] },
       { title: "Matières", url: "/gestion/matieres", icon: BookOpen, roles: ["admin", "directeur", "responsable_pedagogique"] },
-      { title: "Emplois du temps", url: "/gestion/emplois-temps", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique"] },
+      { title: "Emplois du temps", url: "/gestion/emplois-temps", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique"], accreditation: 'EMPLOI_TEMPS' },
+      { title: "Bulletins", url: "/gestion/bulletins", icon: FileText, roles: ["admin", "directeur", "responsable_pedagogique"], accreditation: 'NOTES' },
+      { title: "Examens présentiels", url: "/gestion/examens-presentiel", icon: ClipboardList, roles: ["admin", "directeur", "responsable_pedagogique"] },
       { title: "Rattrapages", url: "/gestion/rattrapages", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
     ],
   },
@@ -102,11 +117,20 @@ const navigationGroups: NavGroup[] = [
   },
   {
     label: "Administration",
-    roles: ["admin", "directeur"],
+    roles: ["admin", "directeur", "personnel"],
     items: [
       { title: "Établissements", url: "/gestion/etablissements", icon: Building2, roles: ["admin", "directeur"] },
-      { title: "Utilisateurs", url: "/admin/utilisateurs", icon: Users, roles: ["admin", "directeur"] },
+      { title: "Utilisateurs", url: "/admin/utilisateurs", icon: Users, roles: ["admin", "directeur"], accreditation: 'ELEVES' },
+      { title: "Accréditations", url: "/admin/accreditations", icon: ShieldCheck, roles: ["admin", "directeur"] },
       { title: "Paramètres", url: "/gestion/settings", icon: Settings, roles: ["admin", "directeur"] },
+    ],
+  },
+  {
+    label: "Facturation",
+    roles: ["admin", "directeur", "personnel"],
+    items: [
+      { title: "Abonnement", url: "/billing", icon: CreditCard, roles: ["admin", "directeur"], accreditation: 'FACTURATION' },
+      { title: "Factures", url: "/billing/invoices", icon: FileText, roles: ["admin", "directeur"], accreditation: 'FACTURATION' },
     ],
   },
 ];
@@ -131,12 +155,42 @@ export function AppSidebar() {
   const { user, logout } = useAuth();
   const { unreadCount } = useNotifications();
   const currentPath = location.pathname;
+  const [activeModules, setActiveModules] = useState<string[]>([]);
+
+  // Fetch active accreditations on mount
+  useEffect(() => {
+    if (user && user.role !== 'admin' && user.role !== 'directeur') {
+      accreditationsApi.getActiveModules()
+        .then(data => {
+          if (data.success) {
+            setActiveModules(data.modules);
+          }
+        })
+        .catch(err => console.error("Failed to load accreditations", err));
+    }
+  }, [user]);
 
   const isActive = (path: string) => currentPath === path;
 
-  const hasAccess = (roles?: UserRole[]) => {
-    if (!roles || !user) return true;
-    return roles.includes(user.role);
+  const hasAccess = (item: NavItem | NavGroup) => {
+    if (!user) return false;
+
+    // Admin always has access
+    if (user.role === 'admin') return true;
+
+    // Check role access
+    const roleAccess = item.roles ? item.roles.includes(user.role) : true;
+
+    // Check accreditation access (if item has an accreditation requirement)
+    // If user has the specific accreditation module, they have access regardless of role (within reason, or it supplements)
+    // Actually, logic: Role OR Accreditation
+    if ('accreditation' in item && item.accreditation) {
+      if (activeModules.includes(item.accreditation)) {
+        return true;
+      }
+    }
+
+    return roleAccess;
   };
 
   const handleLogout = () => {
@@ -167,9 +221,8 @@ export function AppSidebar() {
 
       <SidebarContent className="px-2 py-4">
         {navigationGroups.map((group) => {
-          if (!hasAccess(group.roles)) return null;
-
-          const visibleItems = group.items.filter(item => hasAccess(item.roles));
+          // Check if group has at least one visible item
+          const visibleItems = group.items.filter(item => hasAccess(item));
           if (visibleItems.length === 0) return null;
 
           return (

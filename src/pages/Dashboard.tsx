@@ -307,8 +307,10 @@ const Dashboard = () => {
                   <Clock className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">5</div>
-                  <p className="text-xs text-muted-foreground">+2 par rapport à hier</p>
+                  <div className="text-2xl font-bold text-foreground">
+                    {isLoadingGeneral ? '-' : generalStats?.etat?.cours_aujourdhui || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Séances prévues</p>
                 </CardContent>
               </Card>
 
@@ -320,8 +322,12 @@ const Dashboard = () => {
                   <DoorOpen className="h-4 w-4 text-green-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">12</div>
-                  <p className="text-xs text-muted-foreground">Sur 18 salles</p>
+                  <div className="text-2xl font-bold text-foreground">
+                    {isLoadingGeneral ? '-' : generalStats?.utilisation?.salles_utilisees || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium text-green-600">
+                    {generalStats?.utilisation?.taux_utilisation_salles || 0}% occupation
+                  </p>
                 </CardContent>
               </Card>
 
@@ -348,8 +354,10 @@ const Dashboard = () => {
                   <BarChart3 className="h-4 w-4 text-blue-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground">78%</div>
-                  <p className="text-xs text-muted-foreground">Cette semaine</p>
+                  <div className="text-2xl font-bold text-foreground">
+                    {isLoadingGeneral ? '-' : generalStats?.utilisation?.taux_utilisation_salles || 0}%
+                  </div>
+                  <p className="text-xs text-muted-foreground">Global établissement</p>
                 </CardContent>
               </Card>
             </>

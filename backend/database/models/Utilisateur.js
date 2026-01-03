@@ -91,9 +91,7 @@ const Utilisateur = sequelize.define('Utilisateur', {
     }
   },
   indexes: [
-    {
-      fields: ['email']
-    },
+
     {
       fields: ['etablissement_id']
     },

@@ -311,14 +311,42 @@ export default function AbsencesEnseignant() {
           </Dialog>
         </div>
 
-        {/* Statistiques - Using existing mock tabs/cards for now as we focused on declaration */}
-        {/* ... (Existing Stats UI - could be linked to real stats later) ... */}
-        {/* Placeholder for now to keep the page structure */}
-        <div className="p-8 text-center border rounded-lg bg-muted/20">
-          <p className="text-muted-foreground">
-            L'historique et les statistiques sont en cours de connexion avec les données réelles (TODO).
-            Utilisez le bouton "Faire l'appel" pour tester la déclaration.
-          </p>
+        {/* Historique et Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                Derniers appels effectués
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
+                <p>L'historique détaillé des appels sera bientôt disponible.</p>
+                <p className="text-xs mt-1">Les données sont enregistrées mais l'affichage historique est en cours de finalisation.</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-orange-500" />
+                Alertes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                  <p className="text-sm font-medium text-orange-800 dark:text-orange-400">Rattrapages à prévoir</p>
+                  <p className="text-xs text-orange-700 dark:text-orange-500 mt-1">Vous avez des séances manquées nécessitant une demande de rattrapage.</p>
+                </div>
+                <Button variant="outline" className="w-full" onClick={() => navigate('/enseignant/emploi-temps')}>
+                  Gérer mes séances
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AppLayout>

@@ -5,6 +5,7 @@ const { Op } = require('sequelize');
 const { StatutAbsence, TypeOperation } = require('../utils/enums');
 const NotificationService = require('../services/notificationService');
 const { resolveScopedEtablissementId } = require('../utils/scope');
+const { sequelize } = require('../config/database');
 
 const resolveEnseignantIdFromUser = async (utilisateur) => {
   if (!utilisateur || utilisateur.role !== 'enseignant') return null;
@@ -478,7 +479,7 @@ const absenceController = {
         }],
         attributes: [
           [sequelize.fn('AVG',
-            sequelize.literal(`EXTRACT(EPOCH FROM (date_fin - date_debut)) / 86400`)
+            sequelize.literal(`DATEDIFF(date_fin, date_debut)`)
           ), 'moyenne_duree']
         ]
       });
