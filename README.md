@@ -1,73 +1,80 @@
-# Welcome to your Lovable project
+# 🎓 TimeTable Evolution
 
-## Project info
+**TimeTable Evolution** est une plateforme SaaS (Software as a Service) de pointe conçue pour moderniser la gestion administrative et pédagogique des établissements scolaires et universitaires. Plus qu'un simple générateur d'emplois du temps, c'est un écosystème complet intégrant facturation, communication en temps réel et gestion de la main-d'œuvre.
 
-**URL**: https://lovable.dev/projects/41d00e7c-5964-467d-b242-1b0b2d7ee853
+---
 
-## How can I edit this code?
+## 🚀 Fonctionnalités Clés
 
-There are several ways of editing your application.
+### 📅 Gestion des Emplois du Temps
+- **Génération Intelligente** : Planification automatisée respectant les contraintes de salles, d'enseignants et de classes.
+- **Vues Contextuelles** : Calendriers personnalisés pour les étudiants et les enseignants.
+- **Gestion des Rattrapages** : Workflow complet pour planifier et notifier les cours de remplacement.
 
-**Use Lovable**
+### 💰 Système de Facturation (Pay-as-you-go)
+- **Modèle Économique Flexible** : Facturation basée sur l'utilisation réelle (nombre de classes actives).
+- **Passerelle FedaPay** : Intégration native des paiements Mobile Money (Togo, Bénin, Côte d'Ivoire) et Cartes Bancaires.
+- **Tableau de Bord Financier** : Suivi des factures, états de paiement et métriques d'utilisation.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/41d00e7c-5964-467d-b242-1b0b2d7ee853) and start prompting.
+### 💬 Messagerie Instantanée (ADN Chat)
+- **Communication en Temps Réel** : Système de chat interne basé sur les WebSockets (Socket.io).
+- **Répertoire Intelligent** : Accès simplifié aux contacts de l'établissement filtré par rôle.
+- **Notifications Push** : Alertes instantanées pour les nouveaux messages et changements d'emploi du temps.
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🔐 Sécurité & Accréditation
+- **Authentification forte** : Support de l'authentification à deux facteurs (**2FA via TOTP**).
+- **Délégation de Pouvoir** : Module d'accréditation permettant aux directeurs de déléguer des accès spécifiques à leurs collaborateurs.
+- **Scoping Strict** : Isolation totale des données entre les différents établissements sur la plateforme.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠 Stack Technique
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Frontend
+- **React 18** & **TypeScript**
+- **Tailwind CSS** & **Shadcn/UI** (Design System Premium)
+- **TanStack Query** (Gestion d'état serveur)
+- **Socket.io-client** (Temps réel)
 
-Follow these steps:
+### Backend
+- **Node.js** & **Express**
+- **Sequelize ORM** (MySQL)
+- **Socket.io** (WebSockets)
+- **FedaPay SDK** (FinTech)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 📦 Installation & Configuration
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Prérequis
+- Node.js (v16+)
+- MySQL
+- Compte FedaPay (pour les paiements)
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+### Installation du Backend
+1. Naviguez dans le dossier `backend/`
+2. Installez les dépendances : `npm install`
+3. Configurez le fichier `.env` avec vos accès base de données et clés API FedaPay.
+4. Lancez le serveur : `npm start`
 
-**Edit a file directly in GitHub**
+### Installation du Frontend
+1. À la racine du projet, installez les dépendances : `npm install`
+2. Lancez le serveur de développement : `npm run dev`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🎨 Design & UX
+L'application propose une interface **"High-End"** avec :
+- **Glassmorphism** et effets de profondeur.
+- **Dark Mode** natif.
+- **Micro-animations** fluides pour une expérience utilisateur premium.
+- **Validation Interactive** des formulaires (ex: prévisualisation 3D des cartes bancaires).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 👨‍💻 Développeur
+**Alassane Paul**  
+*Projet de fin de formation - Académie Digitale Numérique (ADN)*
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/41d00e7c-5964-467d-b242-1b0b2d7ee853) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+© 2026 TimeTable Evolution. Tous droits réservés.

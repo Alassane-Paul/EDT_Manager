@@ -23,18 +23,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
-      <BrowserRouter>
-        <AuthProvider>
-          <SocketProvider>
-            <AppRoutes />
-          </SocketProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <TooltipProvider>
+        <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+        <BrowserRouter>
+          <AuthProvider>
+            <SocketProvider>
+              <AppRoutes />
+            </SocketProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

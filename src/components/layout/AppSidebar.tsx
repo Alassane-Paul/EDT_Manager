@@ -25,6 +25,7 @@ import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Badge } from "@/components/ui/badge";
 import { accreditationsApi } from "@/api/accreditations/api";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 import {
   Sidebar,
@@ -271,6 +272,39 @@ export function AppSidebar() {
         })}
       </SidebarContent>
 
+      <SidebarFooter className="border-t border-sidebar-border p-2">
+        <div className="flex items-center justify-between gap-2">
+          {!collapsed && (
+            <div className="flex items-center gap-2 px-2">
+              <Avatar className="h-8 w-8 border border-sidebar-border">
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                  {getInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col truncate max-w-[120px]">
+                <span className="text-sm font-medium text-sidebar-foreground truncate">
+                  {user?.firstName}
+                </span>
+                <span className="text-[10px] text-sidebar-foreground/60 truncate italic">
+                  {user?.role ? getRoleLabel(user.role) : ""}
+                </span>
+              </div>
+            </div>
+          )}
+          <div className="flex items-center gap-1 ml-auto">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              className="h-9 w-9 text-sidebar-foreground/70 hover:text-destructive hover:bg-destructive/10"
+              title="Déconnexion"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }
