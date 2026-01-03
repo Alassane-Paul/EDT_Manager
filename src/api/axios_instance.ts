@@ -1,12 +1,18 @@
 import axios from 'axios';
 
+const isProduction = import.meta.env.MODE === 'production';
+const API_URL = isProduction
+  ? 'https://fundacionesperanzatogo.tg/edtManager/react-flutter-fusion/api'
+  : 'http://localhost:5000/api';
+
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: API_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
 
 axiosInstance.interceptors.request.use(
   (config) => {

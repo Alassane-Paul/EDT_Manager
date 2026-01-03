@@ -23,12 +23,17 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (user) {
-            // Connect to the backend
-            // Replace with your actual backend URL if different
-            const socketInstance = io("http://localhost:5000", {
+            const isProduction = import.meta.env.MODE === 'production';
+            const SOCKET_URL = isProduction
+                ? 'https://fundacionesperanzatogo.tg'
+                : 'http://localhost:5000';
+
+            const socketInstance = io(SOCKET_URL, {
+                path: isProduction ? '/edtManager/react-flutter-fusion/socket.io' : '/socket.io',
                 transports: ["websocket"],
                 withCredentials: true,
             });
+
 
             socketInstance.on("connect", () => {
                 console.log("Socket connected:", socketInstance.id);

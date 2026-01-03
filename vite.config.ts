@@ -5,6 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: mode === 'production' ? '/edtManager/react-flutter-fusion/' : '/',
   server: {
     host: "::",
     port: 1102,
