@@ -1,12 +1,12 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /edtManager/react-flutter-fusion/
+  RewriteBase /edt-manager-app/
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-l
-  RewriteCond %{REQUEST_URI} !^/edtManager/api/.*$
-  RewriteCond %{REQUEST_URI} !^/edtManager/uploads/.*$
-  RewriteRule . /edtManager/react-flutter-fusion/index.html [L]
+  RewriteCond %{REQUEST_URI} !^/edt-api/api/.*$
+  RewriteCond %{REQUEST_URI} !^/edt-api/uploads/.*$
+  RewriteRule . /edt-manager-app/index.html [L]
 
 </IfModule>

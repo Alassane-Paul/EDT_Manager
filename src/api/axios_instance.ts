@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const isProduction = import.meta.env.MODE === 'production';
 const API_URL = isProduction
-  ? 'https://fundacionesperanzatogo.tg/edtManager/api'
+  ? 'https://fundacionesperanzatogo.tg/edt-api/api'
   : 'http://localhost:5000/api';
 
 

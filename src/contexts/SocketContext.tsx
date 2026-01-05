@@ -29,7 +29,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
                 : 'http://localhost:5000';
 
             const socketInstance = io(SOCKET_URL, {
-                path: isProduction ? '/edtManager/api/socket.io' : '/socket.io',
+                path: isProduction ? '/edt-api/socket.io' : '/socket.io',
                 transports: ["websocket"],
                 withCredentials: true,
             });
