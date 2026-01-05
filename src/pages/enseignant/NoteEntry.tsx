@@ -3,7 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { evaluationsApi, Evaluation } from "@/api/evaluations/api";
 import { notesApi, Note } from "@/api/notes/api";
-import { periodesApi } from "@/api/periodes/api";
+import { periodesApi, Periode } from "@/api/periodes/api";
 import { useAuth } from "@/contexts/AuthContext"; // To get current teacher ID
 import { coursApi } from "@/api/cours/api"; // To get teacher's classes/matieres
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,7 @@ export function NoteEntry() {
     // Fetch Evaluations
     const { data: evalsData, isLoading: evalsLoading } = useQuery({
         queryKey: ["evaluations", user?.id], // Filter by teacher ideally
-        queryFn: () => evaluationsApi.getAll({ enseignant_id: user?.enseignant?.id })
+        queryFn: () => evaluationsApi.getAll({ enseignant_id: (user as any)?.enseignant?.id })
         // Needs user to have enseignant profile linked in context or fetch it? 
         // Using simple getAll for now, backend filters or returns all if not strictly scoped in prototype
     });

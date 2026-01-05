@@ -62,6 +62,7 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+type EnseignantFormData = FormValues;
 
 export default function EnseignantForm() {
   const { id } = useParams();
@@ -122,7 +123,7 @@ export default function EnseignantForm() {
         }
       );
     } else {
-      createMutation.mutate(values as EnseignantFormData, {
+      createMutation.mutate(values as any, {
         onSuccess: (data) => navigate(`/gestion/teachers/${data.id}`),
       });
     }

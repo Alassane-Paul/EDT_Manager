@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? '/edt-manager-app/' : '/',
   server: {
     host: "::",
-    port: 1102,
+    port: 8080,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

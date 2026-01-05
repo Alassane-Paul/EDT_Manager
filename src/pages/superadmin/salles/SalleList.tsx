@@ -8,17 +8,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSalles } from '@/hooks/useSalles';
-import { TypeSalle } from '@/types/salles';
+import { TypeSalle, SalleFilters } from '@/types/salles';
 import { Plus, Eye, Edit, Search } from 'lucide-react';
 
 export default function SalleList() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string | 'all'>('all');
+  const [typeFilter, setTypeFilter] = useState<TypeSalle | 'all'>('all');
 
-  const filters = useMemo(() => ({
+  const filters = useMemo((): SalleFilters => ({
     search: search || undefined,
-    type_salle: typeFilter && typeFilter !== 'all' ? typeFilter : undefined,
+    type_salle: typeFilter !== 'all' ? typeFilter : undefined,
   }), [search, typeFilter]);
 
   const { salles, isLoading, error } = useSalles(filters);
@@ -47,7 +47,7 @@ export default function SalleList() {
                 <Input placeholder="Rechercher une salle (nom, bâtiment...)" value={search} onChange={(e) => setSearch(e.target.value)} />
               </div>
 
-              <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as string | 'all')}>
+              <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as TypeSalle | 'all')}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>

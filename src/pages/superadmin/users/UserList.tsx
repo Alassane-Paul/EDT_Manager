@@ -104,7 +104,7 @@ export default function UserList() {
                           {user.enseignant && <div className="text-xs text-muted-foreground">Matricule: {user.enseignant.matricule}</div>}
                           {user.eleve && <div className="text-xs text-muted-foreground">Matricule: {user.eleve.matricule}</div>}
                           {user.directeur && <div className="text-xs text-muted-foreground">Matricule: {user.directeur.matricule}</div>}
-                          {user.responsable_pedagogique && <div className="text-xs text-muted-foreground">Matricule: {user.responsable_pedagogique.matricule}</div>}
+                          {user.responsablePedagogique && <div className="text-xs text-muted-foreground">Matricule: {user.responsablePedagogique.matricule}</div>}
                         </TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>

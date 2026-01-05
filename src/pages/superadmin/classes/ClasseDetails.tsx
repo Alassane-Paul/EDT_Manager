@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatutClasse } from "@/types/classes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useUsers } from "@/hooks/useUsers";
 import { RoleUtilisateur } from "@/types/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
