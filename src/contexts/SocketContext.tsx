@@ -29,10 +29,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
                 : 'http://localhost:5000';
 
             const socketInstance = io(SOCKET_URL, {
-                path: isProduction ? '/edtManager/react-flutter-fusion/socket.io' : '/socket.io',
+                path: isProduction ? '/edtManager/api/socket.io' : '/socket.io',
                 transports: ["websocket"],
                 withCredentials: true,
             });
+
 
 
             socketInstance.on("connect", () => {

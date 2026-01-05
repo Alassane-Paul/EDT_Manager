@@ -5,5 +5,8 @@
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-l
+  RewriteCond %{REQUEST_URI} !^/edtManager/api/.*$
+  RewriteCond %{REQUEST_URI} !^/edtManager/uploads/.*$
   RewriteRule . /edtManager/react-flutter-fusion/index.html [L]
+
 </IfModule>
