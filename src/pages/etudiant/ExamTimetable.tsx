@@ -9,7 +9,7 @@ import { Calendar, Clock, MapPin, FileText, Loader2 } from "lucide-react";
 
 export default function ExamTimetable() {
     const { user } = useAuth();
-    const classeId = user?.eleve?.classe_id;
+    const classeId = (user as any)?.eleve?.classe_id;
 
     const { data: sessionsData, isLoading } = useQuery({
         queryKey: ["sessions-examen", classeId],
@@ -63,7 +63,7 @@ export default function ExamTimetable() {
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         {sessions.map((session: SessionExamen) => (
-                                            <ExamCard key={session.id} session={session} eleveId={user?.eleve?.id} />
+                                            <ExamCard key={session.id} session={session} eleveId={(user as any)?.eleve?.id} />
                                         ))}
                                     </CardContent>
                                 </Card>

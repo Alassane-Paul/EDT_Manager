@@ -90,7 +90,7 @@ export default function EtablissementDetails() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <div><strong>Utilisateurs:</strong> {stats?.total_users ?? '-'}</div>
+                <div><strong>Utilisateurs:</strong> {stats?.total_etudiants ?? '-'}</div>
                 <div><strong>Classes:</strong> {stats?.total_classes ?? '-'}</div>
                 <div><strong>Enseignants:</strong> {stats?.total_enseignants ?? '-'}</div>
                 <div><strong>Salles:</strong> {stats?.total_salles ?? '-'}</div>

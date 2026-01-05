@@ -69,7 +69,8 @@ const EmploiTempsEtudiant = () => {
 
   const weekDates = getWeekDates(selectedWeek);
 
-  const { seances = [], statistiques } = emploiTemps || {};
+  const seances: Seance[] = Array.isArray(emploiTemps?.seances) ? emploiTemps.seances : [];
+  const { statistiques } = emploiTemps || {};
 
   return (
     <AppLayout>
@@ -121,7 +122,7 @@ const EmploiTempsEtudiant = () => {
         {!isLoading && (
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {joursSemaine.map((jour, index) => {
-              const seancesJour = seances.filter(s => s.jour === jour) || [];
+              const seancesJour = seances.filter((s: Seance) => s.jour === jour) || [];
               return (
                 <Card key={jour} className="overflow-hidden">
                   <CardHeader className="bg-muted/50 py-3">

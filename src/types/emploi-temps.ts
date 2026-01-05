@@ -17,18 +17,20 @@ export interface Seance {
   couleur?: string;
 }
 
+export interface EmploiTempsSeances {
+  lundi: Seance[];
+  mardi: Seance[];
+  mercredi: Seance[];
+  jeudi: Seance[];
+  vendredi: Seance[];
+  samedi?: Seance[];
+}
+
 export interface EmploiTemps {
   semaine: string;
   date_debut: string;
   date_fin: string;
-  seances: {
-    lundi: Seance[];
-    mardi: Seance[];
-    mercredi: Seance[];
-    jeudi: Seance[];
-    vendredi: Seance[];
-    samedi?: Seance[];
-  };
+  seances: Seance[] | EmploiTempsSeances;
   statistiques: {
     heures_total: number;
     nombre_seances: number;

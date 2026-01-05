@@ -29,6 +29,7 @@ export interface User {
   eleve?: any;
   directeur?: any;
   responsablePedagogique?: any;
+  deux_fa_active?: boolean;
 }
 
 export interface UserFormData {

@@ -9,6 +9,30 @@ export interface Cours {
   heures_total: number;
   heures_effectuees: number;
   couleur?: string;
+  // Extended fields for UI
+  nbEtudiants?: number;
+  prochainCours?: string;
+  salle?: string;
+  creneaux?: CreneauCours[];
+  eleves?: EleveCours[];
+}
+
+export interface EleveCours {
+  id: string;
+  nom: string;
+  prenom: string;
+  matricule: string;
+}
+
+export interface CreneauCours {
+  id: string;
+  jour_semaine: string;
+  heure_debut: string;
+  heure_fin: string;
+  salle?: {
+    id: string;
+    nom_salle: string;
+  };
 }
 
 export interface CoursDetail extends Cours {

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,7 @@ import { UserX, Calendar, Clock, Users, AlertTriangle, CheckCircle, Plus, Send, 
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
+import { Cours } from "@/types/cours";
 
 interface Etudiant {
   id: string;
@@ -25,6 +27,7 @@ interface Etudiant {
 }
 
 export default function AbsencesEnseignant() {
+  const navigate = useNavigate();
   const [selectedCoursId, setSelectedCoursId] = useState<string>("");
   const [selectedSeanceKey, setSelectedSeanceKey] = useState<string>(""); // Format: "YYYY-MM-DD"
   const [presences, setPresences] = useState<Record<string, boolean>>({});
@@ -43,7 +46,8 @@ export default function AbsencesEnseignant() {
   // Génération des séances (2 dernières semaines + 1 semaine à venir) pour la démo
   // Dans un vrai cas, on pourrait avoir une API dédiée "getSeances" qui retourne les dates réelles
   const getSeancesOptions = () => {
-    if (!selectedCours || !selectedCours.creneaux) return [];
+    const creneaux = (selectedCours as any)?.creneaux;
+    if (!selectedCours || !creneaux) return [];
 
     const options: { date: string; label: string; dateObj: Date }[] = [];
     const today = new Date();
@@ -52,7 +56,7 @@ export default function AbsencesEnseignant() {
     const endDate = new Date(today);
     endDate.setDate(today.getDate() + 7); // 1 week forward
 
-    selectedCours.creneaux.forEach((creneau: any) => {
+    creneaux.forEach((creneau: any) => {
       let currentDate = new Date(startDate);
       while (currentDate <= endDate) {
         // Check if day matches (0=Sunday, 1=Monday...)

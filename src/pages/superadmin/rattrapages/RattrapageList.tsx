@@ -22,14 +22,13 @@ export default function RattrapageList() {
   const navigate = useNavigate();
   const [statutFilter, setStatutFilter] = useState<StatutRattrapage | "all">("all");
 
-  const filters = useMemo(
-    () => ({
-      statut: statutFilter !== "all" ? statutFilter : undefined,
-    }),
-    [statutFilter]
-  );
+  const { rattrapages: allRattrapages, isLoading } = useRattrapages();
 
-  const { rattrapages, isLoading } = useRattrapages(filters);
+  const rattrapages = useMemo(() => {
+    if (!allRattrapages) return [];
+    if (statutFilter === "all") return allRattrapages;
+    return allRattrapages.filter(r => r.statut === statutFilter);
+  }, [allRattrapages, statutFilter]);
 
   return (
     <AppLayout>
@@ -50,7 +49,7 @@ export default function RattrapageList() {
             <CardTitle>Liste des rattrapages</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Select value={statutFilter} onValueChange={(v) => setStatutFilter(v as StatutRattrapage | "")}>
+            <Select value={statutFilter} onValueChange={(v) => setStatutFilter(v as StatutRattrapage | "all")}>
               <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="Filtrer par statut" />
               </SelectTrigger>

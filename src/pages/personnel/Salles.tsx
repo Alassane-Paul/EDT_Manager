@@ -65,9 +65,9 @@ const SallesPersonnel = () => {
   const [filterType, setFilterType] = useState<string>("all");
   const [filterDisponibilite, setFilterDisponibilite] = useState<string>("all");
 
-  const { salles: apiSalles, isLoading, error } = useSalles({
-    type_salle: filterType !== "all" ? filterType : undefined,
-  });
+  const { salles: apiSalles, isLoading, error } = useSalles(
+    filterType !== "all" ? { type_salle: filterType as any } : undefined
+  );
 
   const salles = apiSalles;
 

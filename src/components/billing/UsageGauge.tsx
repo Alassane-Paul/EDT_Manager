@@ -58,9 +58,8 @@ export const UsageGauge: React.FC<UsageGaugeProps> = ({
             {limit ? (
                 <div className="space-y-1">
                     <Progress
-                        value={percentage}
-                        className="h-2"
-                        indicatorClassName={getProgressColor()}
+                        value={percentage ?? 0}
+                        className={`h-2 [&>div]:${getProgressColor()}`}
                     />
                     <div className="flex justify-between items-center pt-1">
                         <div className="flex items-center gap-1">
