@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useChat } from '@/contexts/ChatContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { cn } from '@/lib/utils';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,7 +11,8 @@ import axiosInstance from '@/api/axios_instance';
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const ChatWindow = () => {
-    const { activeConversationId, conversations, sendMessage, socket } = useChat();
+    const { activeConversationId, conversations, sendMessage, socket, onlineUsers, typingStates } = useChat();
+    const { user: currentUser } = useAuth();
     const [messages, setMessages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -88,7 +91,18 @@ export const ChatWindow = () => {
                     </Avatar>
                     <div>
                         <h3 className="font-semibold">{displayName}</h3>
-                        <p className="text-xs text-muted-foreground">Discussion</p>
+                        <p className={cn(
+                            "text-xs",
+                            activeConversation?.type === 'DIRECT' && activeConversation.participants.some(p => p.id !== currentUser?.id && onlineUsers.has(p.id))
+                                ? "text-green-500 font-medium"
+                                : "text-muted-foreground"
+                        )}>
+                            {typingStates[activeConversationId!]?.isTyping ? (
+                                <span className="text-primary italic animate-pulse">En train d'écrire...</span>
+                            ) : activeConversation?.type === 'DIRECT' && activeConversation.participants.some(p => p.id !== currentUser?.id && onlineUsers.has(p.id))
+                                ? "En ligne"
+                                : "Discussion"}
+                        </p>
                     </div>
                 </div>
                 <div className="flex gap-2">

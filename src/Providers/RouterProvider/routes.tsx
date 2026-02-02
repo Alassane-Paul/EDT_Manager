@@ -37,9 +37,11 @@ import GenerationEmploiTemps from "@/pages/superadmin/emplois_temps/GenerationEm
 import EmploiTempsDetails from "@/pages/superadmin/emplois_temps/EmploiTempsDetails";
 import BulletinManager from "@/pages/superadmin/bulletins/BulletinManager";
 import ExamScheduler from "@/pages/superadmin/examens/ExamScheduler";
+import ExamGeneration from "@/pages/superadmin/examens/ExamGeneration";
 import Settings from "@/pages/superadmin/settings/Settings";
 import AccreditationPage from "@/pages/superadmin/accreditations/AccreditationPage";
 import ChatLayout from "@/pages/chat/ChatLayout";
+import Terms from "@/pages/Terms";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -73,6 +75,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/terms" element={<Terms />} />
 
       {/* Route Profil accessible à tous les connectés */}
       <Route
@@ -543,6 +546,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
             <ExamScheduler />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/gestion/examens-presentiel/generate"
+        element={
+          <ProtectedRoute allowedRoles={['admin', 'directeur', 'responsable_pedagogique']}>
+            <ExamGeneration />
           </ProtectedRoute>
         }
       />

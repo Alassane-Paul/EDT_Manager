@@ -137,7 +137,7 @@ export default function SalleForm() {
                     <FormItem>
                       <FormLabel>Nom de la salle *</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: Salle A101" {...field} />
+                        <Input placeholder="" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -172,7 +172,7 @@ export default function SalleForm() {
                       <FormItem>
                         <FormLabel>Capacité (personnes) *</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Ex: 30" {...field} />
+                          <Input type="number" min="0" placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -184,7 +184,7 @@ export default function SalleForm() {
                       <FormItem>
                         <FormLabel>Bâtiment</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ex: Bâtiment A" {...field} />
+                          <Input placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -194,7 +194,7 @@ export default function SalleForm() {
                       <FormItem>
                         <FormLabel>Étage</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ex: 1er" {...field} />
+                          <Input placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -206,7 +206,7 @@ export default function SalleForm() {
                       <FormItem>
                         <FormLabel>Surface (m²)</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Ex: 50" {...field} />
+                          <Input type="number" min="0" placeholder="" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -238,6 +238,7 @@ export default function SalleForm() {
                       <FormControl>
                         <input
                           type="checkbox"
+                          aria-label="Accessibilité PMR"
                           className="w-4 h-4 accent-primary"
                           checked={field.value}
                           onChange={(e) => field.onChange(e.target.checked)}

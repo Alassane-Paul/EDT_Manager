@@ -195,7 +195,7 @@ const AccreditationPage = () => {
                                         <Label htmlFor="desc">Raison / Description (Optionnel)</Label>
                                         <Textarea
                                             id="desc"
-                                            placeholder="Ex: Aide pour la saisie des notes du 1er trimestre"
+                                            placeholder=""
                                             value={formData.description}
                                             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                                         />

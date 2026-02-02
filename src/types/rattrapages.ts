@@ -7,6 +7,8 @@ export enum TypeRattrapage {
 
 export enum StatutRattrapage {
   DEMANDE = "demande",
+  VALIDE = "valide",
+  REFUSE = "refuse",
   PLANIFIE = "planifie",
   REALISE = "realise",
   ANNULE = "annule",

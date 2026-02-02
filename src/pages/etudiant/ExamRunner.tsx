@@ -8,20 +8,34 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
+import { useToast, toast } from "@/hooks/use-toast";
 import { Clock, Send, Loader2, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 export default function ExamRunner() {
     const { examenId } = useParams<{ examenId: string }>();
     const navigate = useNavigate();
-    const { toast } = useToast();
+    const { toast: toastHook } = useToast();
     const [tentativeId, setTentativeId] = useState<string | null>(null);
     const [examen, setExamen] = useState<ExamenEnLigne | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [reponses, setReponses] = useState<Record<string, string>>({});
     const [timeRemaining, setTimeRemaining] = useState<number>(0);
     const [isSubmitted, setIsSubmitted] = useState(false);
+
+    const [confirmConfig, setConfirmConfig] = useState<{
+        open: boolean;
+        title: string;
+        description: string;
+        onConfirm: () => void;
+        variant?: "default" | "destructive";
+    }>({
+        open: false,
+        title: "",
+        description: "",
+        onConfirm: () => { },
+    });
 
     const startMutation = useMutation({
         mutationFn: () => examensApi.startTentative(examenId!),
@@ -83,9 +97,14 @@ export default function ExamRunner() {
 
     const handleSubmit = () => {
         if (Object.keys(reponses).length < (examen?.questions?.length || 0)) {
-            if (!confirm("Vous n'avez pas répondu à toutes les questions. Voulez-vous vraiment soumettre ?")) {
-                return;
-            }
+            setConfirmConfig({
+                open: true,
+                title: "Soumettre l'examen ?",
+                description: "Vous n'avez pas répondu à toutes les questions. Voulez-vous vraiment soumettre ?",
+                onConfirm: () => submitMutation.mutate(),
+                variant: "destructive"
+            });
+            return;
         }
         submitMutation.mutate();
     };
@@ -260,6 +279,15 @@ export default function ExamRunner() {
                     </CardContent>
                 </Card>
             </div>
-        </AppLayout>
+
+            <ConfirmDialog
+                open={confirmConfig.open}
+                onOpenChange={(open) => setConfirmConfig((prev) => ({ ...prev, open }))}
+                title={confirmConfig.title}
+                description={confirmConfig.description}
+                onConfirm={confirmConfig.onConfirm}
+                variant={confirmConfig.variant}
+            />
+        </AppLayout >
     );
 }

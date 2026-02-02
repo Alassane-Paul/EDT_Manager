@@ -1,14 +1,18 @@
 import axios from 'axios';
 
 const isProduction = import.meta.env.MODE === 'production';
-const API_URL = isProduction
-  ? 'https://fundacionesperanzatogo.tg/edt-api/api'
-  : 'http://localhost:5000/api';
+// const API_URL = isProduction
+//   ? 'https://fundacionesperanzatogo.tg/edt-api/api'
+//   : 'http://localhost:5000/api';
+const API_URL =
+  // isProduction
+  //   ? 'https://fundacionesperanzatogo.tg/edt-api/api'
+  'http://localhost:5000/api';
 
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },

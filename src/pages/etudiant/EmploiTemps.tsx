@@ -7,8 +7,8 @@ import { useState } from "react";
 import { useMonEmploiTemps, useExportEmploiTemps } from "@/hooks/useEmploiTemps";
 import { Seance } from "@/types/emploi-temps";
 
-const joursSemaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi"] as const;
-const joursAffichage = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+const joursSemaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"] as const;
+const joursAffichage = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
 
 const getSubjectColor = (matiere: string) => {
   const colors: Record<string, string> = {
@@ -59,7 +59,7 @@ const EmploiTempsEtudiant = () => {
     monday.setDate(today.getDate() - today.getDay() + 1 + (offset * 7));
 
     const friday = new Date(monday);
-    friday.setDate(monday.getDate() + 4);
+    friday.setDate(monday.getDate() + 5);
 
     return {
       start: monday.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
@@ -120,7 +120,7 @@ const EmploiTempsEtudiant = () => {
 
         {/* Grille de l'emploi du temps */}
         {!isLoading && (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {joursSemaine.map((jour, index) => {
               const seancesJour = seances.filter((s: Seance) => s.jour === jour) || [];
               return (

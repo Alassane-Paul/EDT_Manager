@@ -47,7 +47,7 @@ export const ContactDirectory = () => {
     const [etablissements, setEtablissements] = useState<Etablissement[]>([]);
     const [selectedEtabId, setSelectedEtabId] = useState<string | null>(null);
 
-    const { startConversation, setActiveConversationId } = useChat();
+    const { startConversation, setActiveConversationId, onlineUsers } = useChat();
 
     // Charger les établissements si admin
     useEffect(() => {
@@ -199,18 +199,24 @@ export const ContactDirectory = () => {
                                                     isSelecting === user.id && "bg-accent/30"
                                                 )}
                                             >
-                                                <Avatar className="h-10 w-10 border border-border/50">
-                                                    <AvatarImage src={user.photo_url} />
-                                                    <AvatarFallback className="bg-primary/10 text-primary">
-                                                        {user.prenom[0]}{user.nom[0]}
-                                                    </AvatarFallback>
-                                                </Avatar>
+                                                <div className="relative">
+                                                    <Avatar className="h-10 w-10 border border-border/50">
+                                                        <AvatarImage src={user.photo_url} />
+                                                        <AvatarFallback className="bg-primary/10 text-primary">
+                                                            {user.prenom[0]}{user.nom[0]}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    {onlineUsers.has(user.id) && (
+                                                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+                                                    )}
+                                                </div>
                                                 <div className="flex-1">
                                                     <p className="font-semibold text-sm text-foreground/90">
                                                         {user.prenom} {user.nom}
                                                     </p>
-                                                    <p className="text-xs text-muted-foreground truncate">
-                                                        {user.role}
+                                                    <p className="text-xs text-muted-foreground truncate flex items-center gap-1.5">
+                                                        {onlineUsers.has(user.id) && <span className="w-1.5 h-1.5 rounded-full bg-green-500" />}
+                                                        {onlineUsers.has(user.id) ? "En ligne" : user.role}
                                                     </p>
                                                 </div>
                                                 {isSelecting === user.id && (

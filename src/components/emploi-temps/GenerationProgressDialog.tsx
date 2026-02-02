@@ -38,7 +38,13 @@ export function GenerationProgressDialog({ emploiTempsId, open, onClose }: Gener
                     }, 1500);
                 }
             } catch (err: any) {
-                setError(err.message || "Erreur lors de la vérification du statut");
+                // Ne pas afficher l'erreur si c'est un timeout
+                const isTimeout = err.code === 'ECONNABORTED' || err.message?.toLowerCase().includes('timeout');
+                if (!isTimeout) {
+                    setError(err.message || "Erreur lors de la vérification du statut");
+                } else {
+                    console.log("Polling timeout ignoré...");
+                }
             }
         };
 
@@ -64,6 +70,15 @@ export function GenerationProgressDialog({ emploiTempsId, open, onClose }: Gener
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
+                    {!status && !error && (
+                        <div className="flex flex-col items-center justify-center py-8 gap-4">
+                            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                            <p className="text-sm text-muted-foreground animate-pulse">
+                                Initialisation de la génération...
+                            </p>
+                        </div>
+                    )}
+
                     {status?.is_generating && (
                         <>
                             <div className="flex items-center justify-center gap-2">

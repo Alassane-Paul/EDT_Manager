@@ -32,12 +32,7 @@ export default function VirtualClassroom() {
         enabled: !!selectedCours
     });
 
-    // For demo purposes, we'll need to get the student's courses
-    // This would typically come from an API endpoint that returns courses for the student's class
-    // Let's create a placeholder for now
-    const studentCourses = [
-        // This should be fetched from an API
-    ];
+    const studentCourses = [];
 
     return (
         <AppLayout>
@@ -59,7 +54,7 @@ export default function VirtualClassroom() {
                             <Card className="cursor-pointer hover:border-primary transition-colors">
                                 <CardHeader>
                                     <CardTitle className="text-lg">Mathématiques</CardTitle>
-                                    <CardDescription>M. Dupont</CardDescription>
+                                    <CardDescription>Enseignant</CardDescription>
                                 </CardHeader>
                             </Card>
                         </div>

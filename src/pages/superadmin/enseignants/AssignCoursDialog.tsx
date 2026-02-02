@@ -62,6 +62,21 @@ export function AssignCoursDialog({
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
+    const handleMatiereChange = (matiereId: string) => {
+        const selectedMatiere = validMatieres?.find(m => m.id === matiereId);
+        if (selectedMatiere) {
+            setFormData(prev => ({
+                ...prev,
+                matiere_id: matiereId,
+                type_cours: selectedMatiere.type_cours,
+                volume_horaire_hebdo: selectedMatiere.volume_horaire_hebdo.toString(),
+                duree_seance_standard: selectedMatiere.duree_standard.toString()
+            }));
+        } else {
+            handleChange("matiere_id", matiereId);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.matiere_id || !formData.classe_id || !formData.volume_horaire_hebdo) {
@@ -96,10 +111,11 @@ export function AssignCoursDialog({
                 type_cours: "cours_magistral",
             });
             onSuccess();
-        } catch (error) {
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.error || "Impossible de créer le cours.";
             toast({
                 title: "Erreur",
-                description: "Impossible de créer le cours.",
+                description: errorMsg,
                 variant: "destructive",
             });
             console.error(error);
@@ -129,7 +145,7 @@ export function AssignCoursDialog({
                             <Label htmlFor="matiere">Matière *</Label>
                             <Select
                                 value={formData.matiere_id}
-                                onValueChange={(val) => handleChange("matiere_id", val)}
+                                onValueChange={handleMatiereChange}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Choisir une matière" />
@@ -194,9 +210,10 @@ export function AssignCoursDialog({
                             <Input
                                 id="volume"
                                 type="number"
-                                placeholder="ex: 120"
+                                placeholder=""
                                 value={formData.volume_horaire_hebdo}
                                 onChange={(e) => handleChange("volume_horaire_hebdo", e.target.value)}
+                                min="0"
                             />
                         </div>
                     </div>
@@ -206,9 +223,10 @@ export function AssignCoursDialog({
                         <Input
                             id="duree"
                             type="number"
-                            placeholder="ex: 60"
+                            placeholder=""
                             value={formData.duree_seance_standard}
                             onChange={(e) => handleChange("duree_seance_standard", e.target.value)}
+                            min="0"
                         />
                     </div>
 

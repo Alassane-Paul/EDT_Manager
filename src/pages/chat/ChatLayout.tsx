@@ -9,18 +9,30 @@ import { useChat } from '@/contexts/ChatContext';
 // Wrapper component to handle query params (e.g., start chat with user)
 const ChatLayoutInner = () => {
     const location = useLocation();
-    const { startConversation, setActiveConversationId } = useChat();
+
+    // Safely access chat context with error handling
+    let chatContext;
+    try {
+        chatContext = useChat();
+    } catch (error) {
+        // Context not yet initialized
+        return <div className="flex items-center justify-center h-screen">Chargement...</div>;
+    }
+
+    const { startConversation, setActiveConversationId } = chatContext;
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const targetUserId = params.get('user');
 
-        if (targetUserId) {
+        if (targetUserId && startConversation) {
             startConversation(targetUserId).then(id => {
                 setActiveConversationId(id);
+            }).catch(err => {
+                console.error('Failed to start conversation:', err);
             });
         }
-    }, [location]);
+    }, [location, startConversation, setActiveConversationId]);
 
     return (
         <div className="flex h-[calc(100vh-4rem)] border rounded-lg overflow-hidden bg-background shadow-sm">

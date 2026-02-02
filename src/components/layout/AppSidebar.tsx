@@ -91,14 +91,14 @@ const navigationGroups: NavGroup[] = [
       { title: "Mes cours", url: "/enseignant/cours", icon: BookOpen, roles: ["admin", "enseignant"] },
       { title: "Gestion absences", url: "/enseignant/absences", icon: UserCog, roles: ["admin", "enseignant"], accreditation: 'ABSENCES' },
       { title: "Mes rattrapages", url: "/enseignant/rattrapages", icon: Calendar, roles: ["admin", "enseignant"] },
-      { title: "Mes notes", url: "/enseignant/notes", icon: FileText, roles: ["admin", "enseignant"], accreditation: 'NOTES' },
+      { title: "Mes notes", url: "/enseignant/notes", icon: FileText, roles: ["admin", "enseignant"] },
       { title: "Contenu de cours", url: "/enseignant/contenu", icon: BookOpen, roles: ["admin", "enseignant"] },
       { title: "Quiz & Examens", url: "/enseignant/quiz", icon: ClipboardList, roles: ["admin", "enseignant"] },
     ],
   },
   {
     label: "Pédagogie",
-    roles: ["admin", "directeur", "responsable_pedagogique", "personnel"],
+    roles: ["admin", "directeur", "responsable_pedagogique"],
     items: [
       { title: "Classes", url: "/gestion/classes", icon: GraduationCap, roles: ["admin", "directeur", "responsable_pedagogique"], accreditation: 'ELEVES' },
       { title: "Enseignants", url: "/gestion/teachers", icon: UserCog, roles: ["admin", "directeur", "responsable_pedagogique"] },
@@ -106,7 +106,7 @@ const navigationGroups: NavGroup[] = [
       { title: "Emplois du temps", url: "/gestion/emplois-temps", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique"], accreditation: 'EMPLOI_TEMPS' },
       { title: "Bulletins", url: "/gestion/bulletins", icon: FileText, roles: ["admin", "directeur", "responsable_pedagogique"], accreditation: 'NOTES' },
       { title: "Examens présentiels", url: "/gestion/examens-presentiel", icon: ClipboardList, roles: ["admin", "directeur", "responsable_pedagogique"] },
-      { title: "Rattrapages", url: "/gestion/rattrapages", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"] },
+      { title: "Rattrapages", url: "/gestion/rattrapages", icon: Calendar, roles: ["admin", "directeur", "responsable_pedagogique"] },
     ],
   },
   {

@@ -17,6 +17,8 @@ export interface User {
   twoFactorEnabled?: boolean;
   photo_url?: string;
   telephone?: string;
+  enseignantId?: string;
+  eleve?: { id: string; classe_id: string };
 }
 
 interface AuthContextType {
@@ -56,6 +58,8 @@ const mapApiUserToUser = (apiUser: ApiUser): User => ({
   twoFactorEnabled: apiUser.deux_fa_active,
   photo_url: apiUser.photo_url,
   telephone: apiUser.telephone,
+  enseignantId: apiUser.enseignant?.id,
+  eleve: apiUser.eleve,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -104,7 +108,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Si 2FA est requis
       if (response.requires2FA) {
         setRequires2FA(true);
-        setPending2FAEmail(email);
+        // Use email from response to ensure consistency with backend
+        const serverEmail = response.utilisateur?.email || email;
+        console.log('Setting pending2FAEmail to:', serverEmail);
+        setPending2FAEmail(serverEmail);
         return { success: true, requires2FA: true };
       }
 

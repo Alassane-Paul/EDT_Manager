@@ -29,6 +29,9 @@ export interface Etablissement {
   langue: string;
   annee_scolaire_courante: string;
   statut: StatutEtablissement;
+  heure_debut_journee: string;
+  heure_fin_journee: string;
+  duree_cours_standard: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -47,6 +50,9 @@ export interface EtablissementFormData {
   langue?: string;
   annee_scolaire_courante: string;
   statut?: StatutEtablissement;
+  heure_debut_journee?: string;
+  heure_fin_journee?: string;
+  duree_cours_standard?: number;
 }
 
 export interface EtablissementFilters {

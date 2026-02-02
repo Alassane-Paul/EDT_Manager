@@ -11,12 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { BulletinTemplate } from "./BulletinTemplate";
 import { Loader2, FileText, Printer } from "lucide-react";
 
 export default function BulletinManager() {
     const { toast } = useToast();
     const [selectedClasse, setSelectedClasse] = useState<string>("");
     const [selectedPeriode, setSelectedPeriode] = useState<string>("");
+    const [bulletinToPrint, setBulletinToPrint] = useState<Bulletin | null>(null);
 
     // Fetch Classes
     const { data: classesData } = useQuery({
@@ -132,6 +135,7 @@ export default function BulletinManager() {
                                             eleve={eleve}
                                             periodeId={selectedPeriode}
                                             onGenerate={() => generateMutation.mutate({ eleveId: eleve.id, periodeId: selectedPeriode })}
+                                            onPrint={(b) => setBulletinToPrint(b)}
                                         />
                                     ))}
                                 </TableBody>
@@ -140,12 +144,32 @@ export default function BulletinManager() {
                     </Card>
                 )}
             </div>
-        </AppLayout>
+
+            <Dialog open={!!bulletinToPrint} onOpenChange={(open) => !open && setBulletinToPrint(null)}>
+                <DialogContent className="max-w-[210mm] w-full max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Aperçu avant impression</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="border p-4 shadow-sm bg-gray-50 overflow-auto">
+                        {bulletinToPrint && <BulletinTemplate bulletin={bulletinToPrint} />}
+                    </div>
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setBulletinToPrint(null)}>Fermer</Button>
+                        <Button onClick={() => window.print()}>
+                            <Printer className="mr-2 h-4 w-4" />
+                            Imprimer
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </AppLayout >
     );
 }
 
 // Sub-component to manage individual row state (fetching existing bulletin status)
-function BulletinRow({ eleve, periodeId, onGenerate }: { eleve: any, periodeId: string, onGenerate: () => void }) {
+function BulletinRow({ eleve, periodeId, onGenerate, onPrint }: { eleve: any, periodeId: string, onGenerate: () => void, onPrint: (b: Bulletin) => void }) {
     const { data, isLoading, refetch } = useQuery({
         queryKey: ["bulletin", eleve.id, periodeId],
         queryFn: () => bulletinsApi.getByEleveAndPeriode(eleve.id, periodeId),
@@ -182,8 +206,8 @@ function BulletinRow({ eleve, periodeId, onGenerate }: { eleve: any, periodeId: 
                         Générer
                     </Button>
                     {bulletin && (
-                        <Button variant="ghost" size="sm">
-                            <FileText className="h-4 w-4" />
+                        <Button variant="ghost" size="sm" onClick={() => onPrint(bulletin)}>
+                            <Printer className="h-4 w-4" />
                         </Button>
                     )}
                 </div>

@@ -63,6 +63,7 @@ export default function EtablissementDetails() {
             <CardContent>
               <div className="space-y-2">
                 <div><strong>Type:</strong> {etablissement.type}</div>
+                <div><strong>Code:</strong> {etablissement.code_acces}</div>
                 <div><strong>Ville:</strong> {etablissement.ville || '-'}</div>
                 <div><strong>Adresse:</strong> {etablissement.adresse || '-'}</div>
                 <div><strong>Année scolaire:</strong> {etablissement.annee_scolaire_courante}</div>

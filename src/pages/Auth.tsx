@@ -11,6 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Calendar, Loader2, Shield } from "lucide-react";
 import { authApi } from "@/api/auth/api";
 import { TwoFactorSetup } from "@/components/TwoFactorSetup";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Link } from "react-router-dom";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -38,6 +41,7 @@ const Auth = () => {
   const [signupClasseId, setSignupClasseId] = useState("");
   const [availableClasses, setAvailableClasses] = useState<any[]>([]);
   const [isFetchingClasses, setIsFetchingClasses] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   // Charger les classes si c'est un étudiant et que le code d'accès est présent
   useEffect(() => {
@@ -156,6 +160,15 @@ const Auth = () => {
       return;
     }
 
+    if (!acceptedTerms) {
+      toast({
+        title: "Erreur",
+        description: "Vous devez accepter les termes et conditions pour continuer",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (signupPassword !== signupConfirmPassword) {
       toast({
         title: "Erreur",
@@ -252,12 +265,12 @@ const Auth = () => {
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Vérification...
-                  </>
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Vérification...</span>
+                  </span>
                 ) : (
-                  "Vérifier"
+                  <span>Vérifier</span>
                 )}
               </Button>
             </form>
@@ -343,12 +356,12 @@ const Auth = () => {
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Connexion...
-                    </>
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Connexion...</span>
+                    </span>
                   ) : (
-                    "Se connecter"
+                    <span>Se connecter</span>
                   )}
                 </Button>
               </form>
@@ -363,7 +376,7 @@ const Auth = () => {
                     <Input
                       id="signup-firstname"
                       type="text"
-                      placeholder="Jean"
+                      placeholder=""
                       value={signupFirstName}
                       onChange={(e) => setSignupFirstName(e.target.value)}
                       disabled={isLoading}
@@ -375,7 +388,7 @@ const Auth = () => {
                     <Input
                       id="signup-lastname"
                       type="text"
-                      placeholder="Dupont"
+                      placeholder=""
                       value={signupLastName}
                       onChange={(e) => setSignupLastName(e.target.value)}
                       disabled={isLoading}
@@ -489,14 +502,32 @@ const Auth = () => {
                   </div>
                 )}
 
+                <div className="flex items-center space-x-2 py-2">
+                  <Checkbox
+                    id="terms"
+                    checked={acceptedTerms}
+                    onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+                    className="border-primary"
+                  />
+                  <Label
+                    htmlFor="terms"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    J'accepte les{" "}
+                    <Link to="/terms" className="text-primary hover:underline font-semibold">
+                      Termes et Conditions
+                    </Link>
+                  </Label>
+                </div>
+
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Création du compte...
-                    </>
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Création du compte...</span>
+                    </span>
                   ) : (
-                    "Créer un compte"
+                    <span>Créer un compte</span>
                   )}
                 </Button>
               </form>
@@ -508,4 +539,10 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default function AuthWrapped() {
+  return (
+    <ErrorBoundary>
+      <Auth />
+    </ErrorBoundary>
+  );
+}

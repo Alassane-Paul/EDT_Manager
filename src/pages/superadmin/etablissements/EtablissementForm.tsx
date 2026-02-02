@@ -149,7 +149,7 @@ export default function EtablissementForm() {
                       <FormItem>
                         <FormLabel>Nom *</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="Lycée Exemple" />
+                          <Input {...field} placeholder="" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -281,7 +281,7 @@ export default function EtablissementForm() {
                       <FormItem>
                         <FormLabel>Année scolaire *</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="2024-2025" />
+                          <Input {...field} placeholder="" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

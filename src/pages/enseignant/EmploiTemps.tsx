@@ -182,7 +182,7 @@ export default function EmploiTempsEnseignant() {
         </div>
 
         {/* Grille emploi du temps */}
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden min-h-[800px]">
           <CardContent className="p-0">
             {seances.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 px-4">
@@ -253,7 +253,7 @@ export default function EmploiTempsEnseignant() {
                               <div className="text-xs text-white/80 truncate">
                                 {seance.classe}
                               </div>
-                              <div className="text-xs text-white/70 flex items-center gap-1 mt-1">
+                              <div className="text-xs text-white/70 flex items-center gap-1">
                                 <MapPin className="h-3 w-3" />
                                 {seance.salle}
                               </div>

@@ -8,6 +8,8 @@ export interface Bulletin {
     moyenne_generale: number;
     rang: number;
     appreciation_conseil: string;
+    nb_absences?: number;
+    appreciation_conduite?: string;
     details_matieres: any[];
     statut: 'BROUILLON' | 'PUBLIE' | 'ARCHIVE';
     date_generation: string;
@@ -18,6 +20,15 @@ export interface Bulletin {
             nom: string;
             prenom: string;
         }
+    };
+    classe?: {
+        id: string;
+        nom_classe: string;
+    };
+    etablissement?: {
+        nom: string;
+        annee_scolaire: string;
+        telephone: string;
     };
 }
 

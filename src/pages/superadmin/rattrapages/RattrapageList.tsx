@@ -10,13 +10,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRattrapages } from "@/hooks/useRattrapages";
 import { StatutRattrapage } from "@/types/rattrapages";
 import { Plus, Eye } from "lucide-react";
+import { STATUT_COLORS, STATUT_LABELS } from "@/utils/rattrapageUtils";
 
-const STATUT_COLORS: Record<StatutRattrapage, string> = {
-  [StatutRattrapage.DEMANDE]: "bg-yellow-500",
-  [StatutRattrapage.PLANIFIE]: "bg-blue-500",
-  [StatutRattrapage.REALISE]: "bg-green-500",
-  [StatutRattrapage.ANNULE]: "bg-red-500",
-};
+
 
 export default function RattrapageList() {
   const navigate = useNavigate();
@@ -56,7 +52,7 @@ export default function RattrapageList() {
               <SelectContent>
                 <SelectItem value="all">Tous les statuts</SelectItem>
                 {Object.values(StatutRattrapage).map((statut) => (
-                  <SelectItem key={statut} value={statut}>{statut}</SelectItem>
+                  <SelectItem key={statut} value={statut}>{STATUT_LABELS[statut] || statut}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -99,7 +95,7 @@ export default function RattrapageList() {
                         <TableCell>{new Date(rattrapage.date_demande).toLocaleDateString('fr-FR')}</TableCell>
                         <TableCell>
                           <Badge className={STATUT_COLORS[rattrapage.statut]}>
-                            {rattrapage.statut}
+                            {STATUT_LABELS[rattrapage.statut] || rattrapage.statut}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">

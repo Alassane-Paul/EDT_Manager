@@ -52,6 +52,23 @@ export const sessionsExamenApi = {
 
     delete: async (id: string) => {
         await axiosInstance.delete(`/sessions-examen/${id}`);
+    },
+
+    suggestSlot: async (params: { classe_id: string; date_examen: string; duree_minutes: number }) => {
+        const response = await axiosInstance.get<{ heure_debut: string; heure_fin: string }>("/sessions-examen/suggest-slot", { params });
+        return response.data;
+    },
+
+    bulkGenerate: async (data: {
+        etablissement_id: string;
+        classe_ids: string[];
+        date_debut: string;
+        date_fin: string;
+        type_examen: string;
+        max_examens_par_jour?: number;
+    }) => {
+        const response = await axiosInstance.post<{ total_created: number; warnings: string[] }>("/sessions-examen/bulk-generate", data);
+        return response.data;
     }
 };
 

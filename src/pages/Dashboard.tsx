@@ -93,7 +93,7 @@ const dashboardPages: DashboardPage[] = [
     url: "/enseignant/emploi-temps",
     icon: Calendar,
     description: "Votre emploi du temps",
-    roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"],
+    roles: ["admin", "responsable_pedagogique", "enseignant"],
     category: "Enseignant"
   },
   {
@@ -101,7 +101,7 @@ const dashboardPages: DashboardPage[] = [
     url: "/enseignant/cours",
     icon: BookOpen,
     description: "Vos cours assignés",
-    roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"],
+    roles: ["admin", "responsable_pedagogique", "enseignant"],
     category: "Enseignant"
   },
   {
@@ -109,7 +109,7 @@ const dashboardPages: DashboardPage[] = [
     url: "/enseignant/absences",
     icon: UserCog,
     description: "Déclarer les absences",
-    roles: ["admin", "directeur", "responsable_pedagogique", "enseignant"],
+    roles: ["admin", "responsable_pedagogique", "enseignant"],
     category: "Enseignant"
   },
   // Gestion
@@ -236,7 +236,8 @@ const Dashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {user?.role === 'etudiant' ? (
+
+          {user?.role === 'etudiant' && (
             // --- CARTES ÉTUDIANT ---
             <>
               <Card className="border-primary/20">
@@ -296,74 +297,10 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             </>
-          ) : (
-            // --- CARTES ADMIN/AUTRE (EXISTANT) ---
-            <>
-              <Card className="border-primary/20">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Cours aujourd'hui
-                  </CardTitle>
-                  <Clock className="h-4 w-4 text-primary" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {isLoadingGeneral ? '-' : generalStats?.etat?.cours_aujourdhui || 0}
-                  </div>
-                  <p className="text-xs text-muted-foreground">Séances prévues</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-green-500/20">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Salles disponibles
-                  </CardTitle>
-                  <DoorOpen className="h-4 w-4 text-green-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {isLoadingGeneral ? '-' : generalStats?.utilisation?.salles_utilisees || 0}
-                  </div>
-                  <p className="text-xs text-muted-foreground font-medium text-green-600">
-                    {generalStats?.utilisation?.taux_utilisation_salles || 0}% occupation
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-orange-500/20">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Rattrapages en attente
-                  </CardTitle>
-                  <RefreshCw className="h-4 w-4 text-orange-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {isLoadingDashboard ? '-' : dashboardStats?.alertes?.rattrapages_urgents || 0}
-                  </div>
-                  <p className="text-xs text-muted-foreground">À planifier</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-blue-500/20">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Taux d'occupation
-                  </CardTitle>
-                  <BarChart3 className="h-4 w-4 text-blue-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground">
-                    {isLoadingGeneral ? '-' : generalStats?.utilisation?.taux_utilisation_salles || 0}%
-                  </div>
-                  <p className="text-xs text-muted-foreground">Global établissement</p>
-                </CardContent>
-              </Card>
-            </>
           )}
 
           {user?.role === 'enseignant' && (
+            // --- CARTES ENSEIGNANT ---
             <>
               <Card className="border-primary/20">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -422,6 +359,77 @@ const Dashboard = () => {
                     {isLoadingDashboard ? '-' : '24h'}
                   </div>
                   <p className="text-xs text-muted-foreground">Hebdomadaire</p>
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          {['admin', 'directeur', 'responsable_pedagogique'].includes(user?.role || '') && (
+            // --- CARTES ADMIN / DIRECTEUR / RESPONSABLE PÉDA ---
+            <>
+              {/* Carte globale visible tous les gestionnaires */}
+              <Card className="border-primary/20">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    Cours aujourd'hui
+                  </CardTitle>
+                  <Clock className="h-4 w-4 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">
+                    {isLoadingGeneral ? '-' : generalStats?.etat?.cours_aujourdhui || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Séances prévues</p>
+                </CardContent>
+              </Card>
+
+              {/* Carte Salles */}
+              <Card className="border-green-500/20">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    Salles disponibles
+                  </CardTitle>
+                  <DoorOpen className="h-4 w-4 text-green-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">
+                    {isLoadingGeneral ? '-' : (generalStats?.general?.total_salles || 0) - (generalStats?.utilisation?.salles_utilisees || 0)}
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium text-green-600">
+                    Sur {generalStats?.general?.total_salles || 0} salles totales
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Carte Rattrapages */}
+              <Card className="border-orange-500/20">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    Demandes rattrapage
+                  </CardTitle>
+                  <RefreshCw className="h-4 w-4 text-orange-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">
+                    {isLoadingGeneral ? '-' : generalStats?.etat?.rattrapages_en_attente || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">En attente de validation</p>
+                </CardContent>
+              </Card>
+
+              {/* Carte Absences */}
+              <Card className="border-blue-500/20">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    Absences à valider
+                  </CardTitle>
+                  <UserCog className="h-4 w-4 text-blue-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">
+                    {isLoadingDashboard ? '-' : dashboardStats?.alertes?.absences_a_valider || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">À traiter</p>
                 </CardContent>
               </Card>
             </>
@@ -570,7 +578,7 @@ const Dashboard = () => {
         open={show2FASetup}
         onOpenChange={setShow2FASetup}
       />
-    </AppLayout>
+    </AppLayout >
   );
 };
 

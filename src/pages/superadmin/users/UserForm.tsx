@@ -203,12 +203,12 @@ export default function UserForm() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <Label htmlFor="prenom">Prénom</Label>
-                                        <Input id="prenom" {...register("prenom", { required: "Prénom requis" })} placeholder="Jean" />
+                                        <Input id="prenom" {...register("prenom", { required: "Prénom requis" })} placeholder="" />
                                         {errors.prenom && <p className="text-xs text-destructive">{errors.prenom.message as string}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="nom">Nom</Label>
-                                        <Input id="nom" {...register("nom", { required: "Nom requis" })} placeholder="Dupont" />
+                                        <Input id="nom" {...register("nom", { required: "Nom requis" })} placeholder="" />
                                         {errors.nom && <p className="text-xs text-destructive">{errors.nom.message as string}</p>}
                                     </div>
                                 </div>
@@ -216,18 +216,18 @@ export default function UserForm() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <Label htmlFor="email">Email</Label>
-                                        <Input id="email" type="email" {...register("email", { required: "Email requis" })} placeholder="jean.dupont@email.com" />
+                                        <Input id="email" type="email" {...register("email", { required: "Email requis" })} placeholder="" />
                                         {errors.email && <p className="text-xs text-destructive">{errors.email.message as string}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="telephone">Téléphone</Label>
-                                        <Input id="telephone" {...register("telephone")} placeholder="+221 ..." />
+                                        <Input id="telephone" {...register("telephone")} placeholder="" />
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="photo_url">URL de la photo (optionnel)</Label>
-                                    <Input id="photo_url" {...register("photo_url")} placeholder="https://example.com/photo.jpg" />
+                                    <Input id="photo_url" {...register("photo_url")} placeholder="" />
                                 </div>
 
                                 {!isEditing && (
@@ -297,7 +297,7 @@ export default function UserForm() {
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="matricule">Matricule *</Label>
-                                        <Input id="matricule" {...register("matricule", { required: selectedRole !== RoleUtilisateur.ADMIN })} placeholder="MAT-2024-XXX" />
+                                        <Input id="matricule" {...register("matricule", { required: selectedRole !== RoleUtilisateur.ADMIN })} placeholder="" />
                                     </div>
 
                                     {selectedRole === RoleUtilisateur.ENSEIGNANT && (
@@ -319,7 +319,7 @@ export default function UserForm() {
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Heures Hebdo (min)</Label>
-                                                <Input type="number" {...register("heures_contractuelles_hebdo")} />
+                                                <Input type="number" min="0" {...register("heures_contractuelles_hebdo")} />
                                             </div>
                                         </div>
                                     )}

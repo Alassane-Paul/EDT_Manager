@@ -3,16 +3,28 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useEmploiTempsById, useEmploiTempsActions, useExportEmploiTemps } from "@/hooks/useEmploiTemps";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, CheckCircle2, Download, Send } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle2, Download, Send, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TimetableCalendar } from "@/components/timetable/TimetableCalendar";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useState } from "react";
 
 export default function EmploiTempsDetails() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { emploiTemps, isLoading } = useEmploiTempsById(id!);
-    const { validerEmploiTemps, isValidating, publierEmploiTemps, isPublishing } = useEmploiTempsActions();
+    const { validerEmploiTemps, isValidating, publierEmploiTemps, isPublishing, deleteEmploiTemps, isDeleting } = useEmploiTempsActions();
     const { exportPDF, isExporting } = useExportEmploiTemps();
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+    const handleDelete = async () => {
+        if (!id) return;
+        deleteEmploiTemps(id, {
+            onSuccess: () => {
+                navigate("/gestion/emplois-temps");
+            }
+        });
+    };
 
     if (!id) return null;
 
@@ -41,7 +53,7 @@ export default function EmploiTempsDetails() {
 
     return (
         <AppLayout>
-            <div className="space-y-6 h-[calc(100vh-100px)] flex flex-col">
+            <div className="space-y-6 flex flex-col">
                 <div className="flex items-center gap-4 shrink-0">
                     <Button variant="ghost" size="icon" onClick={() => navigate("/gestion/emplois-temps")}>
                         <ArrowLeft className="h-4 w-4" />
@@ -84,7 +96,7 @@ export default function EmploiTempsDetails() {
                     </Card>
                 </div>
 
-                <Card className="flex-1 overflow-hidden flex flex-col">
+                <Card className="min-h-[1000px] flex flex-col overflow-hidden">
                     <CardHeader className="py-3 px-4 shrink-0 border-b">
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-lg">Aperçu de l'emploi du temps</CardTitle>
@@ -119,6 +131,16 @@ export default function EmploiTempsDetails() {
                                         Publier
                                     </Button>
                                 )}
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    onClick={() => setIsConfirmOpen(true)}
+                                    disabled={isDeleting}
+                                >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Supprimer
+                                </Button>
                             </div>
                         </div>
                     </CardHeader>
@@ -128,6 +150,16 @@ export default function EmploiTempsDetails() {
                         </div>
                     </CardContent>
                 </Card>
+
+                <ConfirmDialog
+                    open={isConfirmOpen}
+                    onOpenChange={setIsConfirmOpen}
+                    onConfirm={handleDelete}
+                    title="Supprimer l'emploi du temps"
+                    description="Êtes-vous sûr de vouloir supprimer définitivement cet emploi du temps ?"
+                    confirmText="Supprimer"
+                    variant="destructive"
+                />
             </div>
         </AppLayout>
     );

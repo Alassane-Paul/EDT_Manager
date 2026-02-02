@@ -214,10 +214,23 @@ export function useEmploiTempsActions() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => emploiTempsApi.deleteEmploiTemps(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["emplois-temps"] });
+      toast.success("Emploi du temps supprimé");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.error || "Erreur lors de la suppression");
+    },
+  });
+
   return {
     validerEmploiTemps: validateMutation.mutate,
     isValidating: validateMutation.isPending,
     publierEmploiTemps: publishMutation.mutate,
     isPublishing: publishMutation.isPending,
+    deleteEmploiTemps: deleteMutation.mutate,
+    isDeleting: deleteMutation.isPending,
   };
 }

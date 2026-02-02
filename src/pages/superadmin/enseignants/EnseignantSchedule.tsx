@@ -31,7 +31,7 @@ export default function EnseignantSchedule() {
 
     return (
         <AppLayout>
-            <div className="space-y-6 h-[calc(100vh-100px)] flex flex-col">
+            <div className="space-y-6 flex flex-col">
                 <div className="flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
@@ -60,7 +60,7 @@ export default function EnseignantSchedule() {
                     </div>
                 </div>
 
-                <Card className="flex-1 overflow-hidden flex flex-col">
+                <Card className="min-h-[1000px] flex flex-col overflow-hidden">
                     <CardHeader className="py-3 px-4 shrink-0 border-b">
                         <CardTitle className="text-lg">Aperçu Hebdomadaire</CardTitle>
                     </CardHeader>

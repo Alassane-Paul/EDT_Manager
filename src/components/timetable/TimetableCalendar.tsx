@@ -61,7 +61,7 @@ export function TimetableCalendar({
 
         return {
             top: `${(startMinutes / 60) * 4}rem`, // 4rem per hour height
-            height: `${(durationMinutes / 60) * 4}rem`
+            height: `calc(${(durationMinutes / 60) * 4}rem - 4px)` // Added 4px gap
         };
     };
 

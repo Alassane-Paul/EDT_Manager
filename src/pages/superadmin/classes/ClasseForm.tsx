@@ -5,9 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ArrowLeft, Save } from "lucide-react";
 import { useCreateClasse, useUpdateClasse, useClasse } from "@/hooks/useClasses";
+import { useSalles } from "@/hooks/useSalles";
 import { useEtablissements } from "@/hooks/useEtablissements";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatutClasse } from "@/types/classes";
+import { LEVELS_BY_TYPE, FILIERES_BY_TYPE } from "@/utils/school-definitions";
 // ... (rest similar)
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +45,9 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+
+
+
 export default function ClasseForm() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -71,6 +76,25 @@ export default function ClasseForm() {
       etablissement_id: user?.establishmentId || "",
     },
   });
+
+  // Watch for establishment changes to update levels and fetch rooms
+  const selectedEtabId = form.watch("etablissement_id");
+
+  // Fetch salles for the selected establishment
+  const { salles, isLoading: sallesLoading } = useSalles(
+    selectedEtabId ? { etablissement_id: selectedEtabId } : undefined
+  );
+
+  const selectedEtab = etablissements.find(e => e.id === selectedEtabId);
+  const availableLevels = selectedEtab && selectedEtab.type in LEVELS_BY_TYPE
+    ? LEVELS_BY_TYPE[selectedEtab.type]
+    : LEVELS_BY_TYPE.universite;
+
+  const availableFilieres = selectedEtab && selectedEtab.type in FILIERES_BY_TYPE
+    ? FILIERES_BY_TYPE[selectedEtab.type]
+    : FILIERES_BY_TYPE.universite;
+  // ...
+
 
   useEffect(() => {
     if (classe && isEditMode) {
@@ -190,7 +214,7 @@ export default function ClasseForm() {
                         <FormItem>
                           <FormLabel>Nom de la classe *</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="ex: L3 Informatique" />
+                            <Input {...field} placeholder="" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -210,11 +234,11 @@ export default function ClasseForm() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="L1">L1</SelectItem>
-                              <SelectItem value="L2">L2</SelectItem>
-                              <SelectItem value="L3">L3</SelectItem>
-                              <SelectItem value="M1">M1</SelectItem>
-                              <SelectItem value="M2">M2</SelectItem>
+                              {availableLevels.map((level) => (
+                                <SelectItem key={level} value={level}>
+                                  {level}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -231,7 +255,7 @@ export default function ClasseForm() {
                         <FormItem>
                           <FormLabel>Année scolaire *</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="2024-2025" />
+                            <Input {...field} placeholder="" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -244,9 +268,20 @@ export default function ClasseForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Filière</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="ex: Informatique" />
-                          </FormControl>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Sélectionner une filière" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {availableFilieres.map((filiere) => (
+                                <SelectItem key={filiere} value={filiere}>
+                                  {filiere}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -274,9 +309,34 @@ export default function ClasseForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Salle principale</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="ex: Salle A101" />
-                          </FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            disabled={!selectedEtabId}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={selectedEtabId ? "Sélectionner une salle" : "Sélectionnez d'abord un établissement"} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {sallesLoading ? (
+                                <SelectItem value="loading" disabled>
+                                  Chargement des salles...
+                                </SelectItem>
+                              ) : salles && salles.length > 0 ? (
+                                salles.map((salle) => (
+                                  <SelectItem key={salle.id} value={salle.nom_salle}>
+                                    {salle.nom_salle} {salle.batiment ? `(${salle.batiment})` : ''}
+                                  </SelectItem>
+                                ))
+                              ) : (
+                                <SelectItem value="no-rooms" disabled>
+                                  Aucune salle disponible
+                                </SelectItem>
+                              )}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}

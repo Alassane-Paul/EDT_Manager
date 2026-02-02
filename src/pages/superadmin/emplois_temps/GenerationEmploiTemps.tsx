@@ -6,17 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useClasses } from "@/hooks/useClasses";
-import { AlertCircle, ArrowLeft, Wand2, Loader2 } from "lucide-react";
+import { usePeriodes } from "@/hooks/usePeriodes";
+import { AlertCircle, ArrowLeft, Wand2, Loader2, CalendarRange } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { GenerationParams } from "@/types/emploi-temps";
 import { GenerationProgressDialog } from "@/components/emploi-temps/GenerationProgressDialog";
+import { Periode } from "@/api/periodes/api";
 import { emploiTempsApi } from "@/api/emploi-temps/api";
 import { toast } from "sonner";
 
 export default function GenerationEmploiTemps() {
     const navigate = useNavigate();
     const { classes } = useClasses();
+    const { periodes } = usePeriodes();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [generatingEmploiTempsId, setGeneratingEmploiTempsId] = useState<string | null>(null);
 
@@ -30,6 +33,18 @@ export default function GenerationEmploiTemps() {
             max_cours_journalier: 8
         }
     });
+
+    const handlePeriodeChange = (periodeId: string) => {
+        const selectedPeriode = periodes.find((p: Periode) => p.id === periodeId);
+        if (selectedPeriode) {
+            setFormData(prev => ({
+                ...prev,
+                periode_debut: selectedPeriode.date_debut,
+                periode_fin: selectedPeriode.date_fin,
+                nom_version: selectedPeriode.libelle + " - " + (prev.nom_version || `V1`)
+            }));
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -60,7 +75,17 @@ export default function GenerationEmploiTemps() {
             setGeneratingEmploiTempsId(response.emploi_temps.id);
             toast.success("Génération démarrée !");
         } catch (error: any) {
-            toast.error(error.response?.data?.error || "Erreur lors du démarrage de la génération");
+            // Ne pas afficher l'erreur si c'est un timeout, car la génération continue souvent en arrière-plan
+            const isTimeout = error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout');
+
+            if (!isTimeout) {
+                toast.error(error.response?.data?.error || "Erreur lors du démarrage de la génération");
+            } else {
+                console.log("Génération démarrée (timeout ignoré)");
+                // On peut quand même tenter d'ouvrir le dialog si on a un ID ou s'il a été créé
+                // Mais généralement sans réponse on n'a pas l'ID. 
+                // Le backend devrait idéalement renvoyer l'ID rapidement.
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -120,10 +145,36 @@ export default function GenerationEmploiTemps() {
                                     <div className="space-y-2">
                                         <Label>Nom de la version *</Label>
                                         <Input
-                                            placeholder="Ex: Semestre 1 - V1"
+                                            placeholder=""
                                             value={formData.nom_version || ""}
                                             onChange={(e) => setFormData({ ...formData, nom_version: e.target.value })}
                                         />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>Période de l'établissement (Auto-remplissage)</Label>
+                                        <Select onValueChange={handlePeriodeChange}>
+                                            <SelectTrigger>
+                                                <div className="flex items-center gap-2">
+                                                    <CalendarRange className="h-4 w-4 text-muted-foreground" />
+                                                    <SelectValue placeholder="Sélectionner une période configurée" />
+                                                </div>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {periodes.length === 0 ? (
+                                                    <SelectItem value="none" disabled>Aucune période configurée</SelectItem>
+                                                ) : (
+                                                    periodes.map((p: Periode) => (
+                                                        <SelectItem key={p.id} value={p.id}>
+                                                            {p.libelle} ({new Date(p.date_debut).toLocaleDateString()} - {new Date(p.date_fin).toLocaleDateString()})
+                                                        </SelectItem>
+                                                    ))
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                        <p className="text-[10px] text-muted-foreground italic">
+                                            La sélection d'une période remplit automatiquement les dates et suggère un nom de version.
+                                        </p>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -131,6 +182,7 @@ export default function GenerationEmploiTemps() {
                                             <Label>Date de début *</Label>
                                             <Input
                                                 type="date"
+                                                value={formData.periode_debut || ""}
                                                 onChange={(e) => setFormData({ ...formData, periode_debut: e.target.value })}
                                             />
                                         </div>
@@ -138,6 +190,7 @@ export default function GenerationEmploiTemps() {
                                             <Label>Date de fin *</Label>
                                             <Input
                                                 type="date"
+                                                value={formData.periode_fin || ""}
                                                 onChange={(e) => setFormData({ ...formData, periode_fin: e.target.value })}
                                             />
                                         </div>

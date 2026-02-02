@@ -4,7 +4,7 @@ import axiosInstance from "../axios_instance";
 export const absencesApi = {
   async getAll(filters?: AbsenceFilters): Promise<Absence[]> {
     const response = await axiosInstance.get("/absences", { params: filters });
-    return response.data;
+    return response.data.absences || [];
   },
 
   async getBySeance(seanceId: string): Promise<Absence[]> {

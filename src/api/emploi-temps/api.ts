@@ -89,4 +89,8 @@ export const emploiTempsApi = {
     });
     return response.data;
   },
+
+  async deleteEmploiTemps(id: string): Promise<void> {
+    await axiosInstance.delete(`/emplois-temps/${id}`);
+  },
 };

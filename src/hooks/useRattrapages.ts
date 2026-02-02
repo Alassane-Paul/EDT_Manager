@@ -9,7 +9,7 @@ export interface Rattrapage {
   duree: number;
   eleves_concernes: any; // JSON
   motif?: string;
-  statut: 'demande' | 'planifie' | 'realise' | 'annule';
+  statut: 'demande' | 'valide' | 'refuse' | 'planifie' | 'realise' | 'annule';
   date_demande: string;
   periode_souhaitee_debut?: string;
   periode_souhaitee_fin?: string;
@@ -17,6 +17,9 @@ export interface Rattrapage {
     id: string;
     matiere: { nom_matiere: string; code_matiere: string };
     classe: { nom_classe: string };
+    enseignant?: {
+      utilisateur: { nom: string; prenom: string };
+    };
   };
   creneau_planifie?: {
     date_debut: string; // To be checked against backend response
@@ -69,6 +72,18 @@ const api = {
   // Annuler (si statut demande)
   cancelRattrapage: async ({ id, raison }: { id: string; raison: string }) => {
     const response = await axiosInstance.post(`/rattrapages/${id}/cancel`, { raison });
+    return response.data;
+  },
+
+  // Valider
+  validateRattrapage: async (id: string) => {
+    const response = await axiosInstance.post(`/rattrapages/${id}/validate`);
+    return response.data;
+  },
+
+  // Rejeter
+  rejectRattrapage: async ({ id, motif }: { id: string; motif: string }) => {
+    const response = await axiosInstance.post(`/rattrapages/${id}/reject`, { motif });
     return response.data;
   }
 };
@@ -162,6 +177,24 @@ export function useRattrapageActions() {
     marquerRealise: realiserMutation.mutate,
     isMarkingRealised: realiserMutation.isPending,
     cancelRattrapage: cancelMutation.mutate,
-    isCancelling: cancelMutation.isPending
+    isCancelling: cancelMutation.isPending,
+    validateRattrapage: useMutation({
+      mutationFn: api.validateRattrapage,
+      onSuccess: (_, id) => {
+        queryClient.invalidateQueries({ queryKey: ['rattrapages'] });
+        queryClient.invalidateQueries({ queryKey: ['rattrapage', id] });
+        toast.success("Demande validée");
+      },
+      onError: () => toast.error("Erreur lors de la validation")
+    }).mutate,
+    rejectRattrapage: useMutation({
+      mutationFn: api.rejectRattrapage,
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({ queryKey: ['rattrapages'] });
+        queryClient.invalidateQueries({ queryKey: ['rattrapage', variables.id] });
+        toast.success("Demande rejetée");
+      },
+      onError: () => toast.error("Erreur lors du rejet")
+    }).mutate
   };
 }

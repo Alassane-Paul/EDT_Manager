@@ -119,7 +119,7 @@ export default function RattrapageForm() {
                       <FormItem>
                         <FormLabel>Durée (minutes)</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" min="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -130,7 +130,7 @@ export default function RattrapageForm() {
                     <FormItem>
                       <FormLabel>Élèves concernés (IDs séparés par des virgules)</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="ex: id1, id2, id3" />
+                        <Input {...field} placeholder="" />
                       </FormControl>
                       <FormDescription>Laissez vide pour toute la classe</FormDescription>
                       <FormMessage />

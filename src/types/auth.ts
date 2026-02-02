@@ -48,4 +48,6 @@ export interface ApiUser {
     secret?: string;
     photo_url?: string;
     telephone?: string;
+    enseignant?: { id: string };
+    eleve?: { id: string; classe_id: string };
 }

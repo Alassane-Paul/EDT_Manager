@@ -15,6 +15,7 @@ import { useMesCours } from "@/hooks/useCours";
 import { Clock, Calendar, CheckCircle, AlertTriangle, XCircle, Plus, Timer, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { STATUT_COLORS, STATUT_LABELS } from "@/utils/rattrapageUtils";
 
 export default function RattrapagesEnseignant() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -49,18 +50,11 @@ export default function RattrapagesEnseignant() {
     };
 
     const getStatusBadge = (statut: string) => {
-        switch (statut) {
-            case 'realise':
-                return <Badge className="bg-green-500 hover:bg-green-600">Réalisé</Badge>;
-            case 'planifie':
-                return <Badge className="bg-blue-500 hover:bg-blue-600">Planifié</Badge>;
-            case 'demande':
-                return <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">En attente</Badge>;
-            case 'annule':
-                return <Badge variant="destructive">Annulé</Badge>;
-            default:
-                return <Badge variant="secondary">{statut}</Badge>;
-        }
+        return (
+            <Badge className={STATUT_COLORS[statut] || "bg-gray-500"}>
+                {STATUT_LABELS[statut] || statut}
+            </Badge>
+        );
     };
 
     return (

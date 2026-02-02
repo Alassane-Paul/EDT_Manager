@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { ArrowLeft, Edit, Users, BookOpen, Calendar } from "lucide-react";
+import { ArrowLeft, Edit, Users, BookOpen, Calendar, Plus, Trash2 } from "lucide-react";
 import { useClasse, useClasseStats } from "@/hooks/useClasses";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,8 +8,20 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatutClasse } from "@/types/classes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RoleUtilisateur } from "@/types/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useState } from "react";
+import { useClassesActions } from "@/hooks/useClasses";
+import { useToast, toast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const STATUT_LABELS: Record<StatutClasse, string> = {
   [StatutClasse.ACTIVE]: "Active",
@@ -24,9 +36,24 @@ const STATUT_COLORS: Record<StatutClasse, string> = {
 export default function ClasseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { removeStudent } = useClassesActions();
 
   const { data: classe, isLoading } = useClasse(id!);
   const { data: stats } = useClasseStats(id!);
+  const { toast: toastHook } = useToast(); // Kept for other hook usages if any, but we favor imported toast
+
+  const [confirmConfig, setConfirmConfig] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    variant?: "default" | "destructive";
+  }>({
+    open: false,
+    title: "",
+    description: "",
+    onConfirm: () => { },
+  });
 
   if (isLoading) {
     return (
@@ -162,7 +189,18 @@ export default function ClasseDetails() {
                 <AssignStudentDialog classeId={classe.id} />
               </CardHeader>
               <CardContent>
-                <StudentList students={classe.eleves || []} classeId={classe.id} />
+                <StudentList
+                  students={classe.eleves || []}
+                  onRemoveClick={(studentId, name) => {
+                    setConfirmConfig({
+                      open: true,
+                      title: "Retirer l'étudiant",
+                      description: `Êtes-vous sûr de vouloir retirer ${name} de la classe ?`,
+                      variant: "destructive",
+                      onConfirm: () => removeStudent.mutate({ classeId: id!, studentId })
+                    });
+                  }}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -179,27 +217,26 @@ export default function ClasseDetails() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <ConfirmDialog
+        open={confirmConfig.open}
+        onOpenChange={(open) => setConfirmConfig((prev) => ({ ...prev, open }))}
+        title={confirmConfig.title}
+        description={confirmConfig.description}
+        onConfirm={confirmConfig.onConfirm}
+        variant={confirmConfig.variant}
+      />
     </AppLayout>
   );
 }
 
-import { Plus, Trash2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { useClassesActions } from "@/hooks/useClasses";
-import { useToast } from "@/hooks/use-toast";
-import { useUsers } from "@/hooks/useUsers";
-// Note: Assuming useUsers can fetch users to assign, but API requires creating Eleve or assigning existing user.
-// The controller `assignStudent` takes `utilisateur_id`, `matricule`, etc.
-// We need a user search/select or creation form. For simplicity, let's assume we search for a user or enter an ID.
-// However, the prompt implies "formulaire d'assignation d'élèves". I will create a simple form asking for User ID or selecting from a list if possible.
-// Given constraints, I'll assume we paste a User ID or select from a dropdown of students without class.
-
-function StudentList({ students, classeId }: { students: any[], classeId: string }) {
-  const { removeStudent } = useClassesActions();
-
+function StudentList({
+  students,
+  onRemoveClick
+}: {
+  students: any[],
+  onRemoveClick: (studentId: string, name: string) => void
+}) {
   if (students.length === 0) {
     return <p className="text-center py-8 text-muted-foreground">Aucun étudiant assigné à cette classe.</p>;
   }
@@ -228,11 +265,7 @@ function StudentList({ students, classeId }: { students: any[], classeId: string
                 variant="ghost"
                 size="icon"
                 className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                onClick={() => {
-                  if (confirm("Êtes-vous sûr de vouloir retirer cet étudiant de la classe ?")) {
-                    removeStudent.mutate({ classeId, studentId: u.id });
-                  }
-                }}
+                onClick={() => onRemoveClick(u.id, `${u.prenom} ${u.nom}`)}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -250,9 +283,6 @@ function AssignStudentDialog({ classeId }: { classeId: string }) {
   const [userId, setUserId] = useState("");
   const { assignStudent } = useClassesActions();
   const { toast } = useToast();
-
-  // In a real app, this would be a Combobox searching for users with role ELEVE
-  // For now, I'll use a simple input for User ID and Matricule
 
   const handleSubmit = () => {
     if (!userId) {
@@ -295,7 +325,7 @@ function AssignStudentDialog({ classeId }: { classeId: string }) {
           </div>
           <div className="space-y-2">
             <Label>Matricule</Label>
-            <Input value={matricule} onChange={e => setMatricule(e.target.value)} placeholder="MAT-202X-..." />
+            <Input value={matricule} onChange={e => setMatricule(e.target.value)} placeholder="" />
           </div>
           <Button onClick={handleSubmit} className="w-full">Assigner</Button>
         </div>
@@ -338,4 +368,3 @@ function CourseList({ cours }: { cours: any[] }) {
     </div>
   )
 }
-

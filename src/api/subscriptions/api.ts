@@ -3,7 +3,7 @@ import axiosInstance from "../axios_instance";
 
 export const subscriptionsApi = {
     async getSubscription(): Promise<any> {
-        const response = await axiosInstance.get("/subscriptions");
+        const response = await axiosInstance.get("/subscriptions/");
         return response.data;
     },
 

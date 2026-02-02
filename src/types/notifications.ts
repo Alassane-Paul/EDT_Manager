@@ -4,7 +4,7 @@ export interface Notification {
   titre: string;
   message: string;
   lue: boolean;
-  date_creation: string;
+  date_envoi: string;
   utilisateur_id: string;
 }
 

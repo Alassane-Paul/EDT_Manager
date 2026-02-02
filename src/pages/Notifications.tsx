@@ -63,7 +63,8 @@ const Notifications = () => {
     isLoading,
     markAsRead,
     markAllAsRead,
-    deleteNotification
+    deleteNotification,
+    error
   } = useNotifications();
 
   const notifications = apiNotifications;
@@ -168,7 +169,7 @@ const Notifications = () => {
                             </p>
                             <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
                               <Clock className="h-3 w-3" />
-                              {formatDate(notification.date_creation)}
+                              {formatDate(notification.date_envoi)}
                             </div>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">

@@ -42,6 +42,8 @@ export interface ClasseFilters {
   niveau?: string;
   statut?: StatutClasse;
   search?: string;
+  etablissement_id?: string;
+  filiere?: string;
 }
 
 export interface ClasseStats {

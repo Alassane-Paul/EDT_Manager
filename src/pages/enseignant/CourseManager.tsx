@@ -247,7 +247,7 @@ export default function CourseManager() {
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="lien_visio">Lien Visio (Meet/Zoom)</Label>
-                                                <Input id="lien_visio" name="lien_visio" type="url" placeholder="https://meet.google.com/..." required />
+                                                <Input id="lien_visio" name="lien_visio" type="url" placeholder="" required />
                                             </div>
                                             <Button type="submit" disabled={createSessionMutation.isPending} className="w-full">
                                                 {createSessionMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

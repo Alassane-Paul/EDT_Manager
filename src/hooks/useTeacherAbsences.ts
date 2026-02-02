@@ -27,7 +27,7 @@ export interface TeacherAbsenceDeclaration {
 const api = {
     getMyAbsences: async (): Promise<TeacherAbsence[]> => {
         const response = await axiosInstance.get("/teacher/absences");
-        return response.data.absences || [];
+        return response.data.absences || response.data.data || [];
     },
 
     declareMyAbsence: async (data: TeacherAbsenceDeclaration): Promise<TeacherAbsence> => {

@@ -13,11 +13,16 @@ import {
   BookOpen,
   Users,
   MapPin,
+  Trash2,
+  X,
 } from "lucide-react";
 import { useEnseignant, useEnseignantStats } from "@/hooks/useEnseignants";
 import { AssignMatiereDialog } from "./AssignMatiereDialog";
 import { AssignCoursDialog } from "./AssignCoursDialog";
-import { useToast } from "@/hooks/use-toast"; // Ensure useToast is imported if needed for refetch trigger or similar logic, though hooks handle data refresh usually via React Query invalidation
+import { EditCoursDialog } from "./EditCoursDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useToast, toast } from "@/hooks/use-toast";
+import axiosInstance from "@/api/axios_instance";
 // Note: Assuming react-query invalidation or similar is handled by the hook or passing a refetch callback. 
 // For now, passing a callback to refetch which might be needed if hooks don't auto-update.
 // Let's assume useEnseignant uses SWR or React Query and refetches on window focus or we can force it.
@@ -52,16 +57,90 @@ export default function EnseignantDetails() {
 
   const { data: enseignant, isLoading, refetch } = useEnseignant(id!);
   const { data: stats, refetch: refetchStats } = useEnseignantStats(id!);
+  // toast is now imported directly
 
   const handleRefetch = () => {
     refetch();
     refetchStats();
   };
 
+  const [confirmConfig, setConfirmConfig] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    variant?: "default" | "destructive";
+  }>({
+    open: false,
+    title: "",
+    description: "",
+    onConfirm: () => { },
+  });
+
   const formatHeures = (minutes: number) => {
     const heures = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return mins > 0 ? `${heures}h${mins}` : `${heures}h`;
+  };
+
+  const handleDeleteCours = (coursId: string) => {
+    setConfirmConfig({
+      open: true,
+      title: "Retirer le cours",
+      description: "Êtes-vous sûr de vouloir retirer ce cours ? Cette action supprimera également tous les créneaux planifiés associés.",
+      variant: "destructive",
+      onConfirm: async () => {
+        try {
+          await axiosInstance.delete(`/cours/${coursId}`);
+          toast({
+            title: "Cours retiré",
+            description: "Le cours a été retiré avec succès.",
+          });
+          handleRefetch();
+        } catch (error: any) {
+          const errorMsg = error.response?.data?.error || "Impossible de retirer le cours.";
+          toast({
+            title: "Erreur",
+            description: errorMsg,
+            variant: "destructive",
+          });
+          console.error(error);
+        }
+      },
+    });
+  };
+
+  const handleRemoveMatiere = (matiereId: string) => {
+    setConfirmConfig({
+      open: true,
+      title: "Retirer la matière",
+      description: "Êtes-vous sûr de vouloir retirer cette matière ?",
+      variant: "destructive",
+      onConfirm: async () => {
+        try {
+          const currentMatiereIds = enseignant.matieres?.map(m => m.id) || [];
+          const updatedMatiereIds = currentMatiereIds.filter(id => id !== matiereId);
+
+          await axiosInstance.post(`/enseignants/${id}/assign-subjects`, {
+            matiere_ids: updatedMatiereIds,
+          });
+
+          toast({
+            title: "Matière retirée",
+            description: "La matière a été retirée avec succès.",
+          });
+          handleRefetch();
+        } catch (error: any) {
+          const errorMsg = error.response?.data?.error || "Impossible de retirer la matière.";
+          toast({
+            title: "Erreur",
+            description: errorMsg,
+            variant: "destructive",
+          });
+          console.error(error);
+        }
+      },
+    });
   };
 
   if (isLoading) {
@@ -300,24 +379,37 @@ export default function EnseignantDetails() {
               </CardHeader>
               <CardContent>
                 {enseignant.matieres && enseignant.matieres.length > 0 ? (
-                  <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                    {enseignant.matieres.map((matiere) => (
-                      <div
-                        key={matiere.id}
-                        className="flex items-center gap-3 rounded-lg border p-3"
-                      >
+                  <div className="flex flex-wrap gap-2">
+                    {enseignant.matieres.map((matiere) => {
+                      const subjectColor = matiere.couleur_affichage || "#3b82f6";
+                      return (
                         <div
-                          className="h-10 w-10 rounded-full"
-                          style={{ backgroundColor: matiere.couleur_affichage || "#3b82f6" }}
-                        />
-                        <div>
-                          <p className="font-medium">{matiere.nom_matiere}</p>
-                          <p className="text-sm text-muted-foreground">
+                          key={matiere.id}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all hover:shadow-sm"
+                          style={{
+                            backgroundColor: `${subjectColor}15`,
+                            borderColor: `${subjectColor}40`,
+                            color: subjectColor
+                          }}
+                        >
+                          <div
+                            className="h-2 w-2 rounded-full"
+                            style={{ backgroundColor: subjectColor }}
+                          />
+                          <span className="font-medium text-sm">{matiere.nom_matiere}</span>
+                          <span className="text-[10px] opacity-70 uppercase font-bold tracking-wider">
                             {matiere.code_matiere}
-                          </p>
+                          </span>
+                          <button
+                            onClick={() => handleRemoveMatiere(matiere.id)}
+                            className="ml-1 rounded-full p-0.5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                            title="Retirer la matière"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-center text-muted-foreground py-8">
@@ -363,11 +455,28 @@ export default function EnseignantDetails() {
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-medium">
-                            {formatHeures(cours.volume_horaire_hebdo)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">par semaine</p>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right mr-4">
+                            <p className="font-medium">
+                              {formatHeures(cours.volume_horaire_hebdo)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">par semaine</p>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <EditCoursDialog
+                              cours={cours}
+                              enseignantMatieres={enseignant.matieres?.map(m => m.id) || []}
+                              onSuccess={handleRefetch}
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => handleDeleteCours(cours.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -429,5 +538,14 @@ export default function EnseignantDetails() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <ConfirmDialog
+        open={confirmConfig.open}
+        onOpenChange={(open) => setConfirmConfig((prev) => ({ ...prev, open }))}
+        title={confirmConfig.title}
+        description={confirmConfig.description}
+        onConfirm={confirmConfig.onConfirm}
+        variant={confirmConfig.variant}
+      />
     </AppLayout>);
 }

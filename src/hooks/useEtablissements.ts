@@ -55,8 +55,11 @@ export function useUpdateEtablissement() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<EtablissementFormData> }) =>
       etablissementsApi.update(id, data),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      // Invalider la liste des établissements
       queryClient.invalidateQueries({ queryKey: ["etablissements"] });
+      // Invalider l'établissement spécifique pour rafraîchir les détails
+      queryClient.invalidateQueries({ queryKey: ["etablissement", variables.id] });
       toast.success("Établissement mis à jour");
     },
     onError: () => {

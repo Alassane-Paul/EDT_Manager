@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Image as ImageIcon, Paperclip } from "lucide-react";
+import { useChat } from '@/contexts/ChatContext';
+import { useEffect } from 'react';
 
 interface MessageInputProps {
     onSend: (content: string, type: 'TEXT' | 'IMAGE' | 'FILE') => void;
@@ -10,12 +12,29 @@ interface MessageInputProps {
 
 export const MessageInput: React.FC<MessageInputProps> = ({ onSend, disabled }) => {
     const [message, setMessage] = useState('');
+    const { sendTypingIndicator, activeConversationId } = useChat();
+
+    // Typing logic
+    useEffect(() => {
+        if (!activeConversationId || disabled) return;
+
+        const isTyping = message.trim().length > 0;
+        sendTypingIndicator(activeConversationId, isTyping);
+
+        // Optional: stop typing after inactivity
+        const timeout = setTimeout(() => {
+            if (isTyping) sendTypingIndicator(activeConversationId, false);
+        }, 3000);
+
+        return () => clearTimeout(timeout);
+    }, [message, activeConversationId]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!message.trim()) return;
         onSend(message, 'TEXT');
         setMessage('');
+        if (activeConversationId) sendTypingIndicator(activeConversationId, false);
     };
 
     return (

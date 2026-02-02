@@ -22,8 +22,11 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useClasses } from "@/hooks/useClasses";
+import { useEtablissements } from "@/hooks/useEtablissements";
+import { useAuth } from "@/contexts/AuthContext";
 import { StatutClasse } from "@/types/classes";
 import { Edit, Eye, Plus, Search } from "lucide-react";
+import { LEVELS_BY_TYPE, FILIERES_BY_TYPE, ALL_LEVELS, ALL_FILIERES } from "@/utils/school-definitions";
 
 const STATUT_LABELS: Record<StatutClasse, string> = {
   [StatutClasse.ACTIVE]: "Active",
@@ -39,18 +42,43 @@ const skeletonRows = Array.from({ length: 5 });
 
 export default function ClasseList() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const { etablissements } = useEtablissements();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statutFilter, setStatutFilter] = useState<StatutClasse | "all">("all");
   const [niveauFilter, setNiveauFilter] = useState<string>("all");
+  const [filiereFilter, setFiliereFilter] = useState<string>("all");
+  const [etablissementFilter, setEtablissementFilter] = useState<string>("all");
+
+  // Determine effective establishment ID for filtering
+  // If user is admin, use the filter value (if specific). If user is not admin, force their establishment ID.
+  const effectiveEtabId = isAdmin
+    ? (etablissementFilter !== "all" ? etablissementFilter : undefined)
+    : user?.establishmentId;
 
   const filters = useMemo(
     () => ({
       search: searchTerm || undefined,
       statut: statutFilter && statutFilter !== "all" ? statutFilter : undefined,
       niveau: niveauFilter && niveauFilter !== "all" ? niveauFilter : undefined,
+      filiere: filiereFilter && filiereFilter !== "all" ? filiereFilter : undefined,
+      etablissement_id: effectiveEtabId,
     }),
-    [searchTerm, statutFilter, niveauFilter]
+    [searchTerm, statutFilter, niveauFilter, filiereFilter, effectiveEtabId]
   );
+
+  // Calculate available levels/filieres based on selected/forced establishment
+  const selectedEtab = etablissements.find(e => e.id === effectiveEtabId);
+
+  const availableLevels = selectedEtab
+    ? (LEVELS_BY_TYPE[selectedEtab.type] || [])
+    : ALL_LEVELS;
+
+  const availableFilieres = selectedEtab
+    ? (FILIERES_BY_TYPE[selectedEtab.type] || [])
+    : ALL_FILIERES;
 
   const { classes, isLoading, error } = useClasses(filters);
 
@@ -75,28 +103,66 @@ export default function ClasseList() {
             <CardTitle>Liste des classes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2 sm:w-80">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between flex-wrap">
+              <div className="flex items-center gap-2 w-full sm:w-auto sm:max-w-xs">
                 <Search className="h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher une classe (nom, filière...)"
+                  placeholder="Rechercher une classe..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                {isAdmin && (
+                  <Select
+                    value={etablissementFilter}
+                    onValueChange={(val) => {
+                      setEtablissementFilter(val);
+                      // Reset other filters when establishment changes to prevent invalid combinations
+                      setNiveauFilter("all");
+                      setFiliereFilter("all");
+                    }}
+                  >
+                    <SelectTrigger className="w-full sm:w-[200px]">
+                      <SelectValue placeholder="Établissement" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tous les établissements</SelectItem>
+                      {etablissements.map((etab) => (
+                        <SelectItem key={etab.id} value={etab.id}>
+                          {etab.nom}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+
                 <Select value={niveauFilter} onValueChange={setNiveauFilter}>
-                  <SelectTrigger className="w-full sm:w-40">
+                  <SelectTrigger className="w-full sm:w-[130px]">
                     <SelectValue placeholder="Niveau" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous les niveaux</SelectItem>
-                    <SelectItem value="L1">L1</SelectItem>
-                    <SelectItem value="L2">L2</SelectItem>
-                    <SelectItem value="L3">L3</SelectItem>
-                    <SelectItem value="M1">M1</SelectItem>
-                    <SelectItem value="M2">M2</SelectItem>
+                    <SelectItem value="all">Tous niveaux</SelectItem>
+                    {availableLevels.map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {level}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={filiereFilter} onValueChange={setFiliereFilter}>
+                  <SelectTrigger className="w-full sm:w-[130px]">
+                    <SelectValue placeholder="Filière" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes filières</SelectItem>
+                    {availableFilieres.map((filiere) => (
+                      <SelectItem key={filiere} value={filiere}>
+                        {filiere}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
@@ -104,11 +170,11 @@ export default function ClasseList() {
                   value={statutFilter}
                   onValueChange={(value) => setStatutFilter(value as StatutClasse | "all")}
                 >
-                  <SelectTrigger className="w-full sm:w-40">
+                  <SelectTrigger className="w-full sm:w-[130px]">
                     <SelectValue placeholder="Statut" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous les statuts</SelectItem>
+                    <SelectItem value="all">Tous statuts</SelectItem>
                     <SelectItem value={StatutClasse.ACTIVE}>Active</SelectItem>
                     <SelectItem value={StatutClasse.ARCHIVEE}>Archivée</SelectItem>
                   </SelectContent>

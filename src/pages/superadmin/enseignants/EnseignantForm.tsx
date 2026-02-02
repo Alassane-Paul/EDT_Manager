@@ -256,7 +256,7 @@ export default function EnseignantForm() {
                         <FormItem>
                           <FormLabel>Matricule *</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="ENS2024001" />
+                            <Input {...field} placeholder="" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -329,6 +329,7 @@ export default function EnseignantForm() {
                               type="number"
                               {...field}
                               onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              min="0"
                             />
                           </FormControl>
                           <FormDescription>
@@ -350,6 +351,7 @@ export default function EnseignantForm() {
                               type="number"
                               {...field}
                               onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              min="0"
                             />
                           </FormControl>
                           <FormDescription>
@@ -373,6 +375,7 @@ export default function EnseignantForm() {
                               type="number"
                               {...field}
                               onChange={(e) => field.onChange(parseInt(e.target.value))}
+                              min="0"
                             />
                           </FormControl>
                           <FormMessage />

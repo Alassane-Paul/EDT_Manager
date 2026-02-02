@@ -160,7 +160,7 @@ export default function QuizCreator() {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label>Durée (minutes)</Label>
-                                                <Input name="duree_minutes" type="number" defaultValue="60" required />
+                                                <Input name="duree_minutes" type="number" min="0" defaultValue="60" required />
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Date ouverture</Label>
@@ -288,7 +288,7 @@ function QuestionForm({ onSubmit, isPending }: { onSubmit: (e: React.FormEvent<H
             </div>
             <div className="space-y-2">
                 <Label>Points</Label>
-                <Input name="points" type="number" step="0.5" defaultValue="1" required />
+                <Input name="points" type="number" step="0.5" min="0" defaultValue="1" required />
             </div>
 
             {type === 'QCM' && (

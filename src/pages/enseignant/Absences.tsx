@@ -42,6 +42,7 @@ export default function AbsencesEnseignant() {
 
   const { etudiants, isLoading: isLoadingEtudiants } = useEtudiantsClasse(classeId || "");
   const { saveAppel, isSaving } = useAppelAction();
+  const { absences, isLoading: isLoadingAbsences } = useAbsences();
 
   // Génération des séances (2 dernières semaines + 1 semaine à venir) pour la démo
   // Dans un vrai cas, on pourrait avoir une API dédiée "getSeances" qui retourne les dates réelles
@@ -321,34 +322,192 @@ export default function AbsencesEnseignant() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
-                Derniers appels effectués
+                Historique des absences
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
-                <p>L'historique détaillé des appels sera bientôt disponible.</p>
-                <p className="text-xs mt-1">Les données sont enregistrées mais l'affichage historique est en cours de finalisation.</p>
-              </div>
-            </CardContent>
-          </Card>
+              <Tabs defaultValue="tous" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="tous">Toutes les absences</TabsTrigger>
+                  <TabsTrigger value="seance">Par séance</TabsTrigger>
+                </TabsList>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-orange-500" />
-                Alertes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                  <p className="text-sm font-medium text-orange-800 dark:text-orange-400">Rattrapages à prévoir</p>
-                  <p className="text-xs text-orange-700 dark:text-orange-500 mt-1">Vous avez des séances manquées nécessitant une demande de rattrapage.</p>
-                </div>
-                <Button variant="outline" className="w-full" onClick={() => navigate('/enseignant/emploi-temps')}>
-                  Gérer mes séances
-                </Button>
-              </div>
+                <TabsContent value="tous" className="mt-4">
+                  {isLoadingAbsences ? (
+                    <div className="text-center py-10 text-muted-foreground">
+                      <p>Chargement...</p>
+                    </div>
+                  ) : absences && absences.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Étudiant</TableHead>
+                            <TableHead>Cours</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Motif</TableHead>
+                            <TableHead className="text-right">Statut</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {absences.map((absence: any) => (
+                            <TableRow key={absence.id}>
+                              <TableCell className="font-medium">
+                                {absence.eleve?.utilisateur?.prenom} {absence.eleve?.utilisateur?.nom}
+                              </TableCell>
+                              <TableCell>
+                                {absence.cours?.matiere?.nom_matiere}
+                              </TableCell>
+                              <TableCell>
+                                {format(new Date(absence.date_debut), "d MMM yyyy", { locale: fr })}
+                              </TableCell>
+                              <TableCell className="max-w-xs truncate text-sm text-muted-foreground">
+                                {absence.motif}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {absence.statut === 'DECLAREE' && (
+                                  <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">
+                                    Déclarée
+                                  </Badge>
+                                )}
+                                {absence.statut === 'VALIDEE' && (
+                                  <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
+                                    Validée
+                                  </Badge>
+                                )}
+                                {absence.statut === 'JUSTIFIEE' && (
+                                  <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/30">
+                                    Justifiée
+                                  </Badge>
+                                )}
+                                {absence.statut === 'REFUSEE' && (
+                                  <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30">
+                                    Refusée
+                                  </Badge>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
+                      <p>Aucune absence déclarée pour l'instant.</p>
+                      <p className="text-xs mt-1">Les absences que vous déclarez apparaîtront ici.</p>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="seance" className="mt-4 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Cours</label>
+                      <Select value={selectedCoursId} onValueChange={handleCoursChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner un cours" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {mesCours?.map((cours: any) => (
+                            <SelectItem key={cours.id} value={cours.id}>
+                              {cours.matiere_nom} - {cours.classe_nom}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Séance</label>
+                      <Select value={selectedSeanceKey} onValueChange={handleSeanceChange} disabled={!selectedCoursId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner une séance" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {seanceOptions.map(opt => (
+                            <SelectItem key={opt.date} value={opt.date}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {selectedSeanceKey && (
+                    <>
+                      {isLoadingAbsences ? (
+                        <div className="text-center py-10 text-muted-foreground">
+                          <p>Chargement...</p>
+                        </div>
+                      ) : absences && absences.length > 0 ? (
+                        (() => {
+                          const filteredAbsences = absences.filter(
+                            (absence: any) =>
+                              absence.cours_id === selectedCoursId &&
+                              format(new Date(absence.date_debut), "yyyy-MM-dd") === selectedSeanceKey
+                          );
+
+                          return filteredAbsences.length > 0 ? (
+                            <div className="overflow-x-auto">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead>Étudiant</TableHead>
+                                    <TableHead>Motif</TableHead>
+                                    <TableHead className="text-right">Statut</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {filteredAbsences.map((absence: any) => (
+                                    <TableRow key={absence.id}>
+                                      <TableCell className="font-medium">
+                                        {absence.eleve?.utilisateur?.prenom} {absence.eleve?.utilisateur?.nom}
+                                      </TableCell>
+                                      <TableCell className="max-w-xs truncate text-sm text-muted-foreground">
+                                        {absence.motif}
+                                      </TableCell>
+                                      <TableCell className="text-right">
+                                        {absence.statut === 'DECLAREE' && (
+                                          <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">
+                                            Déclarée
+                                          </Badge>
+                                        )}
+                                        {absence.statut === 'VALIDEE' && (
+                                          <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
+                                            Validée
+                                          </Badge>
+                                        )}
+                                        {absence.statut === 'JUSTIFIEE' && (
+                                          <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/30">
+                                            Justifiée
+                                          </Badge>
+                                        )}
+                                        {absence.statut === 'REFUSEE' && (
+                                          <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30">
+                                            Refusée
+                                          </Badge>
+                                        )}
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          ) : (
+                            <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
+                              <p>Aucune absence déclarée pour cette séance.</p>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">
+                          <p>Aucune absence déclarée pour l'instant.</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </div>

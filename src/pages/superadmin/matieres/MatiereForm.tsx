@@ -176,7 +176,7 @@ export default function MatiereForm() {
                       <FormItem>
                         <FormLabel>Nom de la matière *</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="ex: Mathématiques" />
+                          <Input {...field} placeholder="" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -188,7 +188,7 @@ export default function MatiereForm() {
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="ex: MATH101"
+                            placeholder=""
                             onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                           />
                         </FormControl>
@@ -202,7 +202,7 @@ export default function MatiereForm() {
                       <FormItem>
                         <FormLabel>Coefficient *</FormLabel>
                         <FormControl>
-                          <Input type="number" step="0.1" {...field} />
+                          <Input type="number" step="0.25" min="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -214,7 +214,7 @@ export default function MatiereForm() {
                         <FormControl>
                           <div className="flex gap-2">
                             <Input type="color" {...field} className="w-12 h-10 p-1 cursor-pointer" />
-                            <Input {...field} placeholder="#HEXCODE" />
+                            <Input {...field} placeholder="" />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -267,7 +267,7 @@ export default function MatiereForm() {
                       <FormItem>
                         <FormLabel>Durée standard (minutes)</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" min="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -277,7 +277,7 @@ export default function MatiereForm() {
                       <FormItem>
                         <FormLabel>Volume horaire hebdomadaire (minutes)</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" min="0" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -290,6 +290,7 @@ export default function MatiereForm() {
                         <FormControl>
                           <input
                             type="checkbox"
+                            aria-label="Équipement spécial requis"
                             className="w-4 h-4 accent-primary"
                             checked={field.value}
                             onChange={(e) => field.onChange(e.target.checked)}
@@ -306,6 +307,7 @@ export default function MatiereForm() {
                         <FormControl>
                           <input
                             type="checkbox"
+                            aria-label="Peut être en ligne"
                             className="w-4 h-4 accent-primary"
                             checked={field.value}
                             onChange={(e) => field.onChange(e.target.checked)}
